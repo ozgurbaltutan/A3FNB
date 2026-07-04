@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { clsx } from "clsx";
-import type { MouseEventHandler, ReactNode } from "react";
+import type { ChangeEventHandler, MouseEventHandler, ReactNode } from "react";
 
 type ButtonVariant =
   | "primary"
@@ -165,7 +165,7 @@ export function Card({
     <article
       id={id}
       className={clsx(
-        "rounded-[var(--radius-card)] border border-border bg-surface p-6 shadow-[var(--shadow-soft)]",
+        "rounded-[var(--radius-card)] border border-border bg-surface p-7 shadow-[var(--shadow-soft)]",
         className,
       )}
     >
@@ -180,23 +180,32 @@ export function TextInput({
   type = "text",
   required,
   placeholder,
+  helperText,
+  autoComplete,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
   placeholder?: string;
+  helperText?: string;
+  autoComplete?: string;
 }) {
   return (
-    <label className="grid gap-2">
-      <span className="type-p3 font-medium text-ink">{label}</span>
+    <label className="grid min-w-0 gap-2">
+      <span className="type-p3 font-medium text-ink">
+        {label}
+        {required ? <span className="text-teal"> *</span> : null}
+      </span>
       <input
-        className="premium-focus min-h-12 rounded-[var(--radius-control)] border border-border bg-surface px-4 text-ink"
+        className="premium-focus min-h-12 w-full min-w-0 rounded-[var(--radius-control)] border border-border bg-surface px-4 text-ink"
         name={name}
         type={type}
         required={required}
         placeholder={placeholder}
+        autoComplete={autoComplete}
       />
+      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
     </label>
   );
 }
@@ -206,20 +215,31 @@ export function SelectInput({
   name,
   options,
   required,
+  helperText,
+  value,
+  onChange,
 }: {
   label: string;
   name: string;
   options: string[];
   required?: boolean;
+  helperText?: string;
+  value?: string;
+  onChange?: ChangeEventHandler<HTMLSelectElement>;
 }) {
   return (
-    <label className="grid gap-2">
-      <span className="type-p3 font-medium text-ink">{label}</span>
+    <label className="grid min-w-0 gap-2">
+      <span className="type-p3 font-medium text-ink">
+        {label}
+        {required ? <span className="text-teal"> *</span> : null}
+      </span>
       <select
-        className="premium-focus min-h-12 rounded-[var(--radius-control)] border border-border bg-surface px-4 text-ink"
+        className="premium-focus min-h-12 w-full min-w-0 rounded-[var(--radius-control)] border border-border bg-surface px-4 text-ink"
         name={name}
         required={required}
-        defaultValue=""
+        defaultValue={value === undefined ? "" : undefined}
+        value={value}
+        onChange={onChange}
       >
         <option value="" disabled>
           Select
@@ -230,6 +250,7 @@ export function SelectInput({
           </option>
         ))}
       </select>
+      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
     </label>
   );
 }
@@ -239,21 +260,30 @@ export function TextArea({
   name,
   required,
   placeholder,
+  helperText,
+  rows,
 }: {
   label: string;
   name: string;
   required?: boolean;
   placeholder?: string;
+  helperText?: string;
+  rows?: number;
 }) {
   return (
-    <label className="grid gap-2 md:col-span-2">
-      <span className="type-p3 font-medium text-ink">{label}</span>
+    <label className="grid min-w-0 gap-2 md:col-span-2">
+      <span className="type-p3 font-medium text-ink">
+        {label}
+        {required ? <span className="text-teal"> *</span> : null}
+      </span>
       <textarea
-        className="premium-focus min-h-36 rounded-[var(--radius-control)] border border-border bg-surface px-4 py-3 text-ink"
+        className="premium-focus min-h-36 w-full min-w-0 rounded-[var(--radius-control)] border border-border bg-surface px-4 py-3 text-ink"
         name={name}
         required={required}
         placeholder={placeholder}
+        rows={rows}
       />
+      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
     </label>
   );
 }

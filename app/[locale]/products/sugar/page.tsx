@@ -56,8 +56,8 @@ export default function SugarPage() {
       <CTASection
         title="Request a sugar quote."
         text="Send grade, ICUMSA band, origin preference, packing, volume, destination and documentation requirements."
-        primary={{ label: "Request Sugar Quote", href: "/en/contact" }}
-        secondary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Request Sugar Quote", href: "/en/request-a-quote" }}
+        secondary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );

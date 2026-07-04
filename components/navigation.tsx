@@ -112,7 +112,7 @@ export function Header() {
           )}
         </nav>
         <div className="hidden lg:block">
-          <LinkButton href="/en/contact" size="small" variant={isSolid ? "primary" : "mediaSecondary"}>
+          <LinkButton href="/en/request-a-quote" size="small" variant={isSolid ? "primary" : "mediaSecondary"}>
             Request a Quote
           </LinkButton>
         </div>
@@ -186,8 +186,8 @@ function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
             {item.label}
           </Link>
         ))}
-        <LinkButton href="/en/contact" className="mt-2" variant="primary" onClick={onClose}>
-          Send Requirement
+        <LinkButton href="/en/request-a-quote" className="mt-2" variant="primary" onClick={onClose}>
+          Request a Quote
         </LinkButton>
       </Container>
     </div>

@@ -62,7 +62,7 @@ export default function MarketsSourcingPage() {
       />
       <CTASection
         title="Discuss a sourcing or market requirement."
-        primary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );

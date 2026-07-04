@@ -160,8 +160,8 @@ export function FeatureGrid({
         <div className="grid gap-4 md:grid-cols-3">
           {items.map((item) => (
             <Card key={item.title}>
-              <Heading level={3}>{item.title}</Heading>
-              <Paragraph className="mt-4">{item.description}</Paragraph>
+              <h3 className="card-title text-ink">{item.title}</h3>
+              <Paragraph size="p3" className="mt-4">{item.description}</Paragraph>
             </Card>
           ))}
         </div>
@@ -205,8 +205,8 @@ export function ProductGrid({
                 <div className="mb-5 h-28 rounded-[var(--radius-control)] border border-border bg-paper" role="img" aria-label={product.image.alt}>
                   <div className="h-full w-full placeholder-field" />
                 </div>
-                <Heading level={3}>{product.title}</Heading>
-                <Paragraph className="mt-3">{product.summary}</Paragraph>
+                <h3 className="card-title text-ink">{product.title}</h3>
+                <Paragraph size="p3" className="mt-3">{product.summary}</Paragraph>
                 <p className="type-p3 mt-5 font-medium text-teal">{product.availabilityModel}</p>
               </Card>
             </Link>
@@ -236,10 +236,10 @@ export function ProcessSteps({
           {steps.map((step, index) => (
             <Card className="relative" key={step.title}>
               <span className="type-p3 text-brand-blue">0{index + 1}</span>
-              <Heading level={3} className="mt-4">
+              <h3 className="card-title mt-4 text-ink">
                 {step.title}
-              </Heading>
-              <Paragraph className="mt-4">{step.description}</Paragraph>
+              </h3>
+              <Paragraph size="p3" className="mt-4">{step.description}</Paragraph>
             </Card>
           ))}
         </div>
@@ -325,8 +325,8 @@ export function MapMetricsSection({
                 <p className={clsx("type-p3 mb-3 font-medium capitalize", dark ? "text-brand-blue" : "text-teal")}>
                   {region.role.replace(/([A-Z])/g, " $1")}
                 </p>
-                <Heading level={3} className={dark ? "text-surface" : undefined}>{region.title}</Heading>
-                <p className={clsx("type-p2 mt-4", dark ? "text-surface" : undefined)}>{region.description}</p>
+                <h3 className={clsx("card-title", dark ? "text-surface" : "text-ink")}>{region.title}</h3>
+                <p className={clsx("card-copy mt-4", dark ? "text-surface" : undefined)}>{region.description}</p>
               </Card>
             ))}
           </div>
@@ -355,8 +355,8 @@ export function ResourceGrid({
           {resources.map((resource) => (
             <Card key={resource.id}>
               <p className="type-p3 mb-4 font-medium text-teal">{formatResourceType(resource.type)}</p>
-              <Heading level={3}>{resource.title}</Heading>
-              <Paragraph className="mt-4">{resource.summary}</Paragraph>
+              <h3 className="card-title text-ink">{resource.title}</h3>
+              <Paragraph size="p3" className="mt-4">{resource.summary}</Paragraph>
               <p className="type-p3 mt-5">{resource.gated ? "Shared after inquiry where applicable." : "Available as public company information."}</p>
             </Card>
           ))}
@@ -417,8 +417,8 @@ export function ServiceGrid({
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service) => (
             <Card key={service.id}>
-              <Heading level={3}>{service.title}</Heading>
-              <Paragraph className="mt-4">{service.description}</Paragraph>
+              <h3 className="card-title text-ink">{service.title}</h3>
+              <Paragraph size="p3" className="mt-4">{service.description}</Paragraph>
             </Card>
           ))}
         </div>
@@ -481,8 +481,8 @@ export function Accordion({
         <div className="grid gap-3">
           {items.map((item) => (
             <details className="rounded-[var(--radius-card)] border border-border bg-surface p-5" key={item.title}>
-              <summary className="type-h3 cursor-pointer">{item.title}</summary>
-              <Paragraph className="mt-4">{item.description}</Paragraph>
+              <summary className="card-title cursor-pointer">{item.title}</summary>
+              <Paragraph size="p3" className="mt-4">{item.description}</Paragraph>
             </details>
           ))}
         </div>

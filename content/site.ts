@@ -99,7 +99,7 @@ export const homeLanding = {
     title: "Source food products from trusted producers.",
     text:
       "A3 Food & Beverage helps wholesalers, importers, distributors and food businesses source products such as coffee, sugar, edible oils and packaged foods. We support the process from supplier communication and product documents to shipment coordination.",
-    primary: { label: "Request a Quote", href: "/en/contact" },
+    primary: { label: "Request a Quote", href: "/en/request-a-quote" },
     secondary: { label: "Explore Products", href: "/en/products" },
   },
   companySnapshot: {
@@ -139,6 +139,7 @@ export const homeLanding = {
       icon: homeAssets.icons.greenCoffee,
       image: homeAssets.media.featuredCoffee,
       imageAlt: "Green coffee beans shown as a featured sourcing category",
+      highlights: ["Brazilian Green Coffee", "Arabica", "Robusta / Conilon", "Certified Coffee", "Current Offers"],
       featured: true,
     },
     {
@@ -150,6 +151,7 @@ export const homeLanding = {
       icon: homeAssets.icons.sugar,
       image: "/media/home/featured-sugar.webp",
       imageAlt: "Sugar samples and commercial sacks prepared for sourcing review",
+      highlights: ["Refined White Sugar", "ICUMSA 45", "ICUMSA 150", "Cane Sugar", "Beet Sugar"],
     },
     {
       id: "frozen-foods",
@@ -160,6 +162,7 @@ export const homeLanding = {
       icon: homeAssets.icons.frozenFoods,
       image: "/media/home/featured-frozen-foods.webp",
       imageAlt: "Frozen food samples and cold-chain packaging prepared for buyer review",
+      highlights: ["Fries", "Chicken", "Vegetables", "Fruits", "Bakery"],
     },
     {
       id: "sweeteners-syrups",
@@ -170,6 +173,7 @@ export const homeLanding = {
       icon: homeAssets.icons.sweetenersSyrups,
       image: "/media/home/featured-sweeteners-syrups.webp",
       imageAlt: "Sweetener and syrup samples in commercial ingredient sourcing setting",
+      highlights: ["Glucose Syrup", "Fructose Syrup", "Sweeteners", "Industrial Ingredients"],
     },
     {
       id: "edible-oils-fats",
@@ -180,6 +184,7 @@ export const homeLanding = {
       icon: homeAssets.icons.edibleOilsFats,
       image: "/media/home/featured-edible-oils-fats.webp",
       imageAlt: "Edible oil and fat samples prepared for commercial sourcing review",
+      highlights: ["Sunflower Oil", "Industrial Fats", "Baking Margarine", "Consumer Margarine", "Palm Olein"],
     },
     {
       id: "starches-industrial-ingredients",
@@ -190,6 +195,7 @@ export const homeLanding = {
       icon: homeAssets.icons.starchesIndustrial,
       image: "/media/home/featured-starches-industrial.webp",
       imageAlt: "Starch and industrial ingredient samples arranged for specification review",
+      highlights: ["Sweeteners", "Starches", "Milk Powder", "Sugar", "Green Coffee Beans"],
     },
     {
       id: "dairy-ingredients",
@@ -200,6 +206,7 @@ export const homeLanding = {
       icon: homeAssets.icons.dairyIngredients,
       image: "/media/home/featured-dairy-ingredients.webp",
       imageAlt: "Dairy ingredient powders and food-grade containers for sourcing review",
+      highlights: ["Whole Milk Powder", "Skimmed Milk Powder", "UHT Milk", "Butter", "Cheese"],
     },
     {
       id: "canned-foods",
@@ -210,6 +217,7 @@ export const homeLanding = {
       icon: homeAssets.icons.cannedFoods,
       image: "/media/home/featured-canned-foods.webp",
       imageAlt: "Canned food products and samples prepared for commercial buyer review",
+      highlights: ["Green Peas", "Mixed Vegetables", "Sweet Corn", "Tuna"],
     },
     {
       id: "consumer-foods",
@@ -220,6 +228,7 @@ export const homeLanding = {
       icon: homeAssets.icons.consumerFoods,
       image: "/media/home/featured-consumer-foods.webp",
       imageAlt: "Assorted consumer food products in plain packaging for sourcing review",
+      highlights: ["Mayonnaise", "Ketchup", "Pasta", "UHT Milk", "Tomato Paste"],
     },
   ],
   markets: {
@@ -236,7 +245,7 @@ export const homeLanding = {
       "A3 follows a practical sourcing workflow for commercial buyers, from product requirement and supplier matching to documentation, trade coordination and shipment follow up.",
     image: "/media/home/how-a3-works-process.webp",
     imageAlt: "Food sourcing quality control table with packaged products and warehouse coordination",
-    cta: { label: "Request a Quote", href: "/en/contact" },
+    cta: { label: "Request a Quote", href: "/en/request-a-quote" },
     steps: [
       {
         number: "01",
@@ -283,7 +292,7 @@ export const homeLanding = {
         "Product options by origin, grade, packing format and volume for resale and distribution channels.",
       shortHint: "Product options for resale and distribution channels.",
       needs: "Origin · Grade · Packing · Volume",
-      href: "/en/contact",
+      href: "/en/request-a-quote",
       image: "/media/home/buyer-wholesalers-distributors.webp",
       imageAlt: "Warehouse with palletized packaged food products prepared for distribution",
     },
@@ -294,7 +303,7 @@ export const homeLanding = {
         "Ingredients and food commodities matched to specification, application and recurring supply needs.",
       shortHint: "Ingredients matched to specification and recurring supply needs.",
       needs: "Specification · Application · Repeat supply",
-      href: "/en/contact",
+      href: "/en/request-a-quote",
       image: "/media/home/buyer-food-manufacturers.webp",
       imageAlt: "Food manufacturing quality control with ingredient handling and production equipment",
     },
@@ -305,7 +314,7 @@ export const homeLanding = {
         "Packaged, frozen, canned and ingredient options shaped around format, market fit and channel requirements.",
       shortHint: "Packaged and channel-ready options shaped around market fit.",
       needs: "Format · Market fit · Channel · Private label",
-      href: "/en/contact",
+      href: "/en/request-a-quote",
       image: "/media/home/buyer-retail-foodservice.webp",
       imageAlt: "Packaged food and foodservice products arranged for commercial buyer review",
     },
@@ -332,7 +341,7 @@ export const homeLanding = {
       "Send your product, origin, packing, volume or destination requirement and A3 will review the best way to support your request.",
     image: homeAssets.media.finalCta,
     imageAlt: "Food sourcing and product handling used to represent a sourcing request",
-    primary: { label: "Request a Quote", href: "/en/contact" },
+    primary: { label: "Request a Quote", href: "/en/request-a-quote" },
   },
 } as const;
 
@@ -520,22 +529,44 @@ export const pages: Record<string, PageContent> = {
   contact: {
     locale: "en",
     slug: "/en/contact",
-    title: "Send your product or sourcing requirement.",
+    title: "Contact A3 Food & Beverage.",
     description:
-      "Tell A3 what you are looking for - product, origin, packing, volume, destination market or documentation requirement - and the team will review how it can support the trade.",
-    sections: ["intent", "form", "direct-contact", "thank-you"],
+      "Reach A3 for general company questions, partnership conversations and direct contact details.",
+    sections: ["form", "direct-contact"],
     seo: {
-      metaTitle: "Send Requirement | A3 Food & Beverage",
+      metaTitle: "Contact | A3 Food & Beverage",
       metaDescription:
-        "Send A3 your product, origin, packing, volume, destination market or documentation requirement for commercial food sourcing review.",
+        "Contact A3 Food & Beverage for company information, partnership conversations and direct commercial inquiries.",
       canonicalPath: "/en/contact",
-      ogTitle: "Send a Product or Sourcing Requirement",
-      ogDescription: "Share your commercial food sourcing requirement with A3.",
+      ogTitle: "Contact A3 Food & Beverage",
+      ogDescription: "Direct contact details and general inquiry route for A3 Food & Beverage.",
       robots,
       locale: "en",
       sitemapInclude: true,
       structuredDataType: "ContactPage",
-      targetKeyword: "food sourcing contact",
+      targetKeyword: "A3 Food & Beverage contact",
+      secondaryKeywords: ["food trade contact", "A3 company information", "A3 partnership inquiry"],
+    },
+  },
+  requestQuote: {
+    locale: "en",
+    slug: "/en/request-a-quote",
+    title: "Request a food sourcing quote.",
+    description:
+      "Share your product, origin, packing, volume, destination and documentation requirements so A3 can review the best commercial next step.",
+    sections: ["form", "direct-contact", "thank-you"],
+    seo: {
+      metaTitle: "Request a Quote | A3 Food & Beverage",
+      metaDescription:
+        "Request a food sourcing quote from A3 with product, origin, packing, volume, destination market and documentation details.",
+      canonicalPath: "/en/request-a-quote",
+      ogTitle: "Request a Food Sourcing Quote",
+      ogDescription: "Share a commercial food sourcing requirement with A3 Food & Beverage.",
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "WebPage",
+      targetKeyword: "request food sourcing quote",
       secondaryKeywords: ["request quote", "product sourcing inquiry", "send requirement"],
     },
   },
@@ -561,7 +592,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Brazilian Green Coffee", "Arabica", "Robusta / Conilon", "Certified Coffee", "Current Offers / Inquiry"],
     image: { alt: "Green coffee beans prepared for commercial sourcing review" },
     seo: pages.coffee.seo,
-    relatedPages: ["/en/products", "/en/markets-sourcing", "/en/resources", "/en/contact"],
+    relatedPages: ["/en/products", "/en/markets-sourcing", "/en/resources", "/en/request-a-quote"],
     relatedResources: ["coffee-catalogue"],
   },
   {
@@ -583,7 +614,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Refined White Sugar", "ICUMSA 45", "ICUMSA 150", "Cane Sugar", "Beet Sugar", "Container Supply", "Vessel Supply"],
     image: { alt: "Refined white sugar sample for B2B supply discussion" },
     seo: pages.sugar.seo,
-    relatedPages: ["/en/products", "/en/markets-sourcing", "/en/resources", "/en/contact"],
+    relatedPages: ["/en/products", "/en/markets-sourcing", "/en/resources", "/en/request-a-quote"],
     relatedResources: ["sugar-catalogue"],
   },
   {
@@ -602,7 +633,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Glucose Syrup", "Fructose Syrup", "Other Sweeteners"],
     image: { alt: "Sweetener ingredient samples for commercial sourcing review" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["product-specifications"],
   },
   {
@@ -621,7 +652,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Sunflower Oil", "Olive Oil", "Palm / Blends", "Specialty Oils"],
     image: { alt: "Edible oil samples prepared for buyer specification review" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["product-specifications"],
   },
   {
@@ -640,7 +671,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Corn Starch", "Potato Starch", "Modified Starches", "Maltodextrin"],
     image: { alt: "Starch and industrial ingredient samples for technical specification review" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["product-specifications"],
   },
   {
@@ -659,7 +690,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: ["Whole Milk Powder", "Skimmed Milk Powder"],
     image: { alt: "Dairy ingredient documentation and product specification review" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["product-specifications"],
   },
   {
@@ -678,7 +709,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: [],
     image: { alt: "Frozen food supply documentation and logistics coordination materials" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["documentation-support"],
   },
   {
@@ -697,7 +728,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: [],
     image: { alt: "Canned food products prepared for commercial buyer review" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["company-profile"],
   },
   {
@@ -716,7 +747,7 @@ export const productFamilies: ProductFamily[] = [
     futureChildren: [],
     image: { alt: "Consumer food products reviewed for retail and private label sourcing" },
     seo: pages.products.seo,
-    relatedPages: ["/en/products", "/en/contact"],
+    relatedPages: ["/en/products", "/en/request-a-quote"],
     relatedResources: ["company-profile"],
   },
 ];

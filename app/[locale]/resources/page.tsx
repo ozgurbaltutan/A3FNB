@@ -34,7 +34,7 @@ export default function ResourcesPage() {
       />
       <FeatureGrid
         title="Future resource structure"
-        text="The resource page is prepared for future SEO content without turning the MVP into a generic blog."
+        text="The resource page is prepared for future SEO content without turning the site into a generic blog."
         muted
         items={[
           { title: "Brazilian Green Coffee Sourcing", description: "Future origin page supporting coffee buyers and internal links." },
@@ -46,7 +46,7 @@ export default function ResourcesPage() {
       />
       <CTASection
         title="Need a specific product document?"
-        primary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );

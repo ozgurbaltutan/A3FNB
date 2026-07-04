@@ -52,8 +52,8 @@ export default function CoffeePage() {
       <CTASection
         title="Request coffee availability."
         text="Share origin preference, grade, volume, packing and destination market so A3 can review available sourcing support."
-        primary={{ label: "Request Coffee Availability", href: "/en/contact" }}
-        secondary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Request Coffee Availability", href: "/en/request-a-quote" }}
+        secondary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );

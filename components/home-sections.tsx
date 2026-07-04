@@ -14,6 +14,7 @@ type FeaturedProduct = {
   icon: string;
   image?: string;
   imageAlt?: string;
+  highlights?: readonly string[];
 };
 
 type MarketMarker = {
@@ -222,6 +223,7 @@ function FeaturedSourcingCategories() {
   const activeProduct =
     featuredProducts.find((product) => product.id === activeProductId) ??
     featuredProducts[0];
+  const activeHighlights = activeProduct.highlights?.slice(0, 5) ?? [];
   const [, ...products] = featuredProducts;
   const resetActiveProduct = () => setActiveProductId(defaultProductId);
 
@@ -251,16 +253,27 @@ function FeaturedSourcingCategories() {
                 />
               ) : null}
               <div className="featured-preview-content relative z-10 bg-surface">
-                <div className="flex min-h-11 items-center justify-between gap-4 bg-teal px-5 py-2.5">
+                <div className="featured-preview-heading flex items-center justify-between gap-4 bg-teal">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <IconImage className="h-7 w-7" src={activeProduct.icon} />
-                    <h3 className="featured-preview-title type-h3 text-surface">{activeProduct.title}</h3>
+                    <h3 className="featured-preview-title type-p2 font-medium text-surface">{activeProduct.title}</h3>
                   </div>
                   <ArrowIcon />
                 </div>
-                <p className="featured-preview-description type-p3 px-5 py-4 text-ink/82">
+                <p className="featured-preview-description type-p3 text-ink/82">
                   {activeProduct.description}
                 </p>
+                {activeHighlights.length ? (
+                  <ul className="featured-preview-highlights" aria-label={`${activeProduct.title} examples`}>
+                    {activeHighlights.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
+                <span className="featured-preview-action" aria-hidden="true">
+                  View category
+                  <span>→</span>
+                </span>
               </div>
             </article>
           </Link>
@@ -307,7 +320,7 @@ function ProductCategoryCard({
       onMouseEnter={onActivate}
     >
       <article className="flex h-full min-h-[118px] flex-col overflow-hidden">
-        <div className="featured-category-card__header border-b border-border px-4 py-3">
+        <div className="featured-category-card__header border-b border-border">
           <div className="flex min-h-8 items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2.5">
               <IconImage className="featured-category-card__icon h-7 w-7 shrink-0 object-contain" src={item.icon} />
@@ -316,7 +329,7 @@ function ProductCategoryCard({
             <ArrowIcon className="featured-category-card__arrow" />
           </div>
         </div>
-        <p className="featured-category-card__description type-p3 px-4 py-3 text-ink/82">
+        <p className="featured-category-card__description type-p3 text-ink/82">
           {item.description}
         </p>
       </article>
@@ -328,26 +341,26 @@ function MarketsPreview() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeLayer, setActiveLayer] = useState(1);
   const marketMarkers: MarketMarker[] = [
-    { name: "London, United Kingdom", role: "base", x: 49.2, y: 37.2 },
-    { name: "Turkiye", role: "source", x: 56.8, y: 43.3 },
-    { name: "Ukraine", role: "source", x: 55.2, y: 37.4 },
-    { name: "Argentina", role: "dual", x: 35.4, y: 82.2 },
-    { name: "Brazil", role: "dual", x: 37.6, y: 69.8 },
-    { name: "China", role: "dual", x: 72.4, y: 46.3 },
-    { name: "Poland", role: "dual", x: 52.4, y: 36.1 },
-    { name: "USA", role: "destination", x: 25.7, y: 45.1 },
-    { name: "Canada", role: "destination", x: 24.4, y: 31.9 },
-    { name: "Germany", role: "destination", x: 50.8, y: 38.7 },
-    { name: "France", role: "destination", x: 49.8, y: 42.2 },
-    { name: "Mauritania", role: "destination", x: 45.5, y: 56.2 },
-    { name: "Senegal", role: "destination", x: 45.1, y: 60.4 },
-    { name: "Togo", role: "destination", x: 49.1, y: 64.9 },
-    { name: "Ghana", role: "destination", x: 48.3, y: 64.3 },
-    { name: "Niger", role: "destination", x: 51.2, y: 58.3 },
-    { name: "Cameroon", role: "destination", x: 52.1, y: 66.3 },
-    { name: "Madagascar", role: "destination", x: 59.6, y: 82.5 },
-    { name: "Mozambique", role: "destination", x: 56.8, y: 78.2 },
-    { name: "Taiwan", role: "destination", x: 78.6, y: 54.8 },
+    { name: "London, United Kingdom", role: "base", x: 50.7, y: 39.7 },
+    { name: "Turkiye", role: "source", x: 57.9, y: 47.0 },
+    { name: "Ukraine", role: "source", x: 55.9, y: 40.8 },
+    { name: "Argentina", role: "dual", x: 36.6, y: 83.0 },
+    { name: "Brazil", role: "dual", x: 38.6, y: 71.8 },
+    { name: "China", role: "dual", x: 73.2, y: 48.2 },
+    { name: "Poland", role: "dual", x: 53.2, y: 39.2 },
+    { name: "USA", role: "destination", x: 26.8, y: 43.2 },
+    { name: "Canada", role: "destination", x: 25.8, y: 32.8 },
+    { name: "Germany", role: "destination", x: 51.7, y: 40.3 },
+    { name: "France", role: "destination", x: 50.6, y: 43.6 },
+    { name: "Mauritania", role: "destination", x: 45.8, y: 58.8 },
+    { name: "Senegal", role: "destination", x: 45.4, y: 62.0 },
+    { name: "Togo", role: "destination", x: 49.8, y: 66.4 },
+    { name: "Ghana", role: "destination", x: 48.9, y: 65.8 },
+    { name: "Niger", role: "destination", x: 51.8, y: 59.8 },
+    { name: "Cameroon", role: "destination", x: 52.8, y: 67.0 },
+    { name: "Madagascar", role: "destination", x: 60.4, y: 83.4 },
+    { name: "Mozambique", role: "destination", x: 57.5, y: 79.6 },
+    { name: "Taiwan", role: "destination", x: 79.2, y: 55.8 },
   ];
   const marketLayers = [
     {
@@ -421,6 +434,18 @@ function MarketsPreview() {
     return activeLayer >= 3;
   };
 
+  const isMarkerPulsing = (role: MarketMarker["role"]) => {
+    if (activeLayer === 1) {
+      return role === "base";
+    }
+
+    if (activeLayer === 2) {
+      return role === "source" || role === "dual";
+    }
+
+    return true;
+  };
+
   return (
     <section ref={sectionRef} className="markets-layer-section bg-deep-dark text-surface">
       <HomeShell className="markets-layer-stage grid items-center gap-8 py-16 lg:grid-cols-2 lg:py-20">
@@ -452,7 +477,7 @@ function MarketsPreview() {
             ))}
           </ol>
         </div>
-        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-h-[260px] lg:min-h-[464px]" role="img" aria-label="World map showing A3 sourcing markets and destination experience">
+        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-h-[260px] min-w-0 overflow-hidden lg:min-h-[464px]" role="img" aria-label="World map showing A3 sourcing markets and destination experience">
           <Image
             aria-hidden="true"
             className="h-full min-h-[260px] w-full object-contain"
@@ -467,7 +492,9 @@ function MarketsPreview() {
               <span
                 className={`markets-map-marker markets-map-marker--${marker.role} ${
                   isMarkerVisible(marker.role) ? "is-visible" : ""
-                } ${marker.role === "dual" && activeLayer >= 3 ? "is-destination-complete" : ""}`}
+                } ${isMarkerPulsing(marker.role) ? "is-pulsing" : ""} ${
+                  marker.role === "dual" && activeLayer >= 3 ? "is-destination-complete" : ""
+                }`}
                 key={marker.name}
                 style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
               />

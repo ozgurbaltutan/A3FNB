@@ -45,7 +45,7 @@ export default function HowWeWorkPage() {
       />
       <CTASection
         title="Send A3 your trade requirement."
-        primary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { SendRequirementForm } from "@/components/send-requirement-form";
+import { ContactPageLayout } from "@/components/contact-page-layout";
+import { GeneralContactForm } from "@/components/send-requirement-form";
 import { JsonLd } from "@/components/seo/json-ld";
-import { FeatureGrid, PageHero } from "@/components/sections";
-import { Card, Container, Heading, Paragraph, Section } from "@/components/ui";
-import { company, contactIntents, pages } from "@/content/site";
+import { company, pages } from "@/content/site";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 const breadcrumb = [
@@ -19,48 +18,39 @@ export default function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(breadcrumb)} />
-      <PageHero title={pages.contact.title} text={pages.contact.description} breadcrumb={breadcrumb} />
-      <FeatureGrid
-        title="Choose the right intent"
-        text="This page routes commercial requirements more clearly than a generic contact form."
-        items={contactIntents.slice(0, 6).map((intent) => ({
-          title: intent,
-          description: "The form below adapts the conversation toward product, sourcing, documentation, private label, supplier or direct contact needs.",
-        }))}
-      />
-      <Section muted>
-        <Container className="grid gap-8 lg:grid-cols-[1fr_0.45fr]">
-          <Card>
-            <Heading level={2}>Send Requirement</Heading>
-            <Paragraph className="mt-4">
-              No backend submission is connected yet. The UI is ready for a future secure form integration.
-            </Paragraph>
-            <div className="mt-8">
-              <SendRequirementForm />
-            </div>
-          </Card>
-          <Card>
-            <Heading level={2}>Direct contact</Heading>
-            <div className="mt-6 grid gap-4">
-              <ContactLine label="Email" value={company.email} />
-              <ContactLine label="Phone / WhatsApp" value={company.phone} />
-              <ContactLine label="Registered office" value={company.registeredOffice.display} />
-              <ContactLine label="Company No." value={company.companyNumber} />
-              <ContactLine label="VAT" value={company.vatNumber} />
-              <ContactLine label="D-U-N-S" value={company.dunsNumber} />
-            </div>
-          </Card>
-        </Container>
-      </Section>
+      <ContactPageLayout
+        title={pages.contact.title}
+        text="For general questions, company information or partnership conversations, send a short message to A3. Product sourcing and quote requests can be routed through the dedicated quote page."
+        image="/media/home/company-trade-snapshot.webp"
+        imageAlt="Food sourcing coordination table with packaged products, samples and trade documents"
+        formTitle="Send a general message"
+        formText="Share the topic, your company details and the best way to reply. A prepared email draft will open for review before sending."
+        infoTitle="Direct contact"
+        infoText="A3 operates from London and supports commercial food trade conversations through direct, relationship-led follow-up."
+        infoGroups={[
+          {
+            title: "Reach the team",
+            items: [
+              { label: "Email", value: company.email, href: `mailto:${company.email}` },
+              { label: "Phone / WhatsApp", value: company.phone, href: `tel:${company.phone.replace(/\s+/g, "")}` },
+            ],
+          },
+          {
+            title: "Registered office",
+            text: company.registeredOffice.display,
+            items: [
+              { label: "Company No.", value: company.companyNumber },
+              { label: "VAT", value: company.vatNumber },
+              { label: "D-U-N-S", value: company.dunsNumber },
+            ],
+          },
+        ]}
+        supportTitle="Need a product quote?"
+        supportText="If your message includes product, origin, packing, volume or destination details, use the quote route so A3 receives the commercial context in one place."
+        supportPrimary={{ label: "Request a Quote", href: "/en/request-a-quote" }}
+      >
+        <GeneralContactForm />
+      </ContactPageLayout>
     </>
-  );
-}
-
-function ContactLine({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-b border-border pb-3 last:border-b-0">
-      <p className="type-p3 font-semibold text-teal">{label}</p>
-      <p className="type-p2 mt-1">{value}</p>
-    </div>
   );
 }

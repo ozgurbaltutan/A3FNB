@@ -54,7 +54,7 @@ export default function ProductsPage() {
       <CTASection
         title="Cannot find the product you need?"
         text="Send A3 your product requirement, target origin, packing format, volume and destination market."
-        primary={{ label: "Send Requirement", href: "/en/contact" }}
+        primary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
       />
     </>
   );
