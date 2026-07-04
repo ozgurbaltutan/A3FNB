@@ -205,7 +205,7 @@ export function TextInput({
         placeholder={placeholder}
         autoComplete={autoComplete}
       />
-      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
+      {helperText ? <span className="type-micro text-ink/65">{helperText}</span> : null}
     </label>
   );
 }
@@ -250,7 +250,7 @@ export function SelectInput({
           </option>
         ))}
       </select>
-      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
+      {helperText ? <span className="type-micro text-ink/65">{helperText}</span> : null}
     </label>
   );
 }
@@ -283,7 +283,7 @@ export function TextArea({
         placeholder={placeholder}
         rows={rows}
       />
-      {helperText ? <span className="type-p3 text-ink/65">{helperText}</span> : null}
+      {helperText ? <span className="type-micro text-ink/65">{helperText}</span> : null}
     </label>
   );
 }

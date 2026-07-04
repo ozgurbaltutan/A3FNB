@@ -41,6 +41,7 @@ export const navigation: NavigationItem[] = [
     children: [
       { label: "Coffee", href: "/en/products/coffee", featured: true },
       { label: "Sugar", href: "/en/products/sugar", featured: true },
+      { label: "Elle Mina", href: "/en/products/elle-mina", featured: true },
       { label: "Sweeteners & Syrups", href: "/en/products#sweeteners-syrups" },
       { label: "Edible Oils & Fats", href: "/en/products#edible-oils-fats" },
       { label: "Starches & Industrial Ingredients", href: "/en/products#starches-industrial-ingredients" },
@@ -59,7 +60,14 @@ export const navigation: NavigationItem[] = [
 
 export const homeAssets = {
   media: {
+    companyFoodFeastEditorial: "/media/home/company-food-feast-editorial.webp",
+    companyStillLifeEditorial: "/media/home/company-still-life-editorial.webp",
+    companyTradeEditorial: "/media/home/company-trade-editorial.webp",
     companyTradeSnapshot: "/media/home/company-trade-snapshot.webp",
+    elleMinaButter: "/media/brands/elle-mina/butter-breakfast.webp",
+    elleMinaConsumerMargarine: "/media/brands/elle-mina/consumer-margarine-picnic.webp",
+    elleMinaConsumerMargarineTable: "/media/brands/elle-mina/consumer-margarine-table.webp",
+    elleMinaProfessionalMargarine: "/media/brands/elle-mina/professional-margarine-bakery.webp",
     featuredCoffee: "/media/home/featured-coffee.webp",
     howA3Works: "/media/home/how-a3-works.webp",
     finalCta: "/media/home/final-cta.webp",
@@ -94,20 +102,58 @@ export const homeAssets = {
   },
 } as const;
 
+export const elleMinaProducts = [
+  {
+    id: "consumer-margarine",
+    title: "Consumer Margarine",
+    summary: "200g table margarine for retail, distribution and everyday foodservice use.",
+    description:
+      "A consumer margarine format reviewed for retail, wholesale and foodservice buyers by market fit, packing and commercial requirement.",
+    applications: ["Retail", "Wholesale", "Foodservice"],
+    packing: "200g brick format",
+    image: homeAssets.media.elleMinaConsumerMargarine,
+    imageAlt: "Elle Mina 200g consumer margarine served on a picnic table with bread and jam",
+  },
+  {
+    id: "professional-margarine",
+    title: "Professional Margarine",
+    summary: "Butter flavoured margarine for bakery, pastry and professional kitchen use.",
+    description:
+      "A professional margarine format positioned for bakery, pastry and foodservice requirements where handling, consistency and application fit matter.",
+    applications: ["Bakery", "Pastry", "Professional kitchens"],
+    packing: "Professional bucket format",
+    image: homeAssets.media.elleMinaProfessionalMargarine,
+    imageAlt: "Elle Mina professional butter flavoured margarine bucket in a bakery setting",
+  },
+  {
+    id: "butter",
+    title: "Butter",
+    summary: "200g unsalted butter for retail, distribution and foodservice conversations.",
+    description:
+      "An unsalted butter format reviewed for commercial buyers by destination market, packing needs and documentation availability.",
+    applications: ["Retail", "Foodservice", "Distribution"],
+    packing: "200g brick format",
+    image: homeAssets.media.elleMinaButter,
+    imageAlt: "Elle Mina 200g unsalted butter on a breakfast table with bread and honey",
+  },
+] as const;
+
 export const homeLanding = {
   hero: {
-    title: "Source food products from trusted producers.",
+    title: "International food trade made simpler.",
     text:
-      "A3 Food & Beverage helps wholesalers, importers, distributors and food businesses source products such as coffee, sugar, edible oils and packaged foods. We support the process from supplier communication and product documents to shipment coordination.",
+      "A3 Food & Beverage connects food businesses with trusted producers and suppliers across global markets. We help you find the right products and move each trade forward with clarity and confidence.",
     primary: { label: "Request a Quote", href: "/en/request-a-quote" },
     secondary: { label: "Explore Products", href: "/en/products" },
   },
   companySnapshot: {
     title: "A3 Food & Beverage",
-    text:
-      "Established in 1997 and headquartered in London, A3 Food & Beverage is a UK-based food trade partner connecting selected producers, suppliers and commercial buyers across international markets. The company supports product options, supplier communication, documentation review and shipment follow-up based on buyer requirements.",
-    image: homeAssets.media.companyTradeSnapshot,
-    imageAlt: "Food sourcing coordination table with packaged products, samples and trade documents",
+    text: [
+      "Food trade depends on finding the right match: the right product, the right producer, the right terms and the right timing.",
+      "Since 1997, A3 has helped commercial food buyers turn product requirements into workable supply options across international markets. We combine product access, supplier relationships and practical trade follow-up so buyers can move with more clarity and less friction.",
+    ],
+    image: homeAssets.media.companyStillLifeEditorial,
+    imageAlt: "Historic still life painting with a banquet table, fruit, pastry and serving vessels",
   },
   sourcingSteps: [
     {
@@ -231,6 +277,17 @@ export const homeLanding = {
       highlights: ["Mayonnaise", "Ketchup", "Pasta", "UHT Milk", "Tomato Paste"],
     },
   ],
+  ownBrand: {
+    kicker: "Own brand",
+    title: "Elle Mina",
+    text:
+      "Elle Mina is A3's own consumer and professional margarine and butter range, shaped for retail, foodservice, bakery and distribution conversations.",
+    href: "/en/products/elle-mina",
+    ctaLabel: "Explore Elle Mina Products",
+    image: homeAssets.media.elleMinaProfessionalMargarine,
+    imageAlt: "Elle Mina professional butter flavoured margarine in a bakery setting",
+    products: elleMinaProducts,
+  },
   markets: {
     title: "Sourcing markets and destination experience",
     text:
@@ -352,7 +409,7 @@ export const pages: Record<string, PageContent> = {
     title: "Trusted food sourcing and trade for commercial buyers.",
     description:
       "A3 connects selected producers with wholesalers, distributors, foodservice, retail and industrial buyers across selected international markets.",
-    sections: ["proof", "what-a3-does", "featured-products", "process", "markets", "buyers", "documentation", "resources", "cta"],
+    sections: ["proof", "what-a3-does", "featured-products", "own-brand", "process", "markets", "buyers", "documentation", "resources", "cta"],
     seo: {
       metaTitle: "A3 Food & Beverage | Food Sourcing & Trade Partner",
       metaDescription:
@@ -379,11 +436,11 @@ export const pages: Record<string, PageContent> = {
     seo: {
       metaTitle: "Products | A3 Food & Beverage",
       metaDescription:
-        "Explore selected food and beverage categories sourced for commercial buyers, including coffee, sugar, edible oils, sweeteners, starches, frozen foods and canned foods.",
+        "Explore selected food and beverage categories sourced for commercial buyers, including coffee, sugar, Elle Mina, edible oils, sweeteners, starches, frozen foods and canned foods.",
       canonicalPath: "/en/products",
       ogTitle: "Products sourced for commercial food buyers",
       ogDescription:
-        "Product discovery for coffee, sugar, edible oils, sweeteners, starches and selected food categories.",
+        "Product discovery for coffee, sugar, Elle Mina, edible oils, sweeteners, starches and selected food categories.",
       robots,
       locale: "en",
       sitemapInclude: true,
@@ -436,6 +493,33 @@ export const pages: Record<string, PageContent> = {
       structuredDataType: "Product",
       targetKeyword: "sugar supplier",
       secondaryKeywords: ["ICUMSA 45 sugar", "bulk sugar supplier", "sugar sourcing"],
+    },
+  },
+  elleMina: {
+    locale: "en",
+    slug: "/en/products/elle-mina",
+    title: "Elle Mina consumer and professional margarine and butter.",
+    description:
+      "Elle Mina is A3's own consumer and professional margarine and butter range for retail, foodservice, bakery and distribution buyers.",
+    sections: ["overview", "range", "applications", "trade-information", "cta"],
+    seo: {
+      metaTitle: "Elle Mina | A3 Food & Beverage",
+      metaDescription:
+        "Explore Elle Mina, A3's own consumer and professional margarine and butter range for retail, foodservice, bakery and distribution buyers.",
+      canonicalPath: "/en/products/elle-mina",
+      ogTitle: "Elle Mina",
+      ogDescription:
+        "A3's own consumer and professional margarine and butter range for commercial food buyers.",
+      ogImage: {
+        src: homeAssets.media.elleMinaProfessionalMargarine,
+        alt: "Elle Mina professional butter flavoured margarine in a bakery setting",
+      },
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "Product",
+      targetKeyword: "Elle Mina margarine",
+      secondaryKeywords: ["consumer margarine", "professional margarine", "butter supplier"],
     },
   },
   markets: {
@@ -616,6 +700,31 @@ export const productFamilies: ProductFamily[] = [
     seo: pages.sugar.seo,
     relatedPages: ["/en/products", "/en/markets-sourcing", "/en/resources", "/en/request-a-quote"],
     relatedResources: ["sugar-catalogue"],
+  },
+  {
+    id: "elle-mina",
+    slug: "elle-mina",
+    title: "Elle Mina",
+    summary: "A3's own consumer and professional margarine and butter range for selected commercial buyers.",
+    description:
+      "Elle Mina brings consumer margarine, professional margarine and butter into A3's product offer for retail, foodservice, bakery and distribution requirements.",
+    buyerFit: "Retail buyers, wholesalers, distributors, foodservice groups and bakery buyers.",
+    availabilityModel: "Inquiry-led commercial availability depending on product, packing, volume and destination market.",
+    applications: ["Retail", "Foodservice", "Bakery", "Distribution"],
+    origins: ["Selected production and supply options by requirement"],
+    packingOptions: ["200g consumer format", "200g butter format", "Professional margarine bucket format"],
+    supplyModels: ["Inquiry-led supply", "Distribution discussions", "Private label or branded conversations by case"],
+    documentationAvailable: ["Product specifications", "Label information", "Supplier-held certifications", "Shipment documentation"],
+    ctaLabel: "Explore Elle Mina Products",
+    featured: true,
+    futureChildren: ["Consumer Margarine", "Professional Margarine", "Butter"],
+    image: {
+      src: homeAssets.media.elleMinaProfessionalMargarine,
+      alt: "Elle Mina professional butter flavoured margarine for bakery and foodservice use",
+    },
+    seo: pages.elleMina.seo,
+    relatedPages: ["/en/products", "/en/request-a-quote"],
+    relatedResources: ["company-profile", "product-specifications"],
   },
   {
     id: "sweeteners-syrups",

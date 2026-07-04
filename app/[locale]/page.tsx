@@ -10,17 +10,23 @@ export function generateMetadata(): Metadata {
 
 export default function HomePage() {
   const featuredProducts = homeLanding.featuredProducts;
+  const homeProductLinks = [
+    ...featuredProducts.map((product) => ({
+      title: product.title,
+      href: product.href,
+      summary: product.description,
+    })),
+    {
+      title: homeLanding.ownBrand.title,
+      href: homeLanding.ownBrand.href,
+      summary: homeLanding.ownBrand.text,
+    },
+  ];
 
   return (
     <>
       <JsonLd
-        data={itemListJsonLd(
-          featuredProducts.map((product) => ({
-            title: product.title,
-            href: product.href,
-            summary: product.description,
-          })),
-        )}
+        data={itemListJsonLd(homeProductLinks)}
       />
       <HomeFigmaLanding />
     </>

@@ -20,7 +20,14 @@ const menuProducts = [
   { label: "Consumer Foods", href: "/en/products#consumer-foods" },
 ];
 
-const footerProducts = menuProducts.slice(0, 6);
+const footerProducts = [
+  { label: "Green Coffee Beans", href: "/en/products/coffee" },
+  { label: "Sugar", href: "/en/products/sugar" },
+  { label: "Elle Mina", href: "/en/products/elle-mina" },
+  { label: "Frozen Foods", href: "/en/products#frozen-foods" },
+  { label: "Sweeteners & Syrups", href: "/en/products#sweeteners-syrups" },
+  { label: "Edible Oils & Fats", href: "/en/products#edible-oils-fats" },
+];
 
 const footerSocialLinks = [
   { label: "LinkedIn", href: "#", icon: "linkedin" },
@@ -143,14 +150,20 @@ function MegaMenu({ open }: { open: boolean }) {
     >
       <Container className="a3-container mega-menu__inner grid gap-10 py-9 lg:grid-cols-[minmax(0,0.68fr)_minmax(0,1fr)]">
         <div className="mega-menu__intro">
-          <p className="type-kicker text-teal">Products</p>
-          <p className="type-h3 mt-4 max-w-[25rem] text-ink">
-            Food products and ingredients selected around origin, specification, packing and buyer requirements.
-          </p>
-          <Link className="mega-menu__all-link premium-focus" href="/en/products">
-            <span>View all products</span>
-            <span aria-hidden="true">→</span>
-          </Link>
+          <div className="mega-menu__brand-card">
+            <p className="type-kicker text-teal">Exclusive Brand</p>
+            <Link className="mega-menu__brand-title premium-focus" href="/en/products/elle-mina">
+              Elle Mina
+            </Link>
+            <p className="mega-menu__brand-copy">
+              A3&apos;s own consumer and professional margarine and butter range for retail, foodservice,
+              bakery and distribution buyers.
+            </p>
+            <Link className="mega-menu__brand-action premium-focus" href="/en/products/elle-mina">
+              Explore Elle Mina Products
+              <span aria-hidden="true">-&gt;</span>
+            </Link>
+          </div>
         </div>
         <div>
           <p className="type-kicker mb-3 text-teal">Product categories</p>

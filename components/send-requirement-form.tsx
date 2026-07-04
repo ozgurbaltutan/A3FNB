@@ -379,7 +379,7 @@ export function SendRequirementForm() {
         <Button type="submit" size="large">
           Prepare Quote Email
         </Button>
-        <p className="type-p3 text-ink/68">A prefilled email will open so you can review and send the request.</p>
+        <p className="type-micro text-ink/68">A prefilled email will open so you can review and send the request.</p>
       </div>
     </form>
   );

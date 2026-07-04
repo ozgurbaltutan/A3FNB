@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { homeAssets, homeLanding } from "@/content/site";
+import { EditorialBridge, EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { LinkButton } from "@/components/ui";
 
 type FeaturedProduct = {
@@ -120,7 +121,7 @@ function SectionIntro({
       <h2 className={`type-section ${light ? "text-surface" : "text-ink"}`}>
         {title}
       </h2>
-      <p className={`type-p1 mt-6 max-w-[871px] ${light ? "text-surface" : "text-ink/80"}`}>
+      <p className={`type-section-lead mt-6 max-w-[871px] ${light ? "text-surface" : "text-ink/80"}`}>
         {text}
       </p>
     </div>
@@ -135,6 +136,7 @@ export function HomeFigmaLanding() {
       <HomeHero />
       <WhatA3Does />
       <FeaturedSourcingCategories />
+      <ElleMinaOwnBrand />
       <MarketsPreview />
       <HowA3Works />
       <BuyerPaths />
@@ -159,13 +161,13 @@ function HomeHero() {
       >
         <source src={homeAssets.media.heroVideo} type="video/webm" />
       </video>
-      <div className="absolute inset-0 -z-10 bg-deep-dark/68" aria-hidden="true" />
+      <div className="home-hero-overlay absolute inset-0 -z-10" aria-hidden="true" />
       <HomeShell className="flex min-h-[100svh] items-center pb-16 pt-32 lg:pb-20 lg:pt-40">
         <div className="max-w-[930px]">
           <h1 className="type-hero max-w-[850px] text-surface">
             {hero.title}
           </h1>
-          <p className="type-p1 mt-6 max-w-[867px] text-surface">
+          <p className="type-hero-body mt-6 max-w-[867px] text-surface">
             {hero.text}
           </p>
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:gap-6">
@@ -183,36 +185,25 @@ function HomeHero() {
 }
 
 function WhatA3Does() {
-  const { companySnapshot, sourcingSteps } = homeLanding;
+  const { companySnapshot } = homeLanding;
 
   return (
-    <section className="bg-paper py-12 lg:py-14">
-      <HomeShell className="company-intro-grid">
-        <article className="company-intro-panel reveal reveal--up reveal-delay-1">
-          <h2>{companySnapshot.title}</h2>
-          <p>{companySnapshot.text}</p>
-
-          <div className="company-intro-evidence" aria-label="A3 support areas">
-            {sourcingSteps.map((item) => (
-              <div className="company-intro-evidence__row" key={item.title}>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <div className="company-intro-media reveal reveal--fade">
-          <Image
-            src={companySnapshot.image}
-            alt={companySnapshot.imageAlt}
-            fill
-            sizes="(min-width: 1024px) 48vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-      </HomeShell>
-    </section>
+    <EditorialSection tone="warm" className="company-story-section">
+      <EditorialLayout className="company-story-layout">
+        <EditorialCopy
+          title={companySnapshot.title}
+          text={companySnapshot.text}
+          className="company-story-copy"
+        />
+        <EditorialMedia
+          src={companySnapshot.image}
+          alt={companySnapshot.imageAlt}
+          priority
+          position="center center"
+          className="company-story-media"
+        />
+      </EditorialLayout>
+    </EditorialSection>
   );
 }
 
@@ -228,76 +219,87 @@ function FeaturedSourcingCategories() {
   const resetActiveProduct = () => setActiveProductId(defaultProductId);
 
   return (
-    <section className="bg-surface py-12 lg:py-16">
-      <HomeShell>
+    <>
+      <EditorialBridge tone="warm" className="featured-sourcing-bridge">
         <SectionIntro
           title="Featured sourcing categories"
           text="A3 sources food commodities, ingredients and packaged products across priority categories, with options shaped around origin, specification, packing, volume and shipment needs."
-          className="mb-7"
+          className="featured-sourcing-intro"
         />
-        <div className="featured-categories-grid grid gap-4 bg-surface lg:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
-          <Link
-            href={activeProduct.href}
-            className="featured-preview-card reveal reveal--up premium-focus group flex min-h-[430px] overflow-hidden rounded-[var(--radius-card)] border border-border sm:min-h-[500px] lg:min-h-0"
-          >
-            <article className="relative flex w-full flex-col justify-end overflow-hidden">
-              {activeProduct.image ? (
-                <Image
-                  key={activeProduct.image}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[var(--motion-slow)] ease-[var(--ease-premium)] group-hover:scale-[1.03]"
-                  src={activeProduct.image}
-                  alt={activeProduct.imageAlt ?? activeProduct.title}
-                  fill
-                  sizes="(min-width: 1024px) 648px, 100vw"
-                  priority
-                />
-              ) : null}
-              <div className="featured-preview-content relative z-10 bg-surface">
-                <div className="featured-preview-heading flex items-center justify-between gap-4 bg-teal">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <IconImage className="h-7 w-7" src={activeProduct.icon} />
-                    <h3 className="featured-preview-title type-p2 font-medium text-surface">{activeProduct.title}</h3>
+      </EditorialBridge>
+      <section className="featured-sourcing-section">
+        <HomeShell>
+          <div className="featured-categories-grid grid gap-4 bg-surface lg:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
+            <Link
+              href={activeProduct.href}
+              className="featured-preview-card reveal reveal--up premium-focus group flex min-h-[430px] overflow-hidden rounded-[var(--radius-card)] border border-border sm:min-h-[500px] lg:min-h-0"
+            >
+              <article className="relative flex w-full flex-col justify-end overflow-hidden">
+                {featuredProducts.map((product, index) =>
+                  product.image ? (
+                    <Image
+                      key={product.id}
+                      className={`featured-preview-image ${
+                        product.id === activeProduct.id ? "is-active" : ""
+                      } group-hover:scale-[1.03]`}
+                      src={product.image}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 648px, 100vw"
+                      priority={index === 0}
+                      aria-hidden="true"
+                    />
+                  ) : null,
+                )}
+                <div className="featured-preview-content relative z-10 bg-surface">
+                  <div className="featured-preview-heading flex items-center justify-between gap-4 bg-teal">
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="featured-preview-icon-frame" aria-hidden="true">
+                        <IconImage className="featured-preview-icon" src={activeProduct.icon} />
+                      </span>
+                      <h3 className="featured-preview-title type-p2 font-medium text-surface">{activeProduct.title}</h3>
+                    </div>
+                    <ArrowIcon />
                   </div>
-                  <ArrowIcon />
+                  <p className="featured-preview-description type-p3 text-ink/82">
+                    {activeProduct.description}
+                  </p>
+                  {activeHighlights.length ? (
+                    <ul className="featured-preview-highlights" aria-label={`${activeProduct.title} examples`}>
+                      {activeHighlights.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <span className="featured-preview-action" aria-hidden="true">
+                    View category
+                    <span>→</span>
+                  </span>
                 </div>
-                <p className="featured-preview-description type-p3 text-ink/82">
-                  {activeProduct.description}
-                </p>
-                {activeHighlights.length ? (
-                  <ul className="featured-preview-highlights" aria-label={`${activeProduct.title} examples`}>
-                    {activeHighlights.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                ) : null}
-                <span className="featured-preview-action" aria-hidden="true">
-                  View category
-                  <span>→</span>
-                </span>
-              </div>
-            </article>
-          </Link>
-          <div
-            className="featured-category-grid grid gap-3 sm:grid-cols-2 lg:gap-4"
-            onBlurCapture={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                resetActiveProduct();
-              }
-            }}
-            onMouseLeave={resetActiveProduct}
-          >
-            {products.map((product) => (
-              <ProductCategoryCard
-                active={product.id === activeProductId}
-                item={product}
-                key={product.id}
-                onActivate={() => setActiveProductId(product.id)}
-              />
-            ))}
+              </article>
+            </Link>
+            <div
+              className="featured-category-grid grid gap-3 sm:grid-cols-2 lg:gap-4"
+              onBlurCapture={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  resetActiveProduct();
+                }
+              }}
+              onMouseLeave={resetActiveProduct}
+            >
+              {products.map((product) => (
+                <ProductCategoryCard
+                  active={product.id === activeProductId}
+                  item={product}
+                  key={product.id}
+                  onActivate={() => setActiveProductId(product.id)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </HomeShell>
-    </section>
+        </HomeShell>
+      </section>
+    </>
   );
 }
 
@@ -321,9 +323,11 @@ function ProductCategoryCard({
     >
       <article className="flex h-full min-h-[118px] flex-col overflow-hidden">
         <div className="featured-category-card__header border-b border-border">
-          <div className="flex min-h-8 items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <IconImage className="featured-category-card__icon h-7 w-7 shrink-0 object-contain" src={item.icon} />
+          <div className="featured-category-card__title-row">
+            <div className="featured-category-card__title-group">
+              <span className="featured-category-card__icon-frame" aria-hidden="true">
+                <IconImage className="featured-category-card__icon" src={item.icon} />
+              </span>
               <h3 className="featured-category-card__title type-p2 font-medium text-ink">{item.title}</h3>
             </div>
             <ArrowIcon className="featured-category-card__arrow" />
@@ -334,6 +338,65 @@ function ProductCategoryCard({
         </p>
       </article>
     </Link>
+  );
+}
+
+function ElleMinaOwnBrand() {
+  const { ownBrand } = homeLanding;
+  const [activeProductId, setActiveProductId] = useState<string | null>(null);
+
+  return (
+    <section className="elle-mina-home-section bg-paper pb-16 pt-10 lg:pb-20 lg:pt-12">
+      <HomeShell>
+        <div className="reveal reveal--up mb-8 max-w-[760px]">
+          <h2 className="type-section text-ink">{ownBrand.title}</h2>
+          <p className="type-section-lead mt-5 text-ink/76">{ownBrand.text}</p>
+          <div className="mt-6">
+            <LinkButton href={ownBrand.href} variant="primary">
+              {ownBrand.ctaLabel}
+            </LinkButton>
+          </div>
+        </div>
+        <div
+          className={`elle-mina-segment-panel ${
+            activeProductId ? "has-active-card" : ""
+          }`}
+          onMouseLeave={() => setActiveProductId(null)}
+          onBlurCapture={(event) => {
+            const nextFocus = event.relatedTarget instanceof Node ? event.relatedTarget : null;
+            if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
+              setActiveProductId(null);
+            }
+          }}
+        >
+          {ownBrand.products.map((product) => (
+            <Link
+              className={`elle-mina-segment-card premium-focus ${
+                activeProductId === product.id ? "is-active" : ""
+              }`}
+              href={ownBrand.href}
+              key={product.id}
+              onMouseEnter={() => setActiveProductId(product.id)}
+              onFocus={() => setActiveProductId(product.id)}
+            >
+              <Image
+                className="elle-mina-segment-card__media"
+                src={product.image}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 48vw, (min-width: 768px) 33vw, 100vw"
+                aria-hidden="true"
+              />
+              <span className="elle-mina-segment-card__overlay" aria-hidden="true" />
+              <span className="elle-mina-segment-card__content">
+                <span className="elle-mina-segment-card__title">{product.title}</span>
+                <span className="elle-mina-segment-card__hint">{product.summary}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </HomeShell>
+    </section>
   );
 }
 
@@ -456,7 +519,7 @@ function MarketsPreview() {
               Source markets and destination experience
             </h2>
           </div>
-          <p className="reveal reveal--up reveal-delay-1 type-p1 mt-6 text-surface">
+          <p className="reveal reveal--up reveal-delay-1 type-section-lead mt-6 text-surface">
             A3 operates from London, working with selected supplier countries and commercial buyer markets across Europe, Africa, North America, South America and Asia.
           </p>
           <p className="reveal reveal--up reveal-delay-2 type-p2 mt-6 text-surface">
@@ -623,13 +686,13 @@ function BuyerPaths() {
 
 function BeforeYouEnquire() {
   return (
-    <section className="before-enquire-band bg-paper py-10 lg:py-12">
+    <section className="before-enquire-band bg-paper py-14 lg:py-16">
       <HomeShell className="grid gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center lg:gap-14">
         <div className="reveal reveal--up max-w-[520px]">
-          <h2 className="type-h2 text-ink">
+          <h2 className="type-section text-ink">
             Before you enquire
           </h2>
-          <p className="type-p2 mt-4 text-ink/76">
+          <p className="type-section-lead mt-4 text-ink/76">
             Review the available product catalogues before starting a trade discussion with A3.
           </p>
         </div>
@@ -667,7 +730,7 @@ function FinalCta() {
           <h2 className="type-section max-w-[520px] text-surface">
             {homeLanding.cta.title}
           </h2>
-          <p className="type-p1 mt-5 max-w-[760px] text-surface">{homeLanding.cta.text}</p>
+          <p className="type-section-lead mt-5 max-w-[760px] text-surface">{homeLanding.cta.text}</p>
           <div className="mt-6">
             <LinkButton href={homeLanding.cta.primary.href} variant="light">
               {homeLanding.cta.primary.label}
