@@ -27,7 +27,7 @@ export default function AboutPage() {
               "We work with commercial buyers, wholesalers, distributors, food manufacturers, retailers and suppliers across selected food categories. Our role is to help buyers reach the right product, the right producer and the right commercial terms without treating international trade as a simple transaction between two sides.",
               "Food trade depends on more than availability. Product specification, origin, production capacity, documentation, payment terms, shipment timing and market access all need to work together. A3 brings these parts into one practical supply conversation.",
             ],
-            image: "/media/about/about-borough-market.jpg",
+            image: "/media/about/about-borough-market.webp",
             imageAlt: "Borough Market and London skyline showing A3's UK trading context",
           },
           {
@@ -38,7 +38,7 @@ export default function AboutPage() {
               "For each request, we look beyond the question of whether a product exists. We review the required specification, available quantity, producer capability, price level, documentation needs and shipment window before presenting a supply option.",
               "This allows buyers to move faster, avoid unsuitable offers and focus on supply routes that are commercially workable.",
             ],
-            image: "/media/about/about-market-bakery.jpg",
+            image: "/media/about/about-market-bakery.webp",
             imageAlt: "Food market bakery counter with commercial food buyers",
             imagePosition: "left",
           },
@@ -50,7 +50,7 @@ export default function AboutPage() {
               "In some cases, one producer can meet the full requirement. In others, the right answer may involve more than one source, different shipment windows or a more careful matching process.",
               "A3 helps buyers find the most realistic route, not just the first available offer.",
             ],
-            image: "/media/about/about-market-stalls.jpg",
+            image: "/media/about/about-market-stalls.webp",
             imageAlt: "Busy Borough Market food stalls with shoppers and suppliers",
           },
         ]}
@@ -58,7 +58,7 @@ export default function AboutPage() {
           title: "Producer relationships and market knowledge",
           text:
             "A3's work has grown through long-term relationships with producers, suppliers and commercial buyers across different source and sales markets.",
-          image: "/media/about/about-container-shipping.jpg",
+          image: "/media/about/about-container-shipping.webp",
           imageAlt: "Container vessel and port cranes representing international food trade movement",
           facts: [
             {
@@ -82,7 +82,7 @@ export default function AboutPage() {
           title: "How we approach each trade",
           text:
             "Each request is reviewed through the practical checks that determine whether a supply option can move from conversation to shipment.",
-          image: "/media/about/about-london-station.jpg",
+          image: "/media/about/about-london-station.webp",
           imageAlt: "London station with trains and passengers representing coordinated trade movement",
           steps: [
             {
@@ -117,7 +117,7 @@ export default function AboutPage() {
             title: "Who we work with",
             text:
               "A3 works with commercial buyers and suppliers who need a practical route into food trade, whether they have a clear specification or need help shaping the right source, grade, packaging or commercial structure.",
-            image: "/media/about/about-london-building.jpg",
+            image: "/media/about/about-london-building.webp",
             imageAlt: "London commercial building facade representing A3's UK business base",
             items: [
               {
@@ -146,7 +146,7 @@ export default function AboutPage() {
             title: "Built for long-term trade",
             text:
               "International food trade works best when both sides understand the product, the market and the conditions behind the deal.",
-            image: "/media/about/about-london-docks.jpg",
+            image: "/media/about/about-london-docks.webp",
             imageAlt: "London docks and cranes at sunset representing long-term trade connections",
             items: [
               {
@@ -178,7 +178,7 @@ export default function AboutPage() {
             "Whether you are looking for a specific product, comparing supply options or trying to find a producer that can meet your required specification, A3 can help you review the route forward.",
           primary: { label: "Share Your Requirement", href: "/en/request-a-quote" },
           secondary: { label: "Contact A3", href: "/en/contact" },
-          image: "/media/about/about-seafood-products.jpg",
+          image: "/media/about/about-seafood-products.webp",
           imageAlt: "Fresh seafood and food products displayed in a commercial market",
         }}
       />

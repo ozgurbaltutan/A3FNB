@@ -25,7 +25,7 @@ export default function HowWeWorkPage() {
             paragraphs: [
               "International food trade depends on more than availability. A supplier may have the product and a buyer may have the demand, but that does not always mean the trade is ready to move forward. Before presenting a supplier or product route, A3 reviews the conditions behind the deal - product fit, producer capability, market access, commercial terms, documentation and shipment timing - to understand whether a realistic and commercially workable route can be built around the buyer's requirement.",
             ],
-            image: "/media/how-we-work/port-cranes-shipment.jpg",
+            image: "/media/how-we-work/port-cranes-shipment.webp",
             imageAlt: "Container ship being loaded by port cranes for international trade",
           },
         ]}
@@ -34,7 +34,7 @@ export default function HowWeWorkPage() {
             title: "What makes a trade workable",
             text:
               "Every requirement is reviewed through the practical conditions that shape international food trade. A3 checks the product, the supplier, the market and the commercial structure before moving a conversation forward.",
-            image: "/media/how-we-work/warehouse-trade-review.jpg",
+            image: "/media/how-we-work/warehouse-trade-review.webp",
             imageAlt: "Large warehouse with packed goods prepared for commercial trade review",
             items: [
               {
@@ -69,7 +69,7 @@ export default function HowWeWorkPage() {
           title: "From requirement to supply route",
           text:
             "A3's process is built to reduce unsuitable offers and focus the conversation on supply routes that can realistically work.",
-          image: "/media/how-we-work/container-yard-coordination.jpg",
+          image: "/media/how-we-work/container-yard-coordination.webp",
           imageAlt: "Container yard with stacked shipping containers and forklift coordination",
           steps: [
             {
@@ -107,7 +107,7 @@ export default function HowWeWorkPage() {
               "A3 does not work from a fixed supplier list alone. Each requirement is reviewed according to the product, market and trade conditions behind it.",
               "The result may be a direct producer route, a multi-source option or a more suitable alternative based on availability, timing and commercial fit.",
             ],
-            image: "/media/how-we-work/origin-field-silos.jpg",
+            image: "/media/how-we-work/origin-field-silos.webp",
             imageAlt: "Agricultural field with storage silos representing origin and supply route options",
             imagePosition: "left",
           },
@@ -117,7 +117,7 @@ export default function HowWeWorkPage() {
           text:
             "Share the product you are looking for and the market you need to supply. A3 will review whether a suitable route can be built around your requirement.",
           primary: { label: "Share Your Requirement", href: "/en/request-a-quote" },
-          image: "/media/how-we-work/container-ship-route.jpg",
+          image: "/media/how-we-work/container-ship-route.webp",
           imageAlt: "Container ship moving through open water as part of an international supply route",
         }}
       />

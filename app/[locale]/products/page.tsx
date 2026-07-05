@@ -108,7 +108,7 @@ function ProductsOpeningSection() {
         </div>
         <figure className="products-opening__media">
           <Image
-            src="/media/home/products-opening-flour.jpg"
+            src="/media/home/products-opening-flour.webp"
             alt="Chef dusting flour over fresh ingredients in a professional kitchen"
             fill
             priority

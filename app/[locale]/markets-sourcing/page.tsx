@@ -26,7 +26,7 @@ export default function MarketsSourcingPage() {
               "A3 works across source and sales markets to connect commercial buyers with suitable food producers, manufacturers and suppliers.",
               "The right route depends on the product. Some requirements are driven by origin, some by manufacturer capability, and others by access to a buyer's destination market. A3 reviews each opportunity through the conditions that matter in real trade: product suitability, supplier reliability, commercial terms and shipment timing.",
             ],
-            image: "/media/markets-sourcing/grain-loading-origin.jpg",
+            image: "/media/markets-sourcing/grain-loading-origin.webp",
             imageAlt: "Grain being loaded into a trailer at origin for commercial supply",
           },
           {
@@ -36,7 +36,7 @@ export default function MarketsSourcingPage() {
               "A3 looks at both sides together. The question is not only where a product is available, but whether that market can support the buyer's requirement with the right supplier, documents, timing and commercial structure.",
               "This keeps sourcing practical, instead of reducing it to a fixed country list.",
             ],
-            image: "/media/markets-sourcing/wholesale-market-warehouse.jpg",
+            image: "/media/markets-sourcing/wholesale-market-warehouse.webp",
             imageAlt: "Wholesale market warehouse with stacked food products and buyer activity",
             imagePosition: "left",
           },
@@ -46,7 +46,7 @@ export default function MarketsSourcingPage() {
             title: "Market directions",
             text:
               "A3's work is built around selected market relationships and product-led opportunities. Each region can play a different role depending on the product category, buyer requirement and supply conditions.",
-            image: "/media/markets-sourcing/uk-commercial-market.jpg",
+            image: "/media/markets-sourcing/uk-commercial-market.webp",
             imageAlt: "UK commercial market street representing European buyer and supplier routes",
             items: [
               {
@@ -76,7 +76,7 @@ export default function MarketsSourcingPage() {
           title: "The route follows the requirement.",
           text:
             "A3 does not begin with a fixed supplier list and force the buyer into it. The starting point is the requirement: what product is needed, where it needs to go, and under which commercial conditions the trade can move forward.",
-          image: "/media/markets-sourcing/food-processing-line.jpg",
+          image: "/media/markets-sourcing/food-processing-line.webp",
           imageAlt: "Food processing line showing product handling and supplier capability",
           steps: [
             {
@@ -103,7 +103,7 @@ export default function MarketsSourcingPage() {
               "Coffee, sugar, edible oils, grains, flour, canned goods and frozen food do not follow the same sourcing logic. Each category has different producers, specifications, documents, shipment patterns and price conditions.",
               "A3 reviews the product first, then considers which market or origin can support the requirement most realistically.",
             ],
-            image: "/media/markets-sourcing/packed-sweet-potatoes.jpg",
+            image: "/media/markets-sourcing/packed-sweet-potatoes.webp",
             imageAlt: "Packed sweet potatoes in boxes representing product-led sourcing decisions",
           },
         ]}
@@ -113,7 +113,7 @@ export default function MarketsSourcingPage() {
           text:
             "Share the product you are looking for and the market you need to supply. A3 will review whether a suitable sourcing route can be built around your requirement.",
           primary: { label: "Share Your Requirement", href: "/en/request-a-quote" },
-          image: "/media/markets-sourcing/boxed-food-supply.jpg",
+          image: "/media/markets-sourcing/boxed-food-supply.webp",
           imageAlt: "Boxed food products in warehouse storage for supply review",
         }}
       />
