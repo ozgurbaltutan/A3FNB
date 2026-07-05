@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
-import { company, contactIntents, productFamilies } from "@/content/site";
+import { company, contactIntents, productCategories } from "@/content/site";
 import { Button, TextArea, TextInput } from "@/components/ui";
 
 const buyerIntents = contactIntents.filter((intent) => intent !== "I want to contact A3 directly");
@@ -318,7 +318,7 @@ export function SendRequirementForm() {
           <CustomSelect
             label="Product / category"
             name="productCategory"
-            options={productFamilies.map((product) => product.title)}
+            options={productCategories.map((category) => category.title)}
             required
           />
           <TextInput label="Name" name="name" required autoComplete="name" />

@@ -68,6 +68,17 @@ export type ProductFamily = {
   relatedResources: string[];
 };
 
+export type ProductCategory = {
+  title: string;
+  slug: string;
+  shortDescription: string;
+  longDescription: string;
+  iconKey: string;
+  imageKey?: string;
+  exampleProducts: string[];
+  ctaLabel: string;
+};
+
 export type ProductDetail = {
   id: string;
   slug: string;

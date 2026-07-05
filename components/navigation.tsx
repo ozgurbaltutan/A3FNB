@@ -5,29 +5,15 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { company, navigation } from "@/content/site";
+import { company, navigation, productCategories, productCategoryHref } from "@/content/site";
 import { Container, LinkButton } from "@/components/ui";
 
-const menuProducts = [
-  { label: "Green Coffee Beans", href: "/en/products/coffee" },
-  { label: "Sugar", href: "/en/products/sugar" },
-  { label: "Frozen Foods", href: "/en/products#frozen-foods" },
-  { label: "Sweeteners & Syrups", href: "/en/products#sweeteners-syrups" },
-  { label: "Edible Oils & Fats", href: "/en/products#edible-oils-fats" },
-  { label: "Starches & Ingredients", href: "/en/products#starches-industrial-ingredients" },
-  { label: "Dairy Ingredients", href: "/en/products#dairy-ingredients" },
-  { label: "Canned Foods", href: "/en/products#canned-foods" },
-  { label: "Consumer Foods", href: "/en/products#consumer-foods" },
-];
+const menuProducts = productCategories.map((category) => ({
+  label: category.title,
+  href: productCategoryHref(category),
+}));
 
-const footerProducts = [
-  { label: "Green Coffee Beans", href: "/en/products/coffee" },
-  { label: "Sugar", href: "/en/products/sugar" },
-  { label: "Elle Mina", href: "/en/products/elle-mina" },
-  { label: "Frozen Foods", href: "/en/products#frozen-foods" },
-  { label: "Sweeteners & Syrups", href: "/en/products#sweeteners-syrups" },
-  { label: "Edible Oils & Fats", href: "/en/products#edible-oils-fats" },
-];
+const footerProducts = [{ label: "View All Products", href: "/en/products" }, ...menuProducts];
 
 const footerSocialLinks = [
   { label: "LinkedIn", href: "#", icon: "linkedin" },
@@ -136,40 +122,45 @@ export function Header() {
           Menu
         </button>
       </Container>
-      <MegaMenu open={productsOpen} />
+      <MegaMenu open={productsOpen} onNavigate={() => setProductsOpen(false)} />
       <MobileNav open={open} onClose={() => setOpen(false)} />
     </header>
   );
 }
 
-function MegaMenu({ open }: { open: boolean }) {
+function MegaMenu({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   return (
     <div
       className={clsx("mega-menu absolute left-0 right-0 top-full hidden text-ink lg:block", open ? "is-open" : "is-closed")}
       aria-hidden={!open}
     >
-      <Container className="a3-container mega-menu__inner grid gap-10 py-9 lg:grid-cols-[minmax(0,0.68fr)_minmax(0,1fr)]">
+      <Container className="a3-container mega-menu__inner grid gap-10 py-9 lg:grid-cols-[minmax(20rem,0.58fr)_minmax(0,1fr)] lg:gap-14">
         <div className="mega-menu__intro">
           <div className="mega-menu__brand-card">
-            <p className="type-kicker text-teal">Exclusive Brand</p>
-            <Link className="mega-menu__brand-title premium-focus" href="/en/products/elle-mina">
-              Elle Mina
+            <Link className="mega-menu__brand-title premium-focus" href="/en/products" onClick={onNavigate}>
+              Product categories
             </Link>
             <p className="mega-menu__brand-copy">
-              A3&apos;s own consumer and professional margarine and butter range for retail, foodservice,
-              bakery and distribution buyers.
+              Food commodities, ingredients and packaged products selected around buyer requirements,
+              producer availability and workable commercial terms.
             </p>
-            <Link className="mega-menu__brand-action premium-focus" href="/en/products/elle-mina">
-              Explore Elle Mina Products
-              <span aria-hidden="true">-&gt;</span>
+            <Link className="mega-menu__all-link premium-focus" href="/en/products" onClick={onNavigate}>
+              <span>View all product categories</span>
+              <span aria-hidden="true">→</span>
             </Link>
+            <div className="mega-menu__exclusive">
+              <p className="mega-menu__exclusive-label">Exclusive brand</p>
+              <Link className="mega-menu__all-link premium-focus" href="/en/products/elle-mina" onClick={onNavigate}>
+                <span>Elle Mina margarine &amp; butter</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
         </div>
         <div>
-          <p className="type-kicker mb-3 text-teal">Product categories</p>
           <div className="mega-menu__categories">
             {menuProducts.map((item) => (
-              <Link className="mega-menu__category premium-focus" href={item.href} key={item.href}>
+              <Link className="mega-menu__category premium-focus" href={item.href} key={item.href} onClick={onNavigate}>
                 <span>{item.label}</span>
                 <span className="mega-menu__category-arrow" aria-hidden="true">
                   →

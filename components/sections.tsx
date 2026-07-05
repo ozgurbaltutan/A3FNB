@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { clsx } from "clsx";
-import type { MarketRegion, NavigationItem, ProductFamily, ResourceItem, ServiceItem } from "@/lib/types";
+import type { MarketRegion, NavigationItem, ProductCategory, ProductFamily, ResourceItem, ServiceItem } from "@/lib/types";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { Card, Container, Heading, LinkButton, Paragraph, PlaceholderVisual, Section } from "@/components/ui";
+import { homeAssets, productCategoryHref } from "@/content/site";
 
 export function FullHeightHero({
   title,
@@ -191,11 +193,11 @@ export function ProductGrid({
           {products.map((product) => (
             <Link
               key={product.id}
-              href={product.featured ? `/en/products/${product.slug}` : `/en/products#${product.slug}`}
+              href={`/en/products/${product.slug}`}
               className="premium-focus group block"
             >
               <Card
-                id={product.featured ? undefined : product.slug}
+                id={undefined}
                 className={clsx(
                   "h-full transition duration-[var(--motion-base)] ease-[var(--ease-premium)] group-hover:-translate-y-1 group-hover:border-teal",
                   product.featured && "bg-surface",
@@ -211,6 +213,48 @@ export function ProductGrid({
               </Card>
             </Link>
           ))}
+        </div>
+      </Container>
+    </Section>
+  );
+}
+
+export function ProductCategoryGrid({
+  title,
+  text,
+  categories,
+  muted,
+}: {
+  title: string;
+  text?: string;
+  categories: ProductCategory[];
+  muted?: boolean;
+}) {
+  return (
+    <Section muted={muted}>
+      <Container>
+        <SectionHeader title={title} text={text} />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {categories.map((category) => {
+            const iconSrc = homeAssets.icons[category.iconKey as keyof typeof homeAssets.icons];
+
+            return (
+              <Link key={category.slug} href={productCategoryHref(category)} className="premium-focus group block">
+                <article className="product-category-card h-full">
+                  <div className="product-category-card__top">
+                    <div className="product-category-card__heading">
+                      <span className="product-category-card__icon" aria-hidden="true">
+                        {iconSrc ? <Image src={iconSrc} alt="" width={32} height={32} /> : null}
+                      </span>
+                      <h3 className="product-category-card__title">{category.title}</h3>
+                    </div>
+                    <span className="product-category-card__arrow" aria-hidden="true">-&gt;</span>
+                  </div>
+                  <p className="product-category-card__description">{category.shortDescription}</p>
+                </article>
+              </Link>
+            );
+          })}
         </div>
       </Container>
     </Section>

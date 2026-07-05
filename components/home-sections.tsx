@@ -11,19 +11,25 @@ type FeaturedProduct = {
   id: string;
   title: string;
   description: string;
+  cardSummary?: string;
   href: string;
   icon: string;
   image?: string;
   imageAlt?: string;
-  highlights?: readonly string[];
+  ctaLabel?: string;
 };
 
-type MarketMarker = {
+type MarketPin = {
   name: string;
-  role: "base" | "source" | "destination" | "dual";
   x: number;
   y: number;
+  isHub?: boolean;
+  labelAlign?: "left" | "center" | "right";
 };
+
+function cardCopy(item: { cardSummary?: string; description: string }) {
+  return item.cardSummary ?? item.description;
+}
 
 function HomeShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
@@ -69,20 +75,6 @@ function useHomepageReveal() {
   }, []);
 }
 
-function ArrowIcon({ className = "" }: { className?: string }) {
-  return (
-    <Image
-      aria-hidden="true"
-      className={`h-6 w-6 shrink-0 ${className}`}
-      src={homeAssets.icons.arrowRight}
-      alt=""
-      width={24}
-      height={24}
-      unoptimized
-    />
-  );
-}
-
 function IconImage({
   src,
   className,
@@ -103,6 +95,76 @@ function IconImage({
       unoptimized
     />
   );
+}
+
+function CountUpMetric({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const [displayValue, setDisplayValue] = useState("0");
+
+  useEffect(() => {
+    const match = value.match(/^(\d+)(.*)$/);
+    if (!match) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const target = Number(match[1]);
+    const suffix = match[2] ?? "";
+    const node = ref.current;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    let started = false;
+    let observer: IntersectionObserver | null = null;
+
+    if (reducedMotion.matches) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const animate = () => {
+      const duration = 950;
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setDisplayValue(`${Math.round(target * eased)}${suffix}`);
+
+        if (progress < 1) {
+          frame = requestAnimationFrame(tick);
+        }
+      };
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    if (!node || !("IntersectionObserver" in window)) {
+      animate();
+      return () => cancelAnimationFrame(frame);
+    }
+
+    observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || started) {
+          return;
+        }
+
+        started = true;
+        animate();
+        observer?.disconnect();
+      },
+      { threshold: 0.4 },
+    );
+
+    observer.observe(node);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [value]);
+
+  return <span ref={ref}>{displayValue}</span>;
 }
 
 function SectionIntro({
@@ -150,22 +212,37 @@ function HomeHero() {
   const { hero } = homeLanding;
 
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden bg-deep-dark text-surface">
+    <section className="home-hero relative isolate min-h-[100svh] overflow-hidden bg-deep-dark text-surface">
+      <Image
+        className="home-hero-fallback absolute inset-0 z-0 h-full w-full object-cover"
+        src={homeAssets.media.companyTradeEditorial}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        aria-hidden="true"
+      />
       <video
-        className="absolute inset-0 -z-20 h-full w-full object-cover"
+        className="home-hero-video absolute inset-0 z-0 h-full w-full object-cover"
         autoPlay
         muted
         loop
         playsInline
+        poster={homeAssets.media.companyTradeEditorial}
         aria-label="Food and beverage sourcing background video"
       >
         <source src={homeAssets.media.heroVideo} type="video/webm" />
       </video>
-      <div className="home-hero-overlay absolute inset-0 -z-10" aria-hidden="true" />
-      <HomeShell className="flex min-h-[100svh] items-center pb-16 pt-32 lg:pb-20 lg:pt-40">
-        <div className="max-w-[930px]">
-          <h1 className="type-hero max-w-[850px] text-surface">
-            {hero.title}
+      <div className="home-hero-overlay absolute inset-0 z-10" aria-hidden="true" />
+      <HomeShell className="relative z-20 flex min-h-[100svh] items-center pb-16 pt-32 lg:pb-20 lg:pt-40">
+        <div className="max-w-[1020px]">
+          <h1 className="home-hero-title type-hero max-w-[1020px] text-surface">
+            {hero.title.split("\n").map((line, index, lines) => (
+              <span className="home-hero-title__line" key={line}>
+                {line}
+                {index < lines.length - 1 ? <br /> : null}
+              </span>
+            ))}
           </h1>
           <p className="type-hero-body mt-6 max-w-[867px] text-surface">
             {hero.text}
@@ -188,7 +265,7 @@ function WhatA3Does() {
   const { companySnapshot } = homeLanding;
 
   return (
-    <EditorialSection tone="warm" className="company-story-section">
+    <EditorialSection tone="surface" className="company-story-section">
       <EditorialLayout className="company-story-layout">
         <EditorialCopy
           title={companySnapshot.title}
@@ -209,91 +286,50 @@ function WhatA3Does() {
 
 function FeaturedSourcingCategories() {
   const featuredProducts: readonly FeaturedProduct[] = homeLanding.featuredProducts;
-  const defaultProductId = "coffee";
-  const [activeProductId, setActiveProductId] = useState<string>(defaultProductId);
-  const activeProduct =
-    featuredProducts.find((product) => product.id === activeProductId) ??
-    featuredProducts[0];
-  const activeHighlights = activeProduct.highlights?.slice(0, 5) ?? [];
-  const [, ...products] = featuredProducts;
-  const resetActiveProduct = () => setActiveProductId(defaultProductId);
 
   return (
     <>
-      <EditorialBridge tone="warm" className="featured-sourcing-bridge">
+      <EditorialBridge tone="surface" className="featured-sourcing-bridge">
         <SectionIntro
-          title="Featured sourcing categories"
-          text="A3 sources food commodities, ingredients and packaged products across priority categories, with options shaped around origin, specification, packing, volume and shipment needs."
+          title="Priority food categories"
+          text="A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements."
           className="featured-sourcing-intro"
         />
       </EditorialBridge>
       <section className="featured-sourcing-section">
         <HomeShell>
-          <div className="featured-categories-grid grid gap-4 bg-surface lg:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.15fr)] lg:items-stretch">
-            <Link
-              href={activeProduct.href}
-              className="featured-preview-card reveal reveal--up premium-focus group flex min-h-[430px] overflow-hidden rounded-[var(--radius-card)] border border-border sm:min-h-[500px] lg:min-h-0"
-            >
-              <article className="relative flex w-full flex-col justify-end overflow-hidden">
-                {featuredProducts.map((product, index) =>
-                  product.image ? (
-                    <Image
-                      key={product.id}
-                      className={`featured-preview-image ${
-                        product.id === activeProduct.id ? "is-active" : ""
-                      } group-hover:scale-[1.03]`}
-                      src={product.image}
-                      alt=""
-                      fill
-                      sizes="(min-width: 1024px) 648px, 100vw"
-                      priority={index === 0}
-                      aria-hidden="true"
-                    />
-                  ) : null,
-                )}
-                <div className="featured-preview-content relative z-10 bg-surface">
-                  <div className="featured-preview-heading flex items-center justify-between gap-4 bg-teal">
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <span className="featured-preview-icon-frame" aria-hidden="true">
-                        <IconImage className="featured-preview-icon" src={activeProduct.icon} />
-                      </span>
-                      <h3 className="featured-preview-title type-p2 font-medium text-surface">{activeProduct.title}</h3>
-                    </div>
-                    <ArrowIcon />
-                  </div>
-                  <p className="featured-preview-description type-p3 text-ink/82">
-                    {activeProduct.description}
-                  </p>
-                  {activeHighlights.length ? (
-                    <ul className="featured-preview-highlights" aria-label={`${activeProduct.title} examples`}>
-                      {activeHighlights.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  <span className="featured-preview-action" aria-hidden="true">
-                    View category
-                    <span>→</span>
-                  </span>
-                </div>
-              </article>
-            </Link>
-            <div
-              className="featured-category-grid grid gap-3 sm:grid-cols-2 lg:gap-4"
-              onBlurCapture={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                  resetActiveProduct();
-                }
-              }}
-              onMouseLeave={resetActiveProduct}
-            >
-              {products.map((product) => (
-                <ProductCategoryCard
-                  active={product.id === activeProductId}
-                  item={product}
+          <div className="commodity-bento reveal reveal--up">
+            <div className="commodity-bento__grid">
+              {featuredProducts.map((product, index) => (
+                <Link
+                  href={product.href}
+                  className="commodity-bento__card premium-focus group"
                   key={product.id}
-                  onActivate={() => setActiveProductId(product.id)}
-                />
+                >
+                  <article className="commodity-bento__card-inner">
+                    {product.image ? (
+                      <Image
+                        className="commodity-bento__media"
+                        src={product.image}
+                        alt={product.imageAlt ?? ""}
+                        fill
+                        sizes="(min-width: 1024px) 560px, (min-width: 640px) 50vw, 100vw"
+                        priority={index < 2}
+                      />
+                    ) : null}
+                    <div className="commodity-bento__overlay" aria-hidden="true" />
+                    <div className="commodity-bento__content">
+                      <div className="commodity-bento__heading">
+                        <span className="commodity-bento__icon-frame" aria-hidden="true">
+                          <IconImage className="commodity-bento__icon" src={product.icon} />
+                        </span>
+                        <h3 className="commodity-bento__title">{product.title}</h3>
+                        <span className="image-card-cta" aria-hidden="true">→</span>
+                      </div>
+                      <p className="commodity-bento__description">{cardCopy(product)}</p>
+                    </div>
+                  </article>
+                </Link>
               ))}
             </div>
           </div>
@@ -303,81 +339,22 @@ function FeaturedSourcingCategories() {
   );
 }
 
-function ProductCategoryCard({
-  active,
-  item,
-  onActivate,
-}: {
-  active: boolean;
-  item: FeaturedProduct;
-  onActivate: () => void;
-}) {
-  return (
-    <Link
-      href={item.href}
-      className={`featured-category-card premium-focus group block h-full overflow-hidden rounded-[var(--radius-card)] border bg-surface ${
-        active ? "is-active border-teal" : "border-border"
-      }`}
-      onFocus={onActivate}
-      onMouseEnter={onActivate}
-    >
-      <article className="flex h-full min-h-[118px] flex-col overflow-hidden">
-        <div className="featured-category-card__header border-b border-border">
-          <div className="featured-category-card__title-row">
-            <div className="featured-category-card__title-group">
-              <span className="featured-category-card__icon-frame" aria-hidden="true">
-                <IconImage className="featured-category-card__icon" src={item.icon} />
-              </span>
-              <h3 className="featured-category-card__title type-p2 font-medium text-ink">{item.title}</h3>
-            </div>
-            <ArrowIcon className="featured-category-card__arrow" />
-          </div>
-        </div>
-        <p className="featured-category-card__description type-p3 text-ink/82">
-          {item.description}
-        </p>
-      </article>
-    </Link>
-  );
-}
-
 function ElleMinaOwnBrand() {
   const { ownBrand } = homeLanding;
-  const [activeProductId, setActiveProductId] = useState<string | null>(null);
 
   return (
-    <section className="elle-mina-home-section bg-paper pb-16 pt-10 lg:pb-20 lg:pt-12">
+    <section className="elle-mina-home-section pb-16 pt-10 lg:pb-20 lg:pt-12">
       <HomeShell>
         <div className="reveal reveal--up mb-8 max-w-[760px]">
           <h2 className="type-section text-ink">{ownBrand.title}</h2>
           <p className="type-section-lead mt-5 text-ink/76">{ownBrand.text}</p>
-          <div className="mt-6">
-            <LinkButton href={ownBrand.href} variant="primary">
-              {ownBrand.ctaLabel}
-            </LinkButton>
-          </div>
         </div>
-        <div
-          className={`elle-mina-segment-panel ${
-            activeProductId ? "has-active-card" : ""
-          }`}
-          onMouseLeave={() => setActiveProductId(null)}
-          onBlurCapture={(event) => {
-            const nextFocus = event.relatedTarget instanceof Node ? event.relatedTarget : null;
-            if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
-              setActiveProductId(null);
-            }
-          }}
-        >
+        <div className="elle-mina-segment-panel">
           {ownBrand.products.map((product) => (
             <Link
-              className={`elle-mina-segment-card premium-focus ${
-                activeProductId === product.id ? "is-active" : ""
-              }`}
+              className="elle-mina-segment-card premium-focus"
               href={ownBrand.href}
               key={product.id}
-              onMouseEnter={() => setActiveProductId(product.id)}
-              onFocus={() => setActiveProductId(product.id)}
             >
               <Image
                 className="elle-mina-segment-card__media"
@@ -389,8 +366,11 @@ function ElleMinaOwnBrand() {
               />
               <span className="elle-mina-segment-card__overlay" aria-hidden="true" />
               <span className="elle-mina-segment-card__content">
-                <span className="elle-mina-segment-card__title">{product.title}</span>
-                <span className="elle-mina-segment-card__hint">{product.summary}</span>
+                <span className="elle-mina-segment-card__title-row">
+                  <span className="elle-mina-segment-card__title">{product.title}</span>
+                  <span className="image-card-cta" aria-hidden="true">→</span>
+                </span>
+                <span className="elle-mina-segment-card__hint">{cardCopy(product)}</span>
               </span>
             </Link>
           ))}
@@ -401,166 +381,75 @@ function ElleMinaOwnBrand() {
 }
 
 function MarketsPreview() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [activeLayer, setActiveLayer] = useState(1);
-  const marketMarkers: MarketMarker[] = [
-    { name: "London, United Kingdom", role: "base", x: 50.7, y: 39.7 },
-    { name: "Turkiye", role: "source", x: 57.9, y: 47.0 },
-    { name: "Ukraine", role: "source", x: 55.9, y: 40.8 },
-    { name: "Argentina", role: "dual", x: 36.6, y: 83.0 },
-    { name: "Brazil", role: "dual", x: 38.6, y: 71.8 },
-    { name: "China", role: "dual", x: 73.2, y: 48.2 },
-    { name: "Poland", role: "dual", x: 53.2, y: 39.2 },
-    { name: "USA", role: "destination", x: 26.8, y: 43.2 },
-    { name: "Canada", role: "destination", x: 25.8, y: 32.8 },
-    { name: "Germany", role: "destination", x: 51.7, y: 40.3 },
-    { name: "France", role: "destination", x: 50.6, y: 43.6 },
-    { name: "Mauritania", role: "destination", x: 45.8, y: 58.8 },
-    { name: "Senegal", role: "destination", x: 45.4, y: 62.0 },
-    { name: "Togo", role: "destination", x: 49.8, y: 66.4 },
-    { name: "Ghana", role: "destination", x: 48.9, y: 65.8 },
-    { name: "Niger", role: "destination", x: 51.8, y: 59.8 },
-    { name: "Cameroon", role: "destination", x: 52.8, y: 67.0 },
-    { name: "Madagascar", role: "destination", x: 60.4, y: 83.4 },
-    { name: "Mozambique", role: "destination", x: 57.5, y: 79.6 },
-    { name: "Taiwan", role: "destination", x: 79.2, y: 55.8 },
+  const marketPins: readonly MarketPin[] = [
+    { name: "United Kingdom / London", x: 45.2, y: 20.2, isHub: true, labelAlign: "center" },
+    { name: "Turkiye / Istanbul", x: 56.4, y: 27.4, labelAlign: "left" },
+    { name: "Poland", x: 53.2, y: 22.0, labelAlign: "left" },
+    { name: "Argentina", x: 31.9, y: 77.0, labelAlign: "right" },
+    { name: "China", x: 76.6, y: 35.4, labelAlign: "right" },
+    { name: "Brazil", x: 31.6, y: 63.0, labelAlign: "right" },
+    { name: "Ukraine", x: 56.8, y: 24.2, labelAlign: "left" },
+    { name: "USA", x: 26.0, y: 31.0, labelAlign: "left" },
+    { name: "Canada", x: 23.0, y: 19.0, labelAlign: "left" },
+    { name: "Germany", x: 50.8, y: 22.8, labelAlign: "left" },
+    { name: "France", x: 48.0, y: 25.6, labelAlign: "right" },
+    { name: "Mauritania", x: 45.2, y: 39.0, labelAlign: "right" },
+    { name: "Senegal", x: 43.6, y: 44.0, labelAlign: "right" },
+    { name: "Ghana", x: 47.6, y: 48.2, labelAlign: "right" },
+    { name: "Niger", x: 50.2, y: 41.6, labelAlign: "left" },
+    { name: "Cameroon", x: 51.0, y: 49.2, labelAlign: "left" },
+    { name: "Madagascar", x: 62.8, y: 67.0, labelAlign: "right" },
+    { name: "Mozambique", x: 57.8, y: 63.6, labelAlign: "left" },
+    { name: "Taiwan", x: 83.1, y: 39.8, labelAlign: "right" },
+    { name: "Australia / Sydney", x: 89.2, y: 78.2, labelAlign: "right" },
   ];
-  const marketLayers = [
-    {
-      number: "01",
-      title: "Operating base",
-      text: "London, United Kingdom",
-    },
-    {
-      number: "02",
-      title: "Source countries",
-      text: "Turkiye, Poland, Argentina, China, Brazil and Ukraine",
-    },
-    {
-      number: "03",
-      title: "Destination markets",
-      text: "Europe, Africa, North America, South America and Asia",
-    },
-  ];
-
-  useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const compactViewport = window.matchMedia("(max-width: 1023px)");
-
-    const updateLayer = () => {
-      if (reducedMotion.matches || compactViewport.matches) {
-        setActiveLayer(3);
-        return;
-      }
-
-      const section = sectionRef.current;
-      if (!section) {
-        return;
-      }
-
-      const rect = section.getBoundingClientRect();
-      const scrollableDistance = Math.max(1, rect.height - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / scrollableDistance));
-
-      if (progress < 0.34) {
-        setActiveLayer(1);
-      } else if (progress < 0.68) {
-        setActiveLayer(2);
-      } else {
-        setActiveLayer(3);
-      }
-    };
-
-    updateLayer();
-    window.addEventListener("scroll", updateLayer, { passive: true });
-    window.addEventListener("resize", updateLayer);
-    reducedMotion.addEventListener("change", updateLayer);
-    compactViewport.addEventListener("change", updateLayer);
-
-    return () => {
-      window.removeEventListener("scroll", updateLayer);
-      window.removeEventListener("resize", updateLayer);
-      reducedMotion.removeEventListener("change", updateLayer);
-      compactViewport.removeEventListener("change", updateLayer);
-    };
-  }, []);
-
-  const isMarkerVisible = (role: MarketMarker["role"]) => {
-    if (role === "base") {
-      return activeLayer >= 1;
-    }
-
-    if (role === "source" || role === "dual") {
-      return activeLayer >= 2;
-    }
-
-    return activeLayer >= 3;
-  };
-
-  const isMarkerPulsing = (role: MarketMarker["role"]) => {
-    if (activeLayer === 1) {
-      return role === "base";
-    }
-
-    if (activeLayer === 2) {
-      return role === "source" || role === "dual";
-    }
-
-    return true;
-  };
 
   return (
-    <section ref={sectionRef} className="markets-layer-section bg-deep-dark text-surface">
+    <section className="markets-layer-section bg-deep-dark text-surface">
       <HomeShell className="markets-layer-stage grid items-center gap-8 py-16 lg:grid-cols-2 lg:py-20">
-        <div>
-          <div className="reveal reveal--up flex items-center gap-6">
-            <IconImage className="h-20 w-20 shrink-0 object-contain sm:h-28 sm:w-28" src="/brand/a3logomark.svg" size={112} />
-            <h2 className="type-section text-surface">
-              Source markets and destination experience
-            </h2>
-          </div>
-          <p className="reveal reveal--up reveal-delay-1 type-section-lead mt-6 text-surface">
-            A3 operates from London, working with selected supplier countries and commercial buyer markets across Europe, Africa, North America, South America and Asia.
+        <div className="markets-copy">
+          <h2 className="reveal reveal--up type-section text-surface">
+            Markets we connect.
+          </h2>
+          <p className="markets-copy__body reveal reveal--up reveal-delay-1 mt-6 text-surface">
+            {homeLanding.markets.text}
           </p>
-          <p className="reveal reveal--up reveal-delay-2 type-p2 mt-6 text-surface">
-            Source countries include Turkiye, Poland, Argentina, China, Brazil and Ukraine. Destination experience includes the USA, Canada, Germany, France, Ghana, Senegal, China, Taiwan and other commercial markets.
+          <p className="markets-copy__body reveal reveal--up reveal-delay-2 mt-5 text-surface">
+            {homeLanding.markets.note}
           </p>
-          <ol className="reveal reveal--up reveal-delay-3 mt-8 grid gap-3">
-            {marketLayers.map((layer, index) => (
-              <li
-                className={`markets-layer-item ${activeLayer === index + 1 ? "is-active" : ""}`}
-                key={layer.number}
-              >
-                <span className="type-kicker text-brand-blue">{layer.number}</span>
-                <div>
-                  <h3 className="type-p2 font-medium text-surface">{layer.title}</h3>
-                  <p className="type-p3 mt-1 text-surface/72">{layer.text}</p>
-                </div>
-              </li>
+          <div className="markets-metrics reveal reveal--up reveal-delay-3">
+            {homeLanding.markets.metrics.map((metric) => (
+              <div className="markets-metric" key={metric.label}>
+                <span className="markets-metric__value">
+                  <CountUpMetric value={metric.value} />
+                </span>
+                <span className="markets-metric__label">{metric.label}</span>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
-        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-h-[260px] min-w-0 overflow-hidden lg:min-h-[464px]" role="img" aria-label="World map showing A3 sourcing markets and destination experience">
+        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-w-0" role="img" aria-label="World map showing London and selected connected markets">
           <Image
             aria-hidden="true"
-            className="h-full min-h-[260px] w-full object-contain"
+            className="markets-map__image h-full w-full object-contain"
             src={homeLanding.markets.map}
             alt=""
             width={640}
             height={464}
             unoptimized
           />
-          <div className="absolute inset-0" aria-hidden="true">
-            {marketMarkers.map((marker) => (
-              <span
-                className={`markets-map-marker markets-map-marker--${marker.role} ${
-                  isMarkerVisible(marker.role) ? "is-visible" : ""
-                } ${isMarkerPulsing(marker.role) ? "is-pulsing" : ""} ${
-                  marker.role === "dual" && activeLayer >= 3 ? "is-destination-complete" : ""
-                }`}
-                key={marker.name}
-                style={{ left: `${marker.x}%`, top: `${marker.y}%` }}
-              />
+          <div className="markets-map__pins">
+            {marketPins.map((pin) => (
+              <button
+                aria-label={pin.name}
+                className={`markets-map-pin ${pin.isHub ? "is-hub" : ""} ${pin.labelAlign ? `label-${pin.labelAlign}` : ""}`}
+                key={pin.name}
+                style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                type="button"
+              >
+                <span className="markets-map-pin__dot" />
+                <span className="markets-map-pin__label">{pin.name}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -570,21 +459,13 @@ function MarketsPreview() {
 }
 
 function HowA3Works() {
-  const [activeStep, setActiveStep] = useState<string>(homeLanding.process.steps[0].number);
+  const [activeStep, setActiveStep] = useState<string | null>(homeLanding.process.steps[0].number);
 
   return (
-    <section className="bg-paper py-16 lg:py-24">
+    <section className="py-16 lg:py-24">
       <HomeShell className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="process-content">
           <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
-          <div className="process-cta-group reveal reveal--up reveal-delay-1" aria-label="How A3 works actions">
-            <LinkButton href={homeLanding.process.cta.href} variant="primary">
-              {homeLanding.process.cta.label}
-            </LinkButton>
-            <LinkButton href="/en/contact" variant="text">
-              Get in Touch
-            </LinkButton>
-          </div>
           <div className="process-accordion reveal reveal--up reveal-delay-2">
             {homeLanding.process.steps.map((step) => {
               const isActive = activeStep === step.number;
@@ -596,7 +477,7 @@ function HowA3Works() {
                     aria-controls={panelId}
                     aria-expanded={isActive}
                     className="process-accordion-trigger"
-                    onClick={() => setActiveStep(step.number)}
+                    onClick={() => setActiveStep((currentStep) => (currentStep === step.number ? null : step.number))}
                     type="button"
                   >
                     <span className="process-accordion-index">{step.number}</span>
@@ -626,34 +507,20 @@ function HowA3Works() {
 }
 
 function BuyerPaths() {
-  const [activeBuyerId, setActiveBuyerId] = useState<string | null>(null);
-
   return (
-    <section className="bg-paper py-16 lg:py-20">
+    <section className="py-16 lg:py-20">
       <HomeShell>
         <SectionIntro
           title="Who A3 works with"
-          text="A3 works with buyers who need clear product options, supplier communication and practical trade follow-up across different channels."
+          text="A3 works with commercial buyers, manufacturers, distributors, retailers, foodservice teams and producers that need reliable product options, supplier coordination and workable trade conditions."
           className="mb-8"
         />
-        <div
-          className={`buyer-segment-panel ${activeBuyerId ? "has-active-card" : ""}`}
-          onMouseLeave={() => setActiveBuyerId(null)}
-          onBlurCapture={(event) => {
-            const nextFocus = event.relatedTarget instanceof Node ? event.relatedTarget : null;
-            if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
-              setActiveBuyerId(null);
-            }
-          }}
-        >
+        <div className="buyer-segment-panel">
           {homeLanding.buyerPaths.map((path) => (
-            <article
-              className={`buyer-segment-card ${activeBuyerId === path.id ? "is-active" : ""}`}
+            <Link
+              className="buyer-segment-card premium-focus"
+              href={path.href}
               key={path.id}
-              onMouseEnter={() => setActiveBuyerId(path.id)}
-              onFocus={() => setActiveBuyerId(path.id)}
-              onClick={() => setActiveBuyerId(path.id)}
-              tabIndex={0}
             >
               <Image
                 className="buyer-segment-card__media"
@@ -665,18 +532,14 @@ function BuyerPaths() {
               <div className="buyer-segment-card__overlay" aria-hidden="true" />
               <div className="buyer-segment-card__content">
                 <div>
-                  <h3 className="buyer-segment-card__title">{path.title}</h3>
-                  <p className="buyer-segment-card__hint">{path.shortHint}</p>
-                </div>
-                <div className="buyer-segment-card__details">
-                  <div className="buyer-segment-card__cta">
-                    <LinkButton href={path.href} variant="primary">
-                      Start a Request
-                    </LinkButton>
+                  <div className="buyer-segment-card__title-row">
+                    <h3 className="buyer-segment-card__title">{path.title}</h3>
+                    <span className="image-card-cta" aria-hidden="true">→</span>
                   </div>
+                  <p className="buyer-segment-card__hint">{cardCopy(path)}</p>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </HomeShell>
@@ -686,14 +549,14 @@ function BuyerPaths() {
 
 function BeforeYouEnquire() {
   return (
-    <section className="before-enquire-band bg-paper py-14 lg:py-16">
+    <section className="before-enquire-band py-14 lg:py-16">
       <HomeShell className="grid gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center lg:gap-14">
         <div className="reveal reveal--up max-w-[520px]">
           <h2 className="type-section text-ink">
-            Before you enquire
+            Product catalogues
           </h2>
           <p className="type-section-lead mt-4 text-ink/76">
-            Review the available product catalogues before starting a trade discussion with A3.
+            Explore available coffee and sugar catalogues before starting a product or sourcing discussion with A3.
           </p>
         </div>
         <div className="before-enquire-grid">
@@ -712,6 +575,7 @@ function BeforeYouEnquire() {
               </span>
               <span className="before-enquire-card__action" aria-hidden="true">
                 <span className="before-enquire-card__file">PDF</span>
+                <span>{resource.ctaLabel ?? "View PDF"}</span>
                 <span className="before-enquire-card__arrow">→</span>
               </span>
             </Link>

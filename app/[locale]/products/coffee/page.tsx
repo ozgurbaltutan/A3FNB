@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { ProductDetailLayout } from "@/components/product-detail-layout";
 import { JsonLd } from "@/components/seo/json-ld";
-import { CTASection, FeatureGrid, PageHero, ProductGrid, ResourceGrid, SplitSection } from "@/components/sections";
-import { pages, productFamilies, resources } from "@/content/site";
-import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
+import { pages } from "@/content/site";
+import { breadcrumbJsonLd, buildMetadata, productFamilyJsonLd } from "@/lib/seo";
 
 const breadcrumb = [
   { label: "Home", href: "/en" },
   { label: "Products", href: "/en/products" },
-  { label: "Coffee", href: "/en/products/coffee" },
+  { label: "Green Coffee Beans", href: "/en/products/green-coffee-beans" },
 ];
 
 export function generateMetadata(): Metadata {
@@ -15,45 +15,136 @@ export function generateMetadata(): Metadata {
 }
 
 export default function CoffeePage() {
-  const coffee = productFamilies.find((product) => product.id === "coffee");
-
-  if (!coffee) return null;
-
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(breadcrumb)} />
-      <PageHero title={pages.coffee.title} text={pages.coffee.description} breadcrumb={breadcrumb} />
-      <SplitSection
-        title="Coffee sourcing options"
-        text="Coffee sourcing is handled through commercial buyer requirements. A3 reviews origin, type, grade, process, bag size, certifications and current offer mode before moving toward availability or quote discussions."
-        points={["Green coffee", "Arabica", "Robusta / Conilon", "Commercial coffee", "Certified coffee where available", "Current offers / inquiry-led supply"]}
-        visualLabel={coffee.image.alt}
+      <JsonLd
+        data={productFamilyJsonLd({
+          title: "Green Coffee Beans",
+          summary: pages.coffee.description,
+          href: "/en/products/green-coffee-beans",
+          imageAlt: "Brazilian green coffee beans sourcing category for commercial buyers",
+        })}
       />
-      <FeatureGrid
-        title="Information buyers may need"
-        text="Future product entries are structured around the fields buyers naturally ask for before requesting quote, sample or specification."
-        muted
-        items={[
-          { title: "Origin and region", description: "Country, region or subregion where available, including Brazilian profiles by inquiry." },
-          { title: "Coffee type and grade", description: "Arabica, Robusta / Conilon, commercial grades and supplier-specific specifications." },
-          { title: "Process and bag size", description: "Process details, packing format and shipment model reviewed by supplier availability." },
-          { title: "Certification and traceability", description: "Supplier-held certifications and traceability level reviewed only where available." },
-          { title: "Cup profile", description: "Cup information can be shared when supplied with offer or lot documentation." },
-          { title: "Request route", description: "Buyers can request quote, availability, sample or specification depending on the opportunity." },
+      <ProductDetailLayout
+        breadcrumb={breadcrumb}
+        storySections={[
+          {
+            title: "Brazilian Coffee in Global Trade",
+            paragraphs: [
+              "Brazil has shaped the global coffee market for generations and remains the world's largest coffee producer. Its coffee sector covers a wide range of regions, profiles and commercial grades, from high-volume Arabica and Conilon programs to more defined lots selected by screen size, cup profile, process or certification.",
+              "For international buyers, Brazilian coffee should not be treated as a generic origin. The right option depends on grade, cup profile, volume, timing, documentation and commercial terms, while crop cycles, weather conditions and currency movements can affect availability and pricing from season to season. A3 works from the buyer's requirement backwards, reviewing the required coffee type, target market, volume and shipment window before presenting a workable supply option.",
+            ],
+            image: "/media/products/coffee/brazil-coffee-landscape.jpg",
+            imageAlt: "Brazilian coffee landscape at sunrise with planted hills and fields",
+          },
         ]}
-      />
-      <ProductGrid title="Coffee product cards" products={[coffee]} />
-      <ResourceGrid
-        title="Documentation and trade support"
-        text="A3 treats documentation as part of commercial credibility, not a decorative claim."
-        resources={resources.filter((resource) => resource.relatedProducts.includes("coffee") || resource.id === "documentation-support")}
-        muted
-      />
-      <CTASection
-        title="Request coffee availability."
-        text="Share origin preference, grade, volume, packing and destination market so A3 can review available sourcing support."
-        primary={{ label: "Request Coffee Availability", href: "/en/request-a-quote" }}
-        secondary={{ label: "Send Requirement", href: "/en/request-a-quote" }}
+        profiles={{
+          title: "Coffee profiles reviewed by requirement.",
+          text:
+            "A3 keeps the coffee conversation practical: profile, grade, origin, volume and documentation are reviewed before an option is treated as workable.",
+          items: [
+            {
+              title: "Selected specialty lots",
+              description:
+                "Distinctive Brazilian lots may be reviewed where available, with cup notes, process, lot information and supporting quality details.",
+              image: "/media/products/coffee/coffee-cherry-picking.jpg",
+              imageAlt: "Hand selecting ripe red coffee cherries on a coffee plant",
+            },
+            {
+              title: "Arabica Santos Fine Cup",
+              description:
+                "A cleaner Brazilian Arabica profile for buyers looking for balanced cup character and reliable commercial use.",
+              image: "/media/products/coffee/coffee-plant-green-cherries.jpg",
+              imageAlt: "Green coffee cherries growing among coffee leaves",
+            },
+            {
+              title: "Arabica Santos Good Cup",
+              description:
+                "A practical commercial Arabica route for consistent Brazilian coffee requirements and blend applications.",
+              image: "/media/products/coffee/green-beans-close.jpg",
+              imageAlt: "Close-up of green coffee beans",
+            },
+            {
+              title: "Arabica Rio Minas",
+              description:
+                "A traditional Brazilian profile with stronger cup character, reviewed where the buyer requirement fits the application.",
+              image: "/media/products/coffee/brazil-coffee-valley.jpg",
+              imageAlt: "Wide Brazilian coffee valley with mountains and planted fields",
+            },
+            {
+              title: "Robusta Conilon",
+              description:
+                "Brazilian Conilon Robusta options, including commercial grades, reviewed by origin, lot details, volume and availability.",
+              image: "/media/products/coffee/coffee-drying-beds.jpg",
+              imageAlt: "Coffee cherries drying on raised beds",
+            },
+          ],
+        }}
+        origin={{
+          title: "Brazilian origin context.",
+          text:
+            "Brazil has shaped global coffee trade for more than a century. Its scale, varied regions and established processing routes create a wide range of commercial Arabica, Conilon Robusta and selected specialty possibilities. A3 uses this context to help buyers frame the right inquiry, not to imply confirmed stock.",
+          image: "/media/products/coffee/brazil-coffee-valley.jpg",
+          imageAlt: "Brazilian coffee growing region with mountains, valleys and planted fields",
+          facts: [
+            {
+              title: "Regions",
+              description: "Minas Gerais, Sao Paulo, Bahia, Espirito Santo and Parana can each point to different profiles and supply routes.",
+            },
+            {
+              title: "Processing",
+              description: "Natural and pulped natural coffees are common reference points, with lot details checked by inquiry.",
+            },
+            {
+              title: "Movement",
+              description: "Commercial review may include origin handling, packing, documentation and port movement through established export routes.",
+            },
+          ],
+        }}
+        support={{
+          title: "What makes a coffee option workable.",
+          text:
+            "A coffee option is not just a name on a list. A3 reviews the buyer requirement against product fit, lot information, origin availability, documents and export follow-up before moving toward quotation.",
+          image: "/media/products/coffee/coffee-drying-beds.jpg",
+          imageAlt: "Coffee cherries drying as part of origin processing",
+          steps: [
+            {
+              title: "Product fit",
+              description: "Coffee type, origin, grade, profile, lot size and buyer requirements are reviewed before shortlisting options.",
+            },
+            {
+              title: "Lot review",
+              description: "Available lot details are organized so buyers can compare coffee options with more clarity before commitment.",
+            },
+            {
+              title: "Origin availability",
+              description: "Supply availability is checked across selected Brazilian coffee regions according to the inquiry.",
+            },
+            {
+              title: "Documentation",
+              description: "Export paperwork, certificates and supporting documents are reviewed according to destination and shipment requirement.",
+            },
+            {
+              title: "Export follow-up",
+              description: "Origin handling, loading, port movement and shipment updates are coordinated through the export process.",
+            },
+          ],
+        }}
+        related={[
+          { label: "Sugar", href: "/en/products/sugar" },
+          { label: "Cocoa Products", href: "/en/products/cocoa-products" },
+          { label: "Grains & Seeds", href: "/en/products/grains-seeds" },
+        ]}
+        finalCta={{
+          title: "Request Brazilian coffee options.",
+          text:
+            "Tell us the coffee type, origin, grade, volume, packing format and destination market you need. A3 will review available options, lot information and workable trade conditions.",
+          primary: { label: "Request Coffee Options", href: "/en/request-a-quote" },
+          secondary: { label: "View All Products", href: "/en/products" },
+          image: "/media/products/coffee/green-beans-close.jpg",
+          imageAlt: "Green coffee beans prepared for review",
+        }}
       />
     </>
   );
