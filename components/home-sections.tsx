@@ -3,7 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { homeAssets, homeLanding } from "@/content/site";
+import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
+import { feature } from "topojson-client";
+import type { GeometryObject, Topology } from "topojson-specification";
+import landAtlas from "world-atlas/land-110m.json";
+import { homeAssets, homeLanding, marketLocations, productCategories, productCategoryHref, type MarketLocation } from "@/content/site";
 import { EditorialBridge, EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { LinkButton } from "@/components/ui";
 
@@ -19,16 +23,44 @@ type FeaturedProduct = {
   ctaLabel?: string;
 };
 
-type MarketPin = {
-  name: string;
-  x: number;
-  y: number;
-  isHub?: boolean;
-  labelAlign?: "left" | "center" | "right";
+type ProductRailItem = FeaturedProduct & {
+  href: string;
 };
+
+const MARKET_MAP_WIDTH = 1484.26;
+const MARKET_MAP_HEIGHT = 692.68;
+const LAND_TOPOLOGY = landAtlas as unknown as Topology;
+const LAND_FEATURE = feature(LAND_TOPOLOGY, LAND_TOPOLOGY.objects.land as GeometryObject) as GeoPermissibleObjects;
+const MARKET_PROJECTION = geoNaturalEarth1().fitSize([MARKET_MAP_WIDTH, MARKET_MAP_HEIGHT], LAND_FEATURE);
+const MARKET_LAND_PATH = geoPath(MARKET_PROJECTION)(LAND_FEATURE) ?? "";
 
 function cardCopy(item: { cardSummary?: string; description: string }) {
   return item.cardSummary ?? item.description;
+}
+
+function projectMarketLocation(location: MarketLocation) {
+  const point = MARKET_PROJECTION([location.longitude, location.latitude]);
+
+  return point ? { x: point[0], y: point[1] } : null;
+}
+
+function productRailItem(category: (typeof productCategories)[number]): ProductRailItem {
+  const featuredProduct = homeLanding.featuredProducts.find((product) => product.id === category.slug);
+  const imageKey = category.imageKey as keyof typeof homeAssets.media | undefined;
+  const image = featuredProduct?.image ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial);
+  const icon = featuredProduct?.icon ?? homeAssets.icons[category.iconKey as keyof typeof homeAssets.icons];
+
+  return {
+    id: category.slug,
+    title: category.title,
+    description: featuredProduct ? cardCopy(featuredProduct) : category.shortDescription,
+    cardSummary: featuredProduct?.cardSummary ?? category.shortDescription,
+    href: productCategoryHref(category),
+    icon,
+    image,
+    imageAlt: featuredProduct?.imageAlt ?? `${category.title} sourcing category for commercial buyers`,
+    ctaLabel: "View category",
+  };
 }
 
 function HomeShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -73,28 +105,6 @@ function useHomepageReveal() {
 
     return () => observer.disconnect();
   }, []);
-}
-
-function IconImage({
-  src,
-  className,
-  size = 32,
-}: {
-  src: string;
-  className?: string;
-  size?: number;
-}) {
-  return (
-    <Image
-      aria-hidden="true"
-      className={className}
-      src={src}
-      alt=""
-      width={size}
-      height={size}
-      unoptimized
-    />
-  );
 }
 
 function CountUpMetric({ value }: { value: string }) {
@@ -198,7 +208,6 @@ export function HomeFigmaLanding() {
       <HomeHero />
       <WhatA3Does />
       <FeaturedSourcingCategories />
-      <ElleMinaOwnBrand />
       <MarketsPreview />
       <HowA3Works />
       <BuyerPaths />
@@ -285,52 +294,144 @@ function WhatA3Does() {
 }
 
 function FeaturedSourcingCategories() {
-  const featuredProducts: readonly FeaturedProduct[] = homeLanding.featuredProducts;
+  const products = productCategories.map(productRailItem);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const firstCardRef = useRef<HTMLAnchorElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [railMetrics, setRailMetrics] = useState({ step: 0, visibleCount: 1 });
+  const maxIndex = Math.max(0, products.length - 1);
+  const safeActiveIndex = Math.min(activeIndex, maxIndex);
+  const railOffset = safeActiveIndex * railMetrics.step;
+  const loopedProducts = [
+    ...products,
+    ...products.slice(0, Math.min(products.length, Math.max(1, railMetrics.visibleCount))),
+  ];
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    const firstCard = firstCardRef.current;
+
+    if (!viewport || !track || !firstCard) {
+      return undefined;
+    }
+
+    const viewportElement = viewport;
+    const trackElement = track;
+    const firstCardElement = firstCard;
+
+    function updateRailMetrics() {
+      const cardWidth = firstCardElement.getBoundingClientRect().width;
+      const trackStyle = window.getComputedStyle(trackElement);
+      const gap = Number.parseFloat(trackStyle.columnGap || trackStyle.gap || "0") || 0;
+      const step = cardWidth + gap;
+      const visibleCount = step > 0 ? Math.max(1, Math.floor((viewportElement.clientWidth + gap) / step)) : 1;
+
+      setRailMetrics((current) =>
+        Math.abs(current.step - step) < 0.5 && current.visibleCount === visibleCount
+          ? current
+          : { step, visibleCount },
+      );
+      setActiveIndex((current) => Math.min(current, Math.max(0, products.length - 1)));
+    }
+
+    updateRailMetrics();
+
+    const resizeObserver = new ResizeObserver(updateRailMetrics);
+    resizeObserver.observe(viewportElement);
+    resizeObserver.observe(firstCardElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [products.length]);
+
+  function handleProductClick(event: React.MouseEvent<HTMLButtonElement>, direction: "previous" | "next") {
+    event.preventDefault();
+
+    setActiveIndex((current) => {
+      const lastIndex = Math.max(0, products.length - 1);
+      const currentIndex = Math.min(current, lastIndex);
+
+      if (direction === "next") {
+        return currentIndex >= lastIndex ? 0 : currentIndex + 1;
+      }
+
+      return currentIndex <= 0 ? lastIndex : currentIndex - 1;
+    });
+  }
 
   return (
     <>
       <EditorialBridge tone="surface" className="featured-sourcing-bridge">
-        <SectionIntro
-          title="Priority food categories"
-          text="A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements."
-          className="featured-sourcing-intro"
-        />
+        <div className="product-rail__header reveal reveal--up">
+          <div className="product-rail__intro">
+            <h2 className="type-section text-ink">Products</h2>
+            <p className="type-section-lead text-ink/80">
+              A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
+            </p>
+          </div>
+          <div className="product-rail__controls" aria-label="Product carousel controls">
+            <button
+              aria-label="Previous products"
+              className="product-rail__control premium-focus"
+              onClick={(event) => handleProductClick(event, "previous")}
+              type="button"
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+            <button
+              aria-label="Next products"
+              className="product-rail__control premium-focus"
+              onClick={(event) => handleProductClick(event, "next")}
+              type="button"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </div>
+        </div>
       </EditorialBridge>
       <section className="featured-sourcing-section">
         <HomeShell>
-          <div className="commodity-bento reveal reveal--up">
-            <div className="commodity-bento__grid">
-              {featuredProducts.map((product, index) => (
-                <Link
-                  href={product.href}
-                  className="commodity-bento__card premium-focus group"
-                  key={product.id}
+          <div className="product-rail reveal reveal--up">
+            <div className="product-rail__stage">
+              <div className="product-rail__viewport" ref={viewportRef}>
+                <div
+                  className="product-rail__track"
+                  ref={trackRef}
+                  style={{ "--product-rail-offset": `${-railOffset}px` } as React.CSSProperties}
                 >
-                  <article className="commodity-bento__card-inner">
-                    {product.image ? (
-                      <Image
-                        className="commodity-bento__media"
-                        src={product.image}
-                        alt={product.imageAlt ?? ""}
-                        fill
-                        sizes="(min-width: 1024px) 560px, (min-width: 640px) 50vw, 100vw"
-                        priority={index < 2}
-                      />
-                    ) : null}
-                    <div className="commodity-bento__overlay" aria-hidden="true" />
-                    <div className="commodity-bento__content">
-                      <div className="commodity-bento__heading">
-                        <span className="commodity-bento__icon-frame" aria-hidden="true">
-                          <IconImage className="commodity-bento__icon" src={product.icon} />
-                        </span>
-                        <h3 className="commodity-bento__title">{product.title}</h3>
-                        <span className="image-card-cta" aria-hidden="true">→</span>
+                {loopedProducts.map((product, index) => (
+                  <Link
+                    href={product.href}
+                    className="commodity-bento__card product-rail__card premium-focus group"
+                    key={`${product.id}-${index}`}
+                    ref={index === 0 ? firstCardRef : undefined}
+                  >
+                    <article className="commodity-bento__card-inner">
+                      {product.image ? (
+                        <Image
+                          className="commodity-bento__media"
+                          src={product.image}
+                          alt={product.imageAlt ?? ""}
+                          fill
+                          sizes="(min-width: 1280px) 34vw, (min-width: 768px) 48vw, 86vw"
+                          priority={index < 2}
+                        />
+                      ) : null}
+                      <div className="commodity-bento__overlay" aria-hidden="true" />
+                      <div className="commodity-bento__content">
+                        <div className="commodity-bento__heading">
+                          <h3 className="commodity-bento__title">{product.title}</h3>
+                        </div>
+                        <p className="commodity-bento__description">{cardCopy(product)}</p>
                       </div>
-                      <p className="commodity-bento__description">{cardCopy(product)}</p>
-                    </div>
-                  </article>
-                </Link>
-              ))}
+                    </article>
+                  </Link>
+                ))}
+                </div>
+              </div>
             </div>
           </div>
         </HomeShell>
@@ -339,70 +440,10 @@ function FeaturedSourcingCategories() {
   );
 }
 
-function ElleMinaOwnBrand() {
-  const { ownBrand } = homeLanding;
-
-  return (
-    <section className="elle-mina-home-section pb-16 pt-10 lg:pb-20 lg:pt-12">
-      <HomeShell>
-        <div className="reveal reveal--up mb-8 max-w-[760px]">
-          <h2 className="type-section text-ink">{ownBrand.title}</h2>
-          <p className="type-section-lead mt-5 text-ink/76">{ownBrand.text}</p>
-        </div>
-        <div className="elle-mina-segment-panel">
-          {ownBrand.products.map((product) => (
-            <Link
-              className="elle-mina-segment-card premium-focus"
-              href={ownBrand.href}
-              key={product.id}
-            >
-              <Image
-                className="elle-mina-segment-card__media"
-                src={product.image}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 48vw, (min-width: 768px) 33vw, 100vw"
-                aria-hidden="true"
-              />
-              <span className="elle-mina-segment-card__overlay" aria-hidden="true" />
-              <span className="elle-mina-segment-card__content">
-                <span className="elle-mina-segment-card__title-row">
-                  <span className="elle-mina-segment-card__title">{product.title}</span>
-                  <span className="image-card-cta" aria-hidden="true">→</span>
-                </span>
-                <span className="elle-mina-segment-card__hint">{cardCopy(product)}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </HomeShell>
-    </section>
-  );
-}
-
 function MarketsPreview() {
-  const marketPins: readonly MarketPin[] = [
-    { name: "United Kingdom / London", x: 45.2, y: 20.2, isHub: true, labelAlign: "center" },
-    { name: "Turkiye / Istanbul", x: 56.4, y: 27.4, labelAlign: "left" },
-    { name: "Poland", x: 53.2, y: 22.0, labelAlign: "left" },
-    { name: "Argentina", x: 31.9, y: 77.0, labelAlign: "right" },
-    { name: "China", x: 76.6, y: 35.4, labelAlign: "right" },
-    { name: "Brazil", x: 31.6, y: 63.0, labelAlign: "right" },
-    { name: "Ukraine", x: 56.8, y: 24.2, labelAlign: "left" },
-    { name: "USA", x: 26.0, y: 31.0, labelAlign: "left" },
-    { name: "Canada", x: 23.0, y: 19.0, labelAlign: "left" },
-    { name: "Germany", x: 50.8, y: 22.8, labelAlign: "left" },
-    { name: "France", x: 48.0, y: 25.6, labelAlign: "right" },
-    { name: "Mauritania", x: 45.2, y: 39.0, labelAlign: "right" },
-    { name: "Senegal", x: 43.6, y: 44.0, labelAlign: "right" },
-    { name: "Ghana", x: 47.6, y: 48.2, labelAlign: "right" },
-    { name: "Niger", x: 50.2, y: 41.6, labelAlign: "left" },
-    { name: "Cameroon", x: 51.0, y: 49.2, labelAlign: "left" },
-    { name: "Madagascar", x: 62.8, y: 67.0, labelAlign: "right" },
-    { name: "Mozambique", x: 57.8, y: 63.6, labelAlign: "left" },
-    { name: "Taiwan", x: 83.1, y: 39.8, labelAlign: "right" },
-    { name: "Australia / Sydney", x: 89.2, y: 78.2, labelAlign: "right" },
-  ];
+  const projectedMarkets = marketLocations
+    .map((market) => ({ market, point: projectMarketLocation(market) }))
+    .filter((item): item is { market: MarketLocation; point: { x: number; y: number } } => Boolean(item.point));
 
   return (
     <section className="markets-layer-section bg-deep-dark text-surface">
@@ -428,30 +469,48 @@ function MarketsPreview() {
             ))}
           </div>
         </div>
-        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-w-0" role="img" aria-label="World map showing London and selected connected markets">
-          <Image
-            aria-hidden="true"
-            className="markets-map__image h-full w-full object-contain"
-            src={homeLanding.markets.map}
-            alt=""
-            width={640}
-            height={464}
-            unoptimized
-          />
-          <div className="markets-map__pins">
-            {marketPins.map((pin) => (
-              <button
-                aria-label={pin.name}
-                className={`markets-map-pin ${pin.isHub ? "is-hub" : ""} ${pin.labelAlign ? `label-${pin.labelAlign}` : ""}`}
-                key={pin.name}
-                style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-                type="button"
-              >
-                <span className="markets-map-pin__dot" />
-                <span className="markets-map-pin__label">{pin.name}</span>
-              </button>
-            ))}
-          </div>
+        <div className="markets-map reveal reveal--fade reveal-delay-2 relative min-w-0">
+          <svg
+            aria-label="World map showing London and selected connected markets"
+            className="markets-map__svg"
+            role="img"
+            viewBox={`0 0 ${MARKET_MAP_WIDTH} ${MARKET_MAP_HEIGHT}`}
+          >
+            <title>World map showing London and selected connected markets</title>
+            <defs>
+              <clipPath id="markets-map-land-clip">
+                <rect x="0" y="0" width={MARKET_MAP_WIDTH} height="540" />
+              </clipPath>
+            </defs>
+            <path className="markets-map__land" clipPath="url(#markets-map-land-clip)" d={MARKET_LAND_PATH} />
+            <g className="markets-map__pins" role="list">
+              {projectedMarkets.map(({ market, point }) => {
+                const labelX = market.labelAlign === "left" ? 16 : market.labelAlign === "right" ? -16 : 0;
+                const labelAnchor: "start" | "middle" | "end" =
+                  market.labelAlign === "left" ? "start" : market.labelAlign === "right" ? "end" : "middle";
+
+                return (
+                  <g
+                    aria-label={market.name}
+                    className={`markets-map-pin ${market.isHub ? "is-hub" : ""}`}
+                    focusable="true"
+                    key={market.name}
+                    role="listitem"
+                    tabIndex={0}
+                    transform={`translate(${point.x} ${point.y})`}
+                  >
+                    <title>{market.name}</title>
+                    <line className="markets-map-pin__leader" x1="0" x2={labelX} y1="-12" y2="-29" />
+                    <circle className="markets-map-pin__halo" r="14" />
+                    <circle className="markets-map-pin__dot" r={market.isHub ? 8.5 : 7.4} />
+                    <text className="markets-map-pin__label" textAnchor={labelAnchor} x={labelX} y="-34">
+                      {market.name}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
         </div>
       </HomeShell>
     </section>
@@ -512,7 +571,7 @@ function BuyerPaths() {
       <HomeShell>
         <SectionIntro
           title="Who A3 works with"
-          text="A3 works with commercial buyers, manufacturers, distributors, retailers, foodservice teams and producers that need reliable product options, supplier coordination and workable trade conditions."
+          text="A3 works with farmers, commercial buyers, distributors, retailers, foodservice teams and manufacturers that need reliable product options, supplier coordination and workable trade conditions."
           className="mb-8"
         />
         <div className="buyer-segment-panel">

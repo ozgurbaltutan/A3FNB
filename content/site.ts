@@ -126,6 +126,45 @@ export const homeAssets = {
   },
 } as const;
 
+export type MarketLocation = {
+  name: string;
+  longitude: number;
+  latitude: number;
+  isHub?: boolean;
+  labelAlign?: "left" | "center" | "right";
+};
+
+export const marketLocations: MarketLocation[] = [
+  { name: "United Kingdom / London", longitude: -0.1276, latitude: 51.5072, isHub: true, labelAlign: "center" },
+  { name: "Turkey / Istanbul", longitude: 28.9784, latitude: 41.0082, labelAlign: "left" },
+  { name: "Poland", longitude: 19.1451, latitude: 51.9194, labelAlign: "left" },
+  { name: "Belgium", longitude: 4.4699, latitude: 50.5039, labelAlign: "right" },
+  { name: "Netherlands", longitude: 5.2913, latitude: 52.1326, labelAlign: "left" },
+  { name: "Morocco", longitude: -7.0926, latitude: 31.7917, labelAlign: "right" },
+  { name: "Argentina", longitude: -63.6167, latitude: -38.4161, labelAlign: "right" },
+  { name: "China", longitude: 104.1954, latitude: 35.8617, labelAlign: "right" },
+  { name: "Brazil", longitude: -51.9253, latitude: -14.235, labelAlign: "right" },
+  { name: "Guyana", longitude: -58.9302, latitude: 4.8604, labelAlign: "left" },
+  { name: "Suriname", longitude: -56.0278, latitude: 3.9193, labelAlign: "right" },
+  { name: "Ukraine", longitude: 31.1656, latitude: 48.3794, labelAlign: "left" },
+  { name: "USA", longitude: -95.7129, latitude: 37.0902, labelAlign: "left" },
+  { name: "Canada", longitude: -106.3468, latitude: 56.1304, labelAlign: "left" },
+  { name: "Germany", longitude: 10.4515, latitude: 51.1657, labelAlign: "left" },
+  { name: "France", longitude: 2.2137, latitude: 46.2276, labelAlign: "right" },
+  { name: "Mauritania", longitude: -10.9408, latitude: 21.0079, labelAlign: "right" },
+  { name: "Senegal", longitude: -14.4524, latitude: 14.4974, labelAlign: "right" },
+  { name: "Togo", longitude: 0.8248, latitude: 8.6195, labelAlign: "left" },
+  { name: "Ghana", longitude: -1.0232, latitude: 7.9465, labelAlign: "right" },
+  { name: "Niger", longitude: 8.0817, latitude: 17.6078, labelAlign: "left" },
+  { name: "Cameroon", longitude: 12.3547, latitude: 7.3697, labelAlign: "left" },
+  { name: "Angola", longitude: 17.8739, latitude: -11.2027, labelAlign: "left" },
+  { name: "Madagascar", longitude: 46.8691, latitude: -18.7669, labelAlign: "right" },
+  { name: "Mauritius", longitude: 57.5522, latitude: -20.3484, labelAlign: "left" },
+  { name: "Mozambique", longitude: 35.5296, latitude: -18.6657, labelAlign: "left" },
+  { name: "Taiwan", longitude: 120.9605, latitude: 23.6978, labelAlign: "right" },
+  { name: "Australia / Sydney", longitude: 151.2093, latitude: -33.8688, labelAlign: "right" },
+];
+
 export const productCategories: ProductCategory[] = [
   {
     title: "Sugar",
@@ -289,9 +328,9 @@ export const elleMinaProducts = [
 
 export const homeLanding = {
   hero: {
-    title: "Right product. Right producer.\nRight commercial terms.",
+    title: "Orchestrating Global Supply,\nDelivering Local Value.",
     text:
-      "A3 helps commercial buyers secure food and beverage products from suitable producers, supported by market knowledge, flexible payment structures and coordinated delivery.",
+      "A3 delivers integrated supply chain solutions, connecting commercial buyers to a vetted global network of farmers and producers with technical precision, logistical reliability, and adaptable financing and flexible payment structures.",
     primary: { label: "Request a Quote", href: "/en/request-a-quote" },
     secondary: { label: "Explore Products", href: "/en/products" },
   },
@@ -399,14 +438,14 @@ export const homeLanding = {
     map: homeAssets.icons.marketsMap,
     metrics: [
       { value: "50+", label: "Product lines" },
-      { value: "20", label: "Connected source and buyer markets" },
+      { value: String(marketLocations.length), label: "Connected source and buyer markets" },
       { value: "29+", label: "Years of trade experience" },
     ],
   },
   process: {
     title: "What makes a trade workable.",
     text:
-      "Availability is only the first question. A3 reviews product fit, producer capability, market access, documentation, payment terms and shipping window before presenting a workable supply option.",
+      "Availability is only the first question. A3 assesses product alignment, producer capacity, market regulations, financial structures, and logistical timing to engineer a secure and steady supply flow.",
     image: "/media/home/trade-workable-london.webp",
     imageAlt: "London riverside commercial district with modern office buildings near the Thames",
     cta: { label: "Request a Quote", href: "/en/request-a-quote" },
@@ -415,109 +454,109 @@ export const homeLanding = {
         number: "01",
         title: "Product fit",
         description:
-          "We check product type, grade, specification, packing format, volume and buyer requirements.",
+          "We verify technical specifications, grades, and packing formats to ensure every product aligns perfectly with your specific industrial or retail requirements.",
         icon: homeAssets.icons.processSource,
       },
       {
         number: "02",
         title: "Producer capability",
         description:
-          "We review whether the producer or supplier can meet the required volume, consistency and commercial conditions.",
+          "We evaluate the capacity and consistency of our global network of farmers and producers to guarantee reliable, long-term supply volume and stable commercial conditions.",
         icon: homeAssets.icons.processVerify,
       },
       {
         number: "03",
         title: "Market access",
         description:
-          "Origin, destination market, documentation, certification and import requirements are reviewed before moving forward.",
+          "We navigate complex global regulations by reviewing origin-specific documentation, international certifications, and destination market import rules to ensure a seamless flow of goods.",
         icon: homeAssets.icons.processMatch,
       },
       {
         number: "04",
         title: "Commercial terms",
         description:
-          "Price, payment structure, bank guarantee, Incoterms and delivery conditions are aligned around a workable setup.",
+          "We structure the trade through optimized pricing and Incoterms, while integrating flexible financing and payment solutions to support your cash flow and reduce transaction risk.",
         icon: homeAssets.icons.processCoordinate,
       },
       {
         number: "05",
         title: "Shipment readiness",
         description:
-          "Packing, timing, logistics coordination and follow-up are checked so the supply option can actually move.",
+          "We orchestrate the final movement of goods by coordinating packing timelines, global logistics, and shipment follow-up to ensure your cargo arrives with technical precision and reliability.",
         icon: homeAssets.icons.processFollowThrough,
       },
     ],
   },
   buyerPaths: [
     {
-      id: "wholesalers-distributors",
-      title: "Wholesalers & Distributors",
+      id: "farmers",
+      title: "Farmers",
       description:
-        "Product options for resale, regional distribution and wholesale channels, shaped around volume, packing format and destination market.",
+        "A3 works with farmers and producer networks that need reliable buyer access, supplier coordination and workable trade conditions.",
       cardSummary:
-        "Product options for resale, regional distribution and wholesale channels, shaped around volume and packing.",
-      shortHint: "Product options for resale, regional distribution and wholesale channels.",
-      ctaLabel: "Request product options",
-      needs: "Origin · Grade · Packing · Volume",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-wholesale-market-warehouse.webp",
-      imageAlt: "Wholesale warehouse with stacked food products, carts and distribution aisles",
-    },
-    {
-      id: "food-manufacturers",
-      title: "Food & Ingredient Manufacturers",
-      description:
-        "Ingredients, commodities and recurring supply options for manufacturers working with specific production requirements and specifications.",
-      cardSummary:
-        "Ingredients and commodities for production needs, matched to specification, consistency and recurring supply.",
-      shortHint: "Ingredients, commodities and recurring supply options for manufacturers.",
-      ctaLabel: "Discuss ingredient supply",
-      needs: "Specification · Application · Repeat supply",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-food-manufacturing-processing.webp",
-      imageAlt: "Aerial view of food crop processing and industrial production flow",
-    },
-    {
-      id: "retailers-supermarkets",
-      title: "Retailers & Supermarkets",
-      description:
-        "Consumer-ready and packaged food options for retail shelves, supermarket supply, private label discussions and distribution needs.",
-      cardSummary:
-        "Consumer-ready packaged foods for retail shelves, supermarket supply, private label and distribution.",
-      shortHint: "Consumer-ready and packaged food options for retail shelves.",
-      ctaLabel: "Discuss retail supply",
-      needs: "Format · Market fit · Channel · Private label",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-retail-market-hall.webp",
-      imageAlt: "Retail market hall with food shops, customers and fresh product displays",
-    },
-    {
-      id: "foodservice-commercial-buyers",
-      title: "Foodservice & Commercial Buyers",
-      description:
-        "Food, beverage and ingredient options for hotels, restaurants, catering groups, bakeries and commercial kitchens.",
-      cardSummary:
-        "Food, beverage and ingredient options for hotels, restaurants, caterers, bakeries and commercial kitchens.",
-      shortHint: "Food, beverage and ingredient options for commercial kitchens.",
-      ctaLabel: "Request foodservice options",
-      needs: "Foodservice / Catering / Bakery",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-foodservice-kitchen.webp",
-      imageAlt: "Professional commercial kitchen with chefs working behind stainless steel counters",
-    },
-    {
-      id: "producers-suppliers",
-      title: "Producers & Suppliers",
-      description:
-        "A3 also works with producers and suppliers looking to reach suitable commercial buyers across selected food and beverage markets.",
-      cardSummary:
-        "Support for producers and suppliers looking to reach suitable commercial buyers in selected markets.",
-      shortHint: "Producer and supplier introductions to suitable commercial buyers.",
+        "Producer-side routes shaped around capacity, export readiness and suitable buyer demand.",
+      shortHint: "Producer-side routes shaped around capacity and buyer demand.",
       ctaLabel: "Introduce your products",
       needs: "Products / Capacity / Export markets",
       href: "/en/contact",
       image: "/media/home/buyer-producer-coffee-harvest.webp",
       imageAlt: "Coffee producer inspecting cherries during harvest at origin",
+    },
+    {
+      id: "commercial-buyers",
+      title: "Commercial Buyers",
+      description:
+        "Commercial buyers use A3 to compare reliable product options, supplier capability, documentation and workable trade structures.",
+      cardSummary:
+        "Reliable product options, supplier capability and workable trade structures for commercial buying teams.",
+      shortHint: "Reliable product options for commercial buying teams.",
+      ctaLabel: "Request product options",
+      needs: "Product / Origin / Volume / Destination",
+      href: "/en/request-a-quote",
+      image: "/media/home/buyer-wholesale-market-warehouse.webp",
+      imageAlt: "Wholesale warehouse with stacked food products, carts and distribution aisles",
+    },
+    {
+      id: "distributors-wholesalers",
+      title: "Distributors & Wholesalers",
+      description:
+        "A3 supports distributors and wholesalers with product options for resale, regional distribution and repeat supply planning.",
+      cardSummary:
+        "Product options for resale, regional distribution and wholesale channels.",
+      shortHint: "Product options for resale and regional distribution.",
+      ctaLabel: "Request product options",
+      needs: "Origin / Grade / Packing / Volume",
+      href: "/en/request-a-quote",
+      image: "/media/home/buyer-wholesale-market-warehouse.webp",
+      imageAlt: "Wholesale warehouse with stacked food products, carts and distribution aisles",
+    },
+    {
+      id: "retailers",
+      title: "Retailers",
+      description:
+        "Retailers work with A3 on consumer-ready packaged foods, private label discussions, market fit and supplier coordination.",
+      cardSummary:
+        "Consumer-ready packaged foods, private label discussions and supplier coordination.",
+      shortHint: "Consumer-ready packaged foods and private label discussions.",
+      ctaLabel: "Discuss retail supply",
+      needs: "Format / Market fit / Channel / Private label",
+      href: "/en/request-a-quote",
+      image: "/media/home/buyer-retail-market-hall.webp",
+      imageAlt: "Retail market hall with food shops, customers and fresh product displays",
+    },
+    {
+      id: "manufacturers",
+      title: "Manufacturers",
+      description:
+        "Manufacturers use A3 to source ingredients, commodities and recurring supply options around specification and production needs.",
+      cardSummary:
+        "Ingredients, commodities and recurring supply options matched to production requirements.",
+      shortHint: "Ingredients and recurring supply options for production needs.",
+      ctaLabel: "Discuss ingredient supply",
+      needs: "Specification / Application / Repeat supply",
+      href: "/en/request-a-quote",
+      image: "/media/home/buyer-food-manufacturing-processing.webp",
+      imageAlt: "Aerial view of food crop processing and industrial production flow",
     },
   ],
   resources: [
@@ -555,7 +594,7 @@ export const pages: Record<string, PageContent> = {
     title: "Trusted food sourcing and trade for commercial buyers.",
     description:
       "A3 connects selected producers with wholesalers, distributors, foodservice, retail and industrial buyers across selected international markets.",
-    sections: ["proof", "what-a3-does", "featured-products", "own-brand", "process", "markets", "buyers", "documentation", "resources", "cta"],
+    sections: ["proof", "what-a3-does", "products", "process", "markets", "buyers", "documentation", "resources", "cta"],
     seo: {
       metaTitle: "A3 Food & Beverage | Food Sourcing & Trade Partner",
       metaDescription:
@@ -776,6 +815,75 @@ export const pages: Record<string, PageContent> = {
       structuredDataType: "ContactPage",
       targetKeyword: "A3 Food & Beverage contact",
       secondaryKeywords: ["food trade contact", "A3 company information", "A3 partnership inquiry"],
+    },
+  },
+  cookiePolicy: {
+    locale: "en",
+    slug: "/en/cookie-policy",
+    title: "Cookie Policy.",
+    description:
+      "How A3 Food & Beverage uses cookies and similar technologies on its website.",
+    sections: ["overview", "cookies-used", "control", "contact"],
+    seo: {
+      metaTitle: "Cookie Policy | A3 Food & Beverage",
+      metaDescription:
+        "Read the A3 Food & Beverage cookie policy, including how cookies may be used and how visitors can control browser settings.",
+      canonicalPath: "/en/cookie-policy",
+      ogTitle: "Cookie Policy",
+      ogDescription: "Cookie information for the A3 Food & Beverage website.",
+      robots,
+      locale: "en",
+      lastModified: "2026-07-08",
+      sitemapInclude: true,
+      structuredDataType: "WebPage",
+      targetKeyword: "A3 Food & Beverage cookie policy",
+      secondaryKeywords: ["website cookies", "cookie settings", "A3 cookies"],
+    },
+  },
+  privacyPolicy: {
+    locale: "en",
+    slug: "/en/privacy-policy",
+    title: "Privacy Policy.",
+    description:
+      "How A3 Food & Beverage collects, uses and protects personal information shared through its website and business inquiries.",
+    sections: ["overview", "data-collected", "use", "sharing", "rights", "contact"],
+    seo: {
+      metaTitle: "Privacy Policy | A3 Food & Beverage",
+      metaDescription:
+        "Read the A3 Food & Beverage privacy policy covering business inquiries, contact data, website usage and data protection rights.",
+      canonicalPath: "/en/privacy-policy",
+      ogTitle: "Privacy Policy",
+      ogDescription: "Privacy information for A3 Food & Beverage website visitors and business contacts.",
+      robots,
+      locale: "en",
+      lastModified: "2026-07-08",
+      sitemapInclude: true,
+      structuredDataType: "WebPage",
+      targetKeyword: "A3 Food & Beverage privacy policy",
+      secondaryKeywords: ["data protection", "business inquiry privacy", "personal information"],
+    },
+  },
+  modernSlaveryAct: {
+    locale: "en",
+    slug: "/en/modern-slavery-act",
+    title: "Modern Slavery Act Statement.",
+    description:
+      "A3 Food & Beverage's draft statement on modern slavery, human trafficking risk awareness and supplier expectations.",
+    sections: ["statement", "supply-chain", "expectations", "review", "contact"],
+    seo: {
+      metaTitle: "Modern Slavery Act Statement | A3 Food & Beverage",
+      metaDescription:
+        "Read A3 Food & Beverage's Modern Slavery Act statement covering supplier expectations, trade relationships and risk awareness.",
+      canonicalPath: "/en/modern-slavery-act",
+      ogTitle: "Modern Slavery Act Statement",
+      ogDescription: "Modern slavery and human trafficking statement for A3 Food & Beverage.",
+      robots,
+      locale: "en",
+      lastModified: "2026-07-08",
+      sitemapInclude: true,
+      structuredDataType: "WebPage",
+      targetKeyword: "A3 Food & Beverage modern slavery statement",
+      secondaryKeywords: ["Modern Slavery Act", "supplier expectations", "human trafficking statement"],
     },
   },
   requestQuote: {

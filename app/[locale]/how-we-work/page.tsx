@@ -33,34 +33,34 @@ export default function HowWeWorkPage() {
           {
             title: "What makes a trade workable",
             text:
-              "Every requirement is reviewed through the practical conditions that shape international food trade. A3 checks the product, the supplier, the market and the commercial structure before moving a conversation forward.",
+              "Availability is only the first question. A3 assesses product alignment, producer capacity, market regulations, financial structures, and logistical timing to engineer a secure and steady supply flow.",
             image: "/media/how-we-work/warehouse-trade-review.webp",
             imageAlt: "Large warehouse with packed goods prepared for commercial trade review",
             items: [
               {
                 title: "Product fit",
                 description:
-                  "Product type, grade, specification, origin, packaging and intended use are reviewed before a supplier route is considered.",
+                  "We verify technical specifications, grades, and packing formats to ensure every product aligns perfectly with your specific industrial or retail requirements.",
               },
               {
                 title: "Producer capability",
                 description:
-                  "A3 checks whether the supplier can meet the required quantity, consistency, documentation and timing.",
+                  "We evaluate the capacity and consistency of our global network of farmers and producers to guarantee reliable, long-term supply volume and stable commercial conditions.",
               },
               {
                 title: "Market access",
                 description:
-                  "The destination market, required documents, commercial expectations and product suitability are considered together.",
+                  "We navigate complex global regulations by reviewing origin-specific documentation, international certifications, and destination market import rules to ensure a seamless flow of goods.",
               },
               {
                 title: "Commercial terms",
                 description:
-                  "Price level, payment terms, delivery terms and buyer expectations are aligned before the trade progresses.",
+                  "We structure the trade through optimized pricing and Incoterms, while integrating flexible financing and payment solutions to support your cash flow and reduce transaction risk.",
               },
               {
                 title: "Shipment readiness",
                 description:
-                  "Product availability, realistic timing, documentation and shipment coordination are reviewed before moving forward.",
+                  "We orchestrate the final movement of goods by coordinating packing timelines, global logistics, and shipment follow-up to ensure your cargo arrives with technical precision and reliability.",
               },
             ],
           },

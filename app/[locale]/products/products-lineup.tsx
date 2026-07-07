@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Container, LinkButton } from "@/components/ui";
+import { homeLanding } from "@/content/site";
 
 type ProductLineupGroup = "commodities" | "ingredients" | "retail-foodservice";
 
@@ -211,6 +212,41 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
             ))}
           </div>
           <div className="products-lineup-reveal-sentinel" ref={revealSentinelRef} aria-hidden="true" />
+        </Container>
+      </section>
+
+      <section className="private-label-band">
+        <Container className="a3-container private-label-band__inner">
+          <div className="private-label-band__copy">
+            <p className="private-label-band__kicker">Private Label / Own Brand</p>
+            <h2 className="type-section">{homeLanding.ownBrand.title}</h2>
+            <p className="type-section-lead">{homeLanding.ownBrand.text}</p>
+            <div className="private-label-band__actions">
+              <LinkButton href={homeLanding.ownBrand.href} variant="primary">
+                {homeLanding.ownBrand.ctaLabel}
+              </LinkButton>
+              <LinkButton href="/en/request-a-quote?product=elle-mina" variant="outline">
+                Discuss Private Label
+              </LinkButton>
+            </div>
+          </div>
+          <Link className="private-label-card premium-focus" href={homeLanding.ownBrand.href}>
+            <Image
+              className="private-label-card__media"
+              src={homeLanding.ownBrand.image}
+              alt={homeLanding.ownBrand.imageAlt}
+              fill
+              sizes="(min-width: 1024px) 520px, 100vw"
+            />
+            <span className="private-label-card__overlay" aria-hidden="true" />
+            <span className="private-label-card__content">
+              <span className="private-label-card__title">Elle Mina margarine &amp; butter</span>
+              <span className="private-label-card__text">
+                Consumer, professional and butter formats reviewed by channel, packing, destination and timing.
+              </span>
+              <span className="private-label-card__link">View own brand range</span>
+            </span>
+          </Link>
         </Container>
       </section>
 

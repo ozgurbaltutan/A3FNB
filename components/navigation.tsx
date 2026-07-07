@@ -15,6 +15,12 @@ const menuProducts = productCategories.map((category) => ({
 
 const footerProducts = [{ label: "View All Products", href: "/en/products" }, ...menuProducts];
 
+const footerLegalLinks = [
+  { label: "Cookie Policy", href: "/en/cookie-policy" },
+  { label: "Privacy Policy", href: "/en/privacy-policy" },
+  { label: "Modern Slavery Act", href: "/en/modern-slavery-act" },
+];
+
 const footerSocialLinks = [
   { label: "LinkedIn", href: "#", icon: "linkedin" },
   { label: "X / Twitter", href: "#", icon: "twitter" },
@@ -69,7 +75,13 @@ export function Header() {
       }}
     >
       <Container className="a3-container flex min-h-[var(--header-height)] items-center justify-between gap-6">
-        <Link className="premium-focus inline-flex items-center" href="/en" aria-label="A3 Food & Beverage home">
+        <Link
+          className="site-header__logo-link premium-focus inline-flex items-center"
+          href="/en"
+          aria-label="A3 Food & Beverage home"
+          onFocus={() => setProductsOpen(false)}
+          onMouseEnter={() => setProductsOpen(false)}
+        >
           <Image
             src={isSolid ? "/brand/a3logo_full.svg" : "/brand/a3logo_full_light.svg"}
             alt="A3 Food & Beverage"
@@ -98,13 +110,15 @@ export function Header() {
                 key={item.href}
                 className={clsx("site-nav-link premium-focus type-nav", isSolid ? "site-nav-link--solid" : "site-nav-link--hero")}
                 href={item.href}
+                onFocus={() => setProductsOpen(false)}
+                onMouseEnter={() => setProductsOpen(false)}
               >
                 {item.label}
               </Link>
             ),
           )}
         </nav>
-        <div className="hidden lg:block">
+        <div className="hidden lg:block" onFocusCapture={() => setProductsOpen(false)} onMouseEnter={() => setProductsOpen(false)}>
           <LinkButton href="/en/request-a-quote" size="small" variant={isSolid ? "primary" : "mediaSecondary"}>
             Request a Quote
           </LinkButton>
@@ -149,7 +163,7 @@ function MegaMenu({ open, onNavigate }: { open: boolean; onNavigate: () => void 
               <span aria-hidden="true">→</span>
             </Link>
             <div className="mega-menu__exclusive">
-              <p className="mega-menu__exclusive-label">Exclusive brand</p>
+              <p className="mega-menu__exclusive-label">Own brand</p>
               <Link className="mega-menu__all-link premium-focus" href="/en/products/elle-mina" onClick={onNavigate}>
                 <span>Elle Mina margarine &amp; butter</span>
                 <span aria-hidden="true">→</span>
@@ -230,6 +244,7 @@ export function Footer() {
               links={navigation.map((item) => ({ label: item.label, href: item.href }))}
             />
             <FooterColumn title="Products" links={footerProducts} />
+            <FooterColumn title="Legal" links={footerLegalLinks} />
             <div>
               <p className="footer-heading">Contact</p>
               <div className="type-p3 grid gap-3">

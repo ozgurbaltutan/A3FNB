@@ -116,29 +116,34 @@ export default function AboutPage() {
           {
             title: "Who we work with",
             text:
-              "A3 works with commercial buyers and suppliers who need a practical route into food trade, whether they have a clear specification or need help shaping the right source, grade, packaging or commercial structure.",
+              "A3 works with farmers, commercial buyers, distributors, retailers, foodservice teams and manufacturers that need reliable product options, supplier coordination and workable trade conditions.",
             image: "/media/about/about-london-building.webp",
             imageAlt: "London commercial building facade representing A3's UK business base",
             items: [
               {
-                title: "Wholesalers and distributors",
+                title: "Farmers",
+                description:
+                  "Producer-side conversations shaped around available products, capacity, export markets and suitable buyer demand.",
+              },
+              {
+                title: "Commercial buyers",
+                description:
+                  "Reliable product options, supplier capability, documentation and workable trade structures for buying teams.",
+              },
+              {
+                title: "Distributors and wholesalers",
                 description:
                   "Product availability, origin, packing, documentation and repeat-supply potential for resale and distribution channels.",
               },
               {
-                title: "Food and ingredient manufacturers",
+                title: "Retailers",
                 description:
-                  "Supply options shaped around specification, grade, application, consistency and recurring commercial needs.",
+                  "Consumer-ready packaged products, market fit, channel requirements and private label discussions where relevant.",
               },
               {
-                title: "Retailers, supermarkets and foodservice buyers",
+                title: "Manufacturers",
                 description:
-                  "Consumer-ready, packaged and foodservice product routes reviewed by format, market fit and supplier capability.",
-              },
-              {
-                title: "Procurement teams, producers and suppliers",
-                description:
-                  "Clearer trade conversations around available products, export markets, capacity, certifications and target buyers.",
+                  "Ingredient, commodity and recurring supply options shaped around specification, application and production requirements.",
               },
             ],
           },
