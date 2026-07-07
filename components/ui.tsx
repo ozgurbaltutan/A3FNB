@@ -182,6 +182,9 @@ export function TextInput({
   placeholder,
   helperText,
   autoComplete,
+  defaultValue,
+  value,
+  onChange,
 }: {
   label: string;
   name: string;
@@ -190,6 +193,9 @@ export function TextInput({
   placeholder?: string;
   helperText?: string;
   autoComplete?: string;
+  defaultValue?: string;
+  value?: string;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 }) {
   return (
     <label className="grid min-w-0 gap-2">
@@ -204,6 +210,9 @@ export function TextInput({
         required={required}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        value={value}
+        onChange={onChange}
       />
       {helperText ? <span className="type-micro text-ink/65">{helperText}</span> : null}
     </label>

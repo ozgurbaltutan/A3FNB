@@ -1,11 +1,26 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { company, contactIntents, productCategories } from "@/content/site";
 import { Button, TextArea, TextInput } from "@/components/ui";
 
 const buyerIntents = contactIntents.filter((intent) => intent !== "I want to contact A3 directly");
 const supplierIntent = "I am a producer / supplier";
+const productLabels: Record<string, string> = {
+  "icumsa-45": "ICUMSA 45 / White Refined Sugar",
+  "icumsa-150": "ICUMSA 150 / Crystal Sugar",
+  "icumsa-600-1200": "ICUMSA 600-1200 / Brown Raw Sugar",
+  "icumsa-60-100": "ICUMSA 60-100 / White Beet Sugar",
+  "selected-specialty-lots": "Selected Specialty Lots",
+  "arabica-santos-fine-cup": "Arabica Santos Fine Cup",
+  "arabica-santos-good-cup": "Arabica Santos Good Cup",
+  "arabica-rio-minas": "Arabica Rio Minas",
+  "robusta-conilon": "Robusta Conilon",
+  "elle-mina": "Elle Mina",
+  "consumer-margarine": "Elle Mina Consumer Margarine",
+  "professional-margarine": "Elle Mina Professional Margarine",
+  butter: "Elle Mina Butter",
+};
 
 function valueFrom(formData: FormData, name: string) {
   return String(formData.get(name) || "").trim();
@@ -18,6 +33,25 @@ function buildMailto(subject: string, lines: string[]) {
 
 function openMailDraft(href: string) {
   window.location.href = href;
+}
+
+function titleFromSlug(value: string) {
+  return value
+    .replace(/-/g, " ")
+    .replace(/\band\b/g, "&")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function categoryTitleFromParam(value: string | null) {
+  if (!value) return productCategories[0]?.title ?? "";
+
+  const match = productCategories.find((category) => category.slug === value || category.title.toLowerCase() === value.toLowerCase());
+  return match?.title ?? productCategories[0]?.title ?? "";
+}
+
+function productTitleFromParam(value: string | null) {
+  if (!value) return "";
+  return productLabels[value] ?? titleFromSlug(value);
 }
 
 function SummaryNotice({
@@ -235,16 +269,26 @@ export function GeneralContactForm() {
 export function SendRequirementForm() {
   const [submitted, setSubmitted] = useState(false);
   const [requestType, setRequestType] = useState(buyerIntents[0]);
+  const [productCategory, setProductCategory] = useState(productCategories[0]?.title ?? "");
+  const [productDetail, setProductDetail] = useState("");
   const supplier = requestType === supplierIntent;
+  const hasSelectedProduct = !supplier && productDetail.trim().length > 0;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setProductCategory(categoryTitleFromParam(params.get("category")));
+    setProductDetail(productTitleFromParam(params.get("product")));
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const companyName = valueFrom(formData, "company");
-    const productCategory = valueFrom(formData, "productCategory");
+    const selectedProductCategory = valueFrom(formData, "productCategory");
+    const selectedProductDetail = valueFrom(formData, "productDetail");
     const subject = supplier
       ? `Supplier introduction - ${companyName || "A3"}`
-      : `Quote request - ${productCategory || "Food sourcing"} - ${companyName || "A3"}`;
+      : `Quote request - ${selectedProductDetail || selectedProductCategory || "Food sourcing"} - ${companyName || "A3"}`;
 
     const commonLines = [
       supplier ? "Supplier introduction" : "Quote / sourcing request",
@@ -254,7 +298,8 @@ export function SendRequirementForm() {
       `Company: ${companyName}`,
       `Business email: ${valueFrom(formData, "email")}`,
       `Country / market: ${valueFrom(formData, "country")}`,
-      `Product / category: ${productCategory}`,
+      `Product / category: ${selectedProductCategory}`,
+      `Product / grade: ${selectedProductDetail}`,
       "",
     ];
 
@@ -306,6 +351,16 @@ export function SendRequirementForm() {
   return (
     <form className="contact-form contact-form--quote" onSubmit={handleSubmit}>
       <FormStep number="01" title="Contact details">
+        {hasSelectedProduct ? (
+          <div className="trade-form-selection" aria-live="polite">
+            <span>Selected product</span>
+            <strong>
+              {productCategory}
+              {" / "}
+              {productDetail}
+            </strong>
+          </div>
+        ) : null}
         <div className="grid gap-5 md:grid-cols-2">
           <CustomSelect
             label="Request type"
@@ -320,6 +375,15 @@ export function SendRequirementForm() {
             name="productCategory"
             options={productCategories.map((category) => category.title)}
             required
+            value={productCategory}
+            onChange={setProductCategory}
+          />
+          <TextInput
+            label="Product / grade"
+            name="productDetail"
+            placeholder="ICUMSA 45, cocoa powder, frozen potato products..."
+            value={productDetail}
+            onChange={(event) => setProductDetail(event.target.value)}
           />
           <TextInput label="Name" name="name" required autoComplete="name" />
           <TextInput label="Company" name="company" required autoComplete="organization" />
