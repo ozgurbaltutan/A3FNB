@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const AUTO_REVEAL_SELECTORS = [
   "main .type-hero",
@@ -34,41 +35,27 @@ const AUTO_REVEAL_SELECTORS = [
 ].join(",");
 
 export function GlobalReveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    const explicitItems = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
-    const autoItems = Array.from(document.querySelectorAll<HTMLElement>(AUTO_REVEAL_SELECTORS));
-    const items = Array.from(new Set([...explicitItems, ...autoItems]));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const observedItems = new Set<HTMLElement>();
+    let frame = 0;
+    let observer: IntersectionObserver | null = null;
 
-    if (items.length === 0) return;
+    function revealItem(item: Element) {
+      item.classList.add("is-visible");
+      if (observer) {
+        observer.unobserve(item);
+      }
+      observedItems.delete(item as HTMLElement);
+    }
 
-    items.forEach((item) => {
+    function prepareItem(item: HTMLElement) {
       if (!item.classList.contains("reveal")) {
         item.classList.add("reveal", "reveal--auto");
       }
-    });
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
-      items.forEach((item) => item.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        rootMargin: "0px 0px -10% 0px",
-        threshold: 0.14,
-      },
-    );
-
-    items.forEach((item) => {
       const parent = item.parentElement;
       const siblingIndex = parent ? Array.from(parent.children).indexOf(item) : 0;
       const delayIndex = Math.max(0, siblingIndex % 6);
@@ -76,12 +63,93 @@ export function GlobalReveal() {
       if (!item.style.getPropertyValue("--reveal-delay")) {
         item.style.setProperty("--reveal-delay", `calc(var(--reveal-stagger) * ${delayIndex})`);
       }
+    }
 
-      observer.observe(item);
+    function isAlreadyInView(item: HTMLElement) {
+      const rect = item.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      return rect.top <= viewportHeight * 0.96 && rect.bottom >= 0;
+    }
+
+    function collectItems() {
+      const explicitItems = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+      const autoItems = Array.from(document.querySelectorAll<HTMLElement>(AUTO_REVEAL_SELECTORS));
+      return Array.from(new Set([...explicitItems, ...autoItems]));
+    }
+
+    function scan() {
+      const items = collectItems();
+
+      if (items.length === 0) return;
+
+      items.forEach((item) => {
+        prepareItem(item);
+
+        if (item.classList.contains("is-visible")) return;
+
+        if (reducedMotion.matches || !observer || isAlreadyInView(item)) {
+          revealItem(item);
+          return;
+        }
+
+        if (!observedItems.has(item)) {
+          observedItems.add(item);
+          observer.observe(item);
+        }
+      });
+    }
+
+    function scheduleScan() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        scan();
+      });
+    }
+
+    if (!reducedMotion.matches && "IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            revealItem(entry.target);
+          });
+        },
+        {
+          rootMargin: "0px 0px -6% 0px",
+          threshold: 0.06,
+        },
+      );
+    }
+
+    const mutationObserver = new MutationObserver(scheduleScan);
+    const mutationRoot = document.querySelector("main") ?? document.body;
+
+    mutationObserver.observe(mutationRoot, {
+      childList: true,
+      subtree: true,
     });
 
-    return () => observer.disconnect();
-  }, []);
+    scan();
+    window.requestAnimationFrame(scan);
+    window.setTimeout(scan, 120);
+    window.setTimeout(scan, 600);
+
+    window.addEventListener("scroll", scheduleScan, { passive: true });
+    window.addEventListener("resize", scheduleScan);
+    window.addEventListener("pageshow", scheduleScan);
+
+    return () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+      mutationObserver.disconnect();
+      observer?.disconnect();
+      window.removeEventListener("scroll", scheduleScan);
+      window.removeEventListener("resize", scheduleScan);
+      window.removeEventListener("pageshow", scheduleScan);
+    };
+  }, [pathname]);
 
   return null;
 }
