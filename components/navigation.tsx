@@ -35,7 +35,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/en" || pathname === "/";
-  const isHeroTop = isHome && !scrolled;
+  const isHeroTop = !scrolled;
   const headerSurface = isHeroTop ? "media" : "light";
   const megaSurface = isHeroTop ? "media" : "light";
   const mobileSurface = isHeroTop ? "media" : "light";
@@ -44,18 +44,14 @@ export function Header() {
   useEffect(() => {
     setOpen(false);
     setProductsOpen(false);
+    setScrolled(false);
   }, [pathname]);
 
   useEffect(() => {
-    if (!isHome) {
-      setScrolled(true);
-      return;
-    }
-
     const updateScrollState = () => {
-      const hero = document.querySelector<HTMLElement>(".home-hero");
+      const hero = document.querySelector<HTMLElement>(isHome ? ".home-hero" : ".inner-page-hero");
       if (!hero) {
-        setScrolled(window.scrollY > 64);
+        setScrolled(!isHome || window.scrollY > 64);
         return;
       }
 
@@ -77,7 +73,7 @@ export function Header() {
     <header
       className={clsx(
         "site-header top-0 z-50 w-full",
-        isHome ? "fixed" : "sticky",
+        "fixed",
         isMediaSurface ? "site-header--media text-surface" : "site-header--light text-ink",
         (productsOpen || open) && "site-header--open",
       )}

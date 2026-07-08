@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { InnerPageHero } from "@/components/inner-page-hero";
 import { Container, LinkButton } from "@/components/ui";
 import { homeAssets, productCategories, productCategoryHref } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
@@ -214,12 +215,22 @@ export function ProductDetailLayout({
   finalCta,
 }: ProductDetailProps) {
   const useBuyerInformation = Boolean(technicalSpecs && (productRange || productPortfolio) && (sections.length || documents || support));
-  const leadingStorySections = productPortfolio ? [] : (storySections ?? []);
+  const storyHero = !hero && !productPortfolio ? storySections?.[0] : undefined;
+  const leadingStorySections = productPortfolio ? [] : (storyHero ? (storySections?.slice(1) ?? []) : (storySections ?? []));
   const portfolioStorySections = productPortfolio ? (storySections ?? []) : [];
 
   return (
     <>
       {hero ? <ProductDetailHero hero={hero} breadcrumb={breadcrumb} /> : null}
+      {storyHero ? (
+        <InnerPageHero
+          title={storyHero.title}
+          text={storyHero.paragraphs}
+          image={storyHero.image}
+          imageAlt={storyHero.imageAlt}
+          breadcrumb={breadcrumb}
+        />
+      ) : null}
       {leadingStorySections.map((section, index) => (
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
@@ -306,24 +317,16 @@ function ProductDetailHero({
 
   if (hero.variant === "compact") {
     return (
-      <section className="products-opening products-opening--compact product-detail-opening">
-        <Container className="a3-container products-opening__inner">
-          <div className="products-opening__copy">
-            <h1 className="type-section products-opening__title">{hero.title}</h1>
-            <div className="products-opening__body">
-              {paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-              {hero.note ? <p className="product-detail-note">{hero.note}</p> : null}
-            </div>
-          </div>
-          {hero.image ? (
-            <div className="products-opening__media">
-              <Image src={hero.image} alt={hero.imageAlt} fill priority sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
-            </div>
-          ) : null}
-        </Container>
-      </section>
+      <InnerPageHero
+        title={hero.title}
+        text={paragraphs}
+        image={hero.image ?? homeAssets.media.companyFoodFeastEditorial}
+        imageAlt={hero.imageAlt}
+        breadcrumb={hero.hideBreadcrumb ? undefined : breadcrumb}
+        className="product-detail-opening"
+      >
+        {hero.note ? <p className="product-detail-note inner-page-hero__note">{hero.note}</p> : null}
+      </InnerPageHero>
     );
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { company, contactIntents, productCategories } from "@/content/site";
 import { Button, TextArea, TextInput } from "@/components/ui";
 
@@ -114,10 +114,43 @@ function CustomSelect({
   const initialValue = value ?? (required ? options[0] ?? "" : "");
   const [internalValue, setInternalValue] = useState(initialValue);
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const selectedValue = value ?? internalValue;
   const activeIndex = useMemo(() => Math.max(0, options.indexOf(selectedValue)), [options, selectedValue]);
+  const labelId = `${name}-select-label`;
   const buttonId = `${name}-select-button`;
+  const valueId = `${name}-select-value`;
   const listId = `${name}-select-list`;
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsideInteraction(event: MouseEvent | PointerEvent | TouchEvent) {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (!rootRef.current?.contains(target)) {
+        setOpen(false);
+      }
+    }
+
+    function closeOnEscape(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsideInteraction, true);
+    document.addEventListener("mousedown", closeOnOutsideInteraction, true);
+    document.addEventListener("touchstart", closeOnOutsideInteraction, true);
+    document.addEventListener("keydown", closeOnEscape, true);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideInteraction, true);
+      document.removeEventListener("mousedown", closeOnOutsideInteraction, true);
+      document.removeEventListener("touchstart", closeOnOutsideInteraction, true);
+      document.removeEventListener("keydown", closeOnEscape, true);
+    };
+  }, [open]);
 
   function selectOption(option: string) {
     setInternalValue(option);
@@ -151,21 +184,23 @@ function CustomSelect({
   }
 
   return (
-    <label
+    <div
       className="custom-select-field"
+      ref={rootRef}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setOpen(false);
         }
       }}
     >
-      <span>
+      <span id={labelId}>
         {label}
         {required ? <span> *</span> : null}
       </span>
       <input name={name} type="hidden" value={selectedValue} />
       <div className="custom-select" onKeyDown={handleKeyDown}>
         <button
+          aria-labelledby={`${labelId} ${valueId}`}
           aria-controls={listId}
           aria-expanded={open}
           aria-haspopup="listbox"
@@ -174,7 +209,7 @@ function CustomSelect({
           onClick={() => setOpen((current) => !current)}
           type="button"
         >
-          <span>{selectedValue || "Select"}</span>
+          <span id={valueId}>{selectedValue || "Select"}</span>
           <span aria-hidden="true" className="custom-select__chevron" />
         </button>
         {open ? (
@@ -187,6 +222,10 @@ function CustomSelect({
                   className={`custom-select__option ${selected ? "is-selected" : ""}`}
                   key={option}
                   onClick={() => selectOption(option)}
+                  onPointerDown={(event) => {
+                    event.preventDefault();
+                    selectOption(option);
+                  }}
                   role="option"
                   type="button"
                 >
@@ -197,7 +236,7 @@ function CustomSelect({
           </div>
         ) : null}
       </div>
-    </label>
+    </div>
   );
 }
 

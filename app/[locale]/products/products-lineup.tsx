@@ -6,6 +6,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { InnerPageHero } from "@/components/inner-page-hero";
 import { Container, LinkButton } from "@/components/ui";
 import { homeLanding } from "@/content/site";
 
@@ -126,33 +127,15 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
 
   return (
     <>
-      <section className="products-opening products-opening--compact">
-        <Container className="a3-container products-opening__inner">
-          <div className="products-opening__copy">
-            <h1 className="type-section products-opening__title">Food products for commercial supply.</h1>
-            <div className="products-opening__body">
-              <p>
-                A3 works across selected food categories for wholesalers, distributors, food manufacturers,
-                retailers and commercial buyers.
-              </p>
-              <p>
-                Each requirement is reviewed by product type, specification, origin, volume, packing format,
-                destination market and shipment timing.
-              </p>
-            </div>
-          </div>
-          <div className="products-opening__media">
-            <Image
-              src="/media/home/products-opening-flour.webp"
-              alt="Food preparation and flour used for commercial product supply"
-              fill
-              priority
-              sizes="(min-width: 1024px) 520px, 100vw"
-              className="object-cover"
-            />
-          </div>
-        </Container>
-      </section>
+      <InnerPageHero
+        title="Food products for commercial supply."
+        text={[
+          "A3 works across selected food categories for wholesalers, distributors, food manufacturers, retailers and commercial buyers.",
+          "Each requirement is reviewed by product type, specification, origin, volume, packing format, destination market and shipment timing.",
+        ]}
+        image="/media/home/products-opening-flour.webp"
+        imageAlt="Food preparation and flour used for commercial product supply"
+      />
 
       <section className="products-lineup-page">
         <Container className="a3-container products-lineup-page__inner">
@@ -218,7 +201,6 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
       <section className="private-label-band">
         <Container className="a3-container private-label-band__inner">
           <div className="private-label-band__copy">
-            <p className="private-label-band__kicker">Private Label / Own Brand</p>
             <h2 className="type-section">{homeLanding.ownBrand.title}</h2>
             <p className="type-section-lead">{homeLanding.ownBrand.text}</p>
             <div className="private-label-band__actions">
@@ -259,24 +241,26 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
             </p>
           </div>
           <div className="products-support-panel">
-            <div className="products-support-panel__accordion">
+            <div className="process-accordion products-support-panel__accordion">
               {supportItems.map((item, index) => {
                 const isActive = activeSupport === item.title;
                 const panelId = `products-support-${index + 1}`;
+                const number = String(index + 1).padStart(2, "0");
 
                 return (
-                  <article className={`products-support-panel__item ${isActive ? "is-active" : ""}`} key={item.title}>
+                  <article className={`process-accordion-item products-support-panel__item ${isActive ? "is-active" : ""}`} key={item.title}>
                     <button
                       aria-controls={panelId}
                       aria-expanded={isActive}
-                      className="products-support-panel__trigger premium-focus"
-                      onClick={() => setActiveSupport((current) => (current === item.title ? "" : item.title))}
+                      className="process-accordion-trigger products-support-panel__trigger premium-focus"
+                      onClick={() => setActiveSupport(item.title)}
                       type="button"
                     >
-                      <span>{item.title}</span>
-                      <span className="products-support-panel__arrow" aria-hidden="true" />
+                      <span className="process-accordion-index">{number}</span>
+                      <span className="process-accordion-title">{item.title}</span>
+                      <span className="process-accordion-arrow products-support-panel__arrow" aria-hidden="true" />
                     </button>
-                    <div className="products-support-panel__panel" id={panelId}>
+                    <div className="process-accordion-panel products-support-panel__panel" id={panelId}>
                       <p>{item.text}</p>
                     </div>
                   </article>

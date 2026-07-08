@@ -1,5 +1,5 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
+import { InnerPageHero } from "@/components/inner-page-hero";
 import { Container, LinkButton } from "@/components/ui";
 
 type ContactInfoItem = {
@@ -52,24 +52,7 @@ export function ContactPageLayout({
 }) {
   return (
     <>
-      <section className="contact-page-hero bg-deep-dark text-surface">
-        <Container className="a3-container contact-page-hero__inner">
-          <div className="contact-page-hero__copy">
-            <h1 className="text-surface">{title}</h1>
-            <p>{text}</p>
-          </div>
-          <div className="contact-page-hero__media">
-            <Image
-              className="object-cover"
-              src={image}
-              alt={imageAlt}
-              fill
-              priority
-              sizes="(min-width: 1024px) 42vw, 100vw"
-            />
-          </div>
-        </Container>
-      </section>
+      <InnerPageHero title={title} text={text} image={image} imageAlt={imageAlt} className="contact-page-hero" />
 
       <section className="contact-page-main bg-paper">
         <Container className="a3-container contact-page-grid">

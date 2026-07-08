@@ -165,7 +165,7 @@ export function Card({
     <article
       id={id}
       className={clsx(
-        "rounded-[var(--radius-card)] border border-border bg-surface p-7 shadow-[var(--shadow-soft)]",
+        "a3-card rounded-[var(--radius-card)] border border-border bg-surface p-7 shadow-[var(--shadow-soft)]",
         className,
       )}
     >

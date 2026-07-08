@@ -74,42 +74,6 @@ function HomeShell({ children, className = "" }: { children: React.ReactNode; cl
   );
 }
 
-function useHomepageReveal() {
-  useEffect(() => {
-    const items = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
-
-    if (items.length === 0) {
-      return;
-    }
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
-      items.forEach((item) => item.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        rootMargin: "0px 0px -12% 0px",
-        threshold: 0.16,
-      },
-    );
-
-    items.forEach((item) => observer.observe(item));
-
-    return () => observer.disconnect();
-  }, []);
-}
-
 function CountUpMetric({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [displayValue, setDisplayValue] = useState("0");
@@ -204,8 +168,6 @@ function SectionIntro({
 }
 
 export function HomeFigmaLanding() {
-  useHomepageReveal();
-
   return (
     <>
       <HomeHero />
@@ -638,7 +600,6 @@ function BeforeYouEnquire() {
                 <span className="before-enquire-card__description">{resource.description}</span>
               </span>
               <span className="before-enquire-card__action" aria-hidden="true">
-                <span className="before-enquire-card__file">PDF</span>
                 <span>{resource.ctaLabel ?? "View PDF"}</span>
                 <span className="before-enquire-card__arrow">→</span>
               </span>

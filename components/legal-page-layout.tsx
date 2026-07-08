@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { InnerPageHero } from "@/components/inner-page-hero";
 import { Container } from "@/components/ui";
 import type { NavigationItem } from "@/lib/types";
 
@@ -24,17 +24,16 @@ export function LegalPageLayout({
 }) {
   return (
     <main className="legal-page">
-      <section className="legal-page__hero">
-        <Container className="a3-container legal-page__hero-inner">
-          <Breadcrumb items={breadcrumb} />
-          <div className="legal-page__intro">
-            <p className="legal-page__kicker">Legal</p>
-            <h1 className="type-section">{title}</h1>
-            <p className="type-section-lead">{description}</p>
-            <p className="legal-page__updated">Last updated: {lastUpdated}</p>
-          </div>
-        </Container>
-      </section>
+      <InnerPageHero
+        title={title}
+        text={description}
+        image="/media/home/company-trade-editorial.webp"
+        imageAlt="Trade documents and food products prepared for commercial review"
+        breadcrumb={breadcrumb}
+        className="legal-page__hero"
+      >
+        <p className="legal-page__updated inner-page-hero__note">Last updated: {lastUpdated}</p>
+      </InnerPageHero>
 
       <section className="legal-page__body">
         <Container className="a3-container legal-page__body-inner">

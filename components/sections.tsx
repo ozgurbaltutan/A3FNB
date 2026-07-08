@@ -88,20 +88,37 @@ export function PageHero({
   title,
   text,
   breadcrumb,
+  image = homeAssets.media.companyTradeEditorial,
+  imageAlt = "Food trade documents and product samples prepared for commercial review",
 }: {
   title: string;
   text: string;
   breadcrumb: NavigationItem[];
+  image?: string;
+  imageAlt?: string;
 }) {
   return (
-    <section className="border-b border-border bg-paper">
-      <Container className="py-16 lg:py-24">
-        <Breadcrumb items={breadcrumb} />
-        <div className="mt-8 max-w-4xl">
-          <Heading level={1}>{title}</Heading>
-          <Paragraph size="p1" className="mt-6">
-            {text}
-          </Paragraph>
+    <section className="inner-page-hero text-surface">
+      <Image
+        src={image}
+        alt={imageAlt}
+        fill
+        priority
+        sizes="100vw"
+        className="inner-page-hero__image object-cover"
+      />
+      <div className="inner-page-hero__overlay" aria-hidden="true" />
+      <Container className="a3-container inner-page-hero__inner">
+        <div className="inner-page-hero__breadcrumb">
+          <Breadcrumb items={breadcrumb} />
+        </div>
+        <div className="inner-page-hero__copy">
+          <Heading level={1} className="type-section inner-page-hero__title">
+            {title}
+          </Heading>
+          <div className="inner-page-hero__text">
+            <p>{text}</p>
+          </div>
         </div>
       </Container>
     </section>
@@ -199,7 +216,7 @@ export function ProductGrid({
               <Card
                 id={undefined}
                 className={clsx(
-                  "h-full transition duration-[var(--motion-base)] ease-[var(--ease-premium)] group-hover:-translate-y-1 group-hover:border-teal",
+                  "h-full transition duration-[var(--motion-base)] ease-[var(--ease-premium)] group-hover:border-teal",
                   product.featured && "bg-surface",
                 )}
               >

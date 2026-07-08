@@ -1,2 +1,5 @@
-export { generateMetadata } from "../coffee/page";
-export { default } from "../coffee/page";
+import CoffeePage, { generateMetadata } from "../coffee/page";
+
+export { generateMetadata };
+
+export default CoffeePage;
