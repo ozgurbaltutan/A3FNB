@@ -128,41 +128,44 @@ export const homeAssets = {
 
 export type MarketLocation = {
   name: string;
+  displayName?: string;
   longitude: number;
   latitude: number;
+  visualLongitude?: number;
+  visualLatitude?: number;
   isHub?: boolean;
   labelAlign?: "left" | "center" | "right";
 };
 
 export const marketLocations: MarketLocation[] = [
-  { name: "United Kingdom / London", longitude: -0.1276, latitude: 51.5072, isHub: true, labelAlign: "center" },
-  { name: "Turkey / Istanbul", longitude: 28.9784, latitude: 41.0082, labelAlign: "left" },
-  { name: "Poland", longitude: 19.1451, latitude: 51.9194, labelAlign: "left" },
-  { name: "Belgium", longitude: 4.4699, latitude: 50.5039, labelAlign: "right" },
-  { name: "Netherlands", longitude: 5.2913, latitude: 52.1326, labelAlign: "left" },
+  { name: "United Kingdom / London", displayName: "England - London", longitude: -0.1276, latitude: 51.5072, isHub: true, labelAlign: "center" },
+  { name: "Turkey / Istanbul", displayName: "Turkey", longitude: 28.9784, latitude: 41.0082, visualLongitude: 32.8597, visualLatitude: 39.9334, labelAlign: "left" },
+  { name: "Poland", longitude: 19.1451, latitude: 51.9194, visualLongitude: 21.0122, visualLatitude: 52.2297, labelAlign: "left" },
+  { name: "Belgium", longitude: 4.4699, latitude: 50.5039, visualLongitude: 3.7174, visualLatitude: 51.0543, labelAlign: "right" },
+  { name: "Netherlands", longitude: 5.2913, latitude: 52.1326, visualLongitude: 6.5665, visualLatitude: 53.2194, labelAlign: "left" },
   { name: "Morocco", longitude: -7.0926, latitude: 31.7917, labelAlign: "right" },
   { name: "Argentina", longitude: -63.6167, latitude: -38.4161, labelAlign: "right" },
   { name: "China", longitude: 104.1954, latitude: 35.8617, labelAlign: "right" },
   { name: "Brazil", longitude: -51.9253, latitude: -14.235, labelAlign: "right" },
-  { name: "Guyana", longitude: -58.9302, latitude: 4.8604, labelAlign: "left" },
-  { name: "Suriname", longitude: -56.0278, latitude: 3.9193, labelAlign: "right" },
-  { name: "Ukraine", longitude: 31.1656, latitude: 48.3794, labelAlign: "left" },
+  { name: "Guyana", longitude: -58.9302, latitude: 4.8604, visualLongitude: -58.1551, visualLatitude: 6.8013, labelAlign: "left" },
+  { name: "Suriname", longitude: -56.0278, latitude: 3.9193, visualLongitude: -55.2038, visualLatitude: 5.852, labelAlign: "right" },
+  { name: "Ukraine", longitude: 31.1656, latitude: 48.3794, visualLongitude: 30.5234, visualLatitude: 50.4501, labelAlign: "left" },
   { name: "USA", longitude: -95.7129, latitude: 37.0902, labelAlign: "left" },
   { name: "Canada", longitude: -106.3468, latitude: 56.1304, labelAlign: "left" },
-  { name: "Germany", longitude: 10.4515, latitude: 51.1657, labelAlign: "left" },
-  { name: "France", longitude: 2.2137, latitude: 46.2276, labelAlign: "right" },
+  { name: "Germany", longitude: 10.4515, latitude: 51.1657, visualLongitude: 13.405, visualLatitude: 52.52, labelAlign: "left" },
+  { name: "France", longitude: 2.2137, latitude: 46.2276, visualLongitude: -0.5792, visualLatitude: 44.8378, labelAlign: "right" },
   { name: "Mauritania", longitude: -10.9408, latitude: 21.0079, labelAlign: "right" },
   { name: "Senegal", longitude: -14.4524, latitude: 14.4974, labelAlign: "right" },
-  { name: "Togo", longitude: 0.8248, latitude: 8.6195, labelAlign: "left" },
-  { name: "Ghana", longitude: -1.0232, latitude: 7.9465, labelAlign: "right" },
+  { name: "Togo", longitude: 0.8248, latitude: 8.6195, visualLongitude: 1.1861, visualLatitude: 9.5511, labelAlign: "left" },
+  { name: "Ghana", longitude: -1.0232, latitude: 7.9465, visualLongitude: -1.6163, visualLatitude: 6.6666, labelAlign: "right" },
   { name: "Niger", longitude: 8.0817, latitude: 17.6078, labelAlign: "left" },
-  { name: "Cameroon", longitude: 12.3547, latitude: 7.3697, labelAlign: "left" },
+  { name: "Cameroon", longitude: 12.3547, latitude: 7.3697, visualLongitude: 11.5021, visualLatitude: 3.848, labelAlign: "left" },
   { name: "Angola", longitude: 17.8739, latitude: -11.2027, labelAlign: "left" },
-  { name: "Madagascar", longitude: 46.8691, latitude: -18.7669, labelAlign: "right" },
-  { name: "Mauritius", longitude: 57.5522, latitude: -20.3484, labelAlign: "left" },
-  { name: "Mozambique", longitude: 35.5296, latitude: -18.6657, labelAlign: "left" },
+  { name: "Madagascar", longitude: 46.8691, latitude: -18.7669, visualLongitude: 47.5079, visualLatitude: -18.8792, labelAlign: "right" },
+  { name: "Mauritius", longitude: 57.5522, latitude: -20.3484, visualLongitude: 57.5522, visualLatitude: -20.3484, labelAlign: "left" },
+  { name: "Mozambique", longitude: 35.5296, latitude: -18.6657, visualLongitude: 32.5832, visualLatitude: -25.9655, labelAlign: "left" },
   { name: "Taiwan", longitude: 120.9605, latitude: 23.6978, labelAlign: "right" },
-  { name: "Australia / Sydney", longitude: 151.2093, latitude: -33.8688, labelAlign: "right" },
+  { name: "Australia / Sydney", displayName: "Australia", longitude: 151.2093, latitude: -33.8688, labelAlign: "right" },
 ];
 
 export const productCategories: ProductCategory[] = [

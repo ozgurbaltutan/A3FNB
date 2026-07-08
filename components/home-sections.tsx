@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
@@ -39,7 +39,10 @@ function cardCopy(item: { cardSummary?: string; description: string }) {
 }
 
 function projectMarketLocation(location: MarketLocation) {
-  const point = MARKET_PROJECTION([location.longitude, location.latitude]);
+  const point = MARKET_PROJECTION([
+    location.visualLongitude ?? location.longitude,
+    location.visualLatitude ?? location.latitude,
+  ]);
 
   return point ? { x: point[0], y: point[1] } : null;
 }
@@ -484,27 +487,29 @@ function MarketsPreview() {
             </defs>
             <path className="markets-map__land" clipPath="url(#markets-map-land-clip)" d={MARKET_LAND_PATH} />
             <g className="markets-map__pins" role="list">
-              {projectedMarkets.map(({ market, point }) => {
+              {projectedMarkets.map(({ market, point }, index) => {
                 const labelX = market.labelAlign === "left" ? 16 : market.labelAlign === "right" ? -16 : 0;
                 const labelAnchor: "start" | "middle" | "end" =
                   market.labelAlign === "left" ? "start" : market.labelAlign === "right" ? "end" : "middle";
+                const displayName = market.displayName ?? market.name;
 
                 return (
                   <g
-                    aria-label={market.name}
+                    aria-label={displayName}
                     className={`markets-map-pin ${market.isHub ? "is-hub" : ""}`}
                     focusable="true"
                     key={market.name}
                     role="listitem"
+                    style={{ "--pin-delay": `${(index % 7) * 0.16}s` } as CSSProperties}
                     tabIndex={0}
                     transform={`translate(${point.x} ${point.y})`}
                   >
-                    <title>{market.name}</title>
+                    <title>{displayName}</title>
                     <line className="markets-map-pin__leader" x1="0" x2={labelX} y1="-12" y2="-29" />
-                    <circle className="markets-map-pin__halo" r="14" />
-                    <circle className="markets-map-pin__dot" r={market.isHub ? 8.5 : 7.4} />
+                    <circle className="markets-map-pin__halo" r="11.5" />
+                    <circle className="markets-map-pin__dot" r={market.isHub ? 7.2 : 6.2} />
                     <text className="markets-map-pin__label" textAnchor={labelAnchor} x={labelX} y="-34">
-                      {market.name}
+                      {displayName}
                     </text>
                   </g>
                 );
