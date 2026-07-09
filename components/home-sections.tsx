@@ -6,9 +6,10 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
-import landAtlas from "world-atlas/land-110m.json";
+import countriesAtlas from "world-atlas/countries-110m.json";
 import { homeAssets, homeLanding, marketLocations, productCategories, productCategoryHref, type MarketLocation } from "@/content/site";
 import { EditorialBridge, EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
+import { ProductImageCarousel } from "@/components/product-image-carousel";
 import { LinkButton } from "@/components/ui";
 
 type FeaturedProduct = {
@@ -28,11 +29,24 @@ type ProductRailItem = FeaturedProduct & {
 };
 
 const MARKET_MAP_WIDTH = 1484.26;
-const MARKET_MAP_HEIGHT = 692.68;
-const LAND_TOPOLOGY = landAtlas as unknown as Topology;
-const LAND_FEATURE = feature(LAND_TOPOLOGY, LAND_TOPOLOGY.objects.land as GeometryObject) as GeoPermissibleObjects;
-const MARKET_PROJECTION = geoNaturalEarth1().fitSize([MARKET_MAP_WIDTH, MARKET_MAP_HEIGHT], LAND_FEATURE);
-const MARKET_LAND_PATH = geoPath(MARKET_PROJECTION)(LAND_FEATURE) ?? "";
+const MARKET_MAP_HEIGHT = 620;
+const MARKET_MAP_VIEWBOX_X = 105;
+const MARKET_MAP_VIEWBOX_WIDTH = MARKET_MAP_WIDTH - MARKET_MAP_VIEWBOX_X;
+const MARKET_MAP_VIEWBOX_HEIGHT = MARKET_MAP_HEIGHT;
+const ANTARCTICA_COUNTRY_ID = "010";
+const COUNTRY_TOPOLOGY = countriesAtlas as unknown as Topology;
+const COUNTRY_FEATURES = feature(COUNTRY_TOPOLOGY, COUNTRY_TOPOLOGY.objects.countries as GeometryObject) as {
+  type: "FeatureCollection";
+  features: GeoPermissibleObjects[];
+};
+const MARKET_LAND_FEATURE = {
+  type: "FeatureCollection",
+  features: COUNTRY_FEATURES.features.filter(
+    (country) => String((country as { id?: number | string }).id).padStart(3, "0") !== ANTARCTICA_COUNTRY_ID,
+  ),
+} as GeoPermissibleObjects;
+const MARKET_PROJECTION = geoNaturalEarth1().fitSize([MARKET_MAP_WIDTH, MARKET_MAP_HEIGHT], MARKET_LAND_FEATURE);
+const MARKET_LAND_PATH = geoPath(MARKET_PROJECTION)(MARKET_LAND_FEATURE) ?? "";
 
 function cardCopy(item: { cardSummary?: string; description: string }) {
   return item.cardSummary ?? item.description;
@@ -259,146 +273,34 @@ function WhatA3Does() {
 }
 
 function FeaturedSourcingCategories() {
-  const products = productCategories.map(productRailItem);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const firstCardRef = useRef<HTMLAnchorElement | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [railMetrics, setRailMetrics] = useState({ step: 0, visibleCount: 1 });
-  const maxIndex = Math.max(0, products.length - 1);
-  const safeActiveIndex = Math.min(activeIndex, maxIndex);
-  const railOffset = safeActiveIndex * railMetrics.step;
-  const loopedProducts = [
-    ...products,
-    ...products.slice(0, Math.min(products.length, Math.max(1, railMetrics.visibleCount))),
-  ];
-
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    const track = trackRef.current;
-    const firstCard = firstCardRef.current;
-
-    if (!viewport || !track || !firstCard) {
-      return undefined;
-    }
-
-    const viewportElement = viewport;
-    const trackElement = track;
-    const firstCardElement = firstCard;
-
-    function updateRailMetrics() {
-      const cardWidth = firstCardElement.getBoundingClientRect().width;
-      const trackStyle = window.getComputedStyle(trackElement);
-      const gap = Number.parseFloat(trackStyle.columnGap || trackStyle.gap || "0") || 0;
-      const step = cardWidth + gap;
-      const visibleCount = step > 0 ? Math.max(1, Math.floor((viewportElement.clientWidth + gap) / step)) : 1;
-
-      setRailMetrics((current) =>
-        Math.abs(current.step - step) < 0.5 && current.visibleCount === visibleCount
-          ? current
-          : { step, visibleCount },
-      );
-      setActiveIndex((current) => Math.min(current, Math.max(0, products.length - 1)));
-    }
-
-    updateRailMetrics();
-
-    const resizeObserver = new ResizeObserver(updateRailMetrics);
-    resizeObserver.observe(viewportElement);
-    resizeObserver.observe(firstCardElement);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [products.length]);
-
-  function handleProductClick(event: React.MouseEvent<HTMLButtonElement>, direction: "previous" | "next") {
-    event.preventDefault();
-
-    setActiveIndex((current) => {
-      const lastIndex = Math.max(0, products.length - 1);
-      const currentIndex = Math.min(current, lastIndex);
-
-      if (direction === "next") {
-        return currentIndex >= lastIndex ? 0 : currentIndex + 1;
-      }
-
-      return currentIndex <= 0 ? lastIndex : currentIndex - 1;
-    });
-  }
+  const products = productCategories.map(productRailItem).map((product) => ({
+    ...product,
+    image: product.image ?? homeAssets.media.companyFoodFeastEditorial,
+    imageAlt: product.imageAlt ?? `${product.title} sourcing category for commercial buyers`,
+  }));
 
   return (
     <>
       <EditorialBridge tone="surface" className="featured-sourcing-bridge">
-        <div className="product-rail__header reveal reveal--up">
-          <div className="product-rail__intro">
+        <div className="home-products-carousel__header reveal reveal--up">
+          <div className="home-products-carousel__intro">
             <h2 className="type-section text-ink">Products</h2>
             <p className="type-section-lead text-ink/80">
               A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
             </p>
           </div>
-          <div className="product-rail__controls" aria-label="Product carousel controls">
-            <button
-              aria-label="Previous products"
-              className="product-rail__control premium-focus"
-              onClick={(event) => handleProductClick(event, "previous")}
-              type="button"
-            >
-              <span aria-hidden="true">‹</span>
-            </button>
-            <button
-              aria-label="Next products"
-              className="product-rail__control premium-focus"
-              onClick={(event) => handleProductClick(event, "next")}
-              type="button"
-            >
-              <span aria-hidden="true">›</span>
-            </button>
-          </div>
         </div>
       </EditorialBridge>
       <section className="featured-sourcing-section">
         <HomeShell>
-          <div className="product-rail reveal reveal--up">
-            <div className="product-rail__stage">
-              <div className="product-rail__viewport" ref={viewportRef}>
-                <div
-                  className="product-rail__track"
-                  ref={trackRef}
-                  style={{ "--product-rail-offset": `${-railOffset}px` } as React.CSSProperties}
-                >
-                {loopedProducts.map((product, index) => (
-                  <Link
-                    href={product.href}
-                    className="commodity-bento__card product-rail__card premium-focus group"
-                    key={`${product.id}-${index}`}
-                    ref={index === 0 ? firstCardRef : undefined}
-                  >
-                    <article className="commodity-bento__card-inner">
-                      {product.image ? (
-                        <Image
-                          className="commodity-bento__media"
-                          src={product.image}
-                          alt={product.imageAlt ?? ""}
-                          fill
-                          sizes="(min-width: 1280px) 34vw, (min-width: 768px) 48vw, 86vw"
-                          priority={index < 2}
-                        />
-                      ) : null}
-                      <div className="commodity-bento__overlay" aria-hidden="true" />
-                      <div className="commodity-bento__content">
-                        <div className="commodity-bento__heading">
-                          <h3 className="commodity-bento__title">{product.title}</h3>
-                        </div>
-                        <p className="commodity-bento__description">{cardCopy(product)}</p>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          <ProductImageCarousel
+            ariaLabel="Products"
+            className="reveal reveal--up"
+            getHref={(product) => product.href}
+            getItemLabel={(product) => `View ${product.title} category`}
+            items={products}
+            mode="link"
+          />
         </HomeShell>
       </section>
     </>
@@ -412,7 +314,7 @@ function MarketsPreview() {
 
   return (
     <section className="markets-layer-section bg-deep-dark text-surface">
-      <HomeShell className="markets-layer-stage grid items-center gap-8 py-16 lg:grid-cols-2 lg:py-20">
+      <HomeShell className="markets-layer-stage grid items-center gap-5 py-16 lg:grid-cols-2 lg:py-20">
         <div className="markets-copy">
           <h2 className="reveal reveal--up type-section text-surface">
             Markets we connect.
@@ -438,16 +340,12 @@ function MarketsPreview() {
           <svg
             aria-label="World map showing London and selected connected markets"
             className="markets-map__svg"
+            preserveAspectRatio="xMinYMid meet"
             role="img"
-            viewBox={`0 0 ${MARKET_MAP_WIDTH} ${MARKET_MAP_HEIGHT}`}
+            viewBox={`${MARKET_MAP_VIEWBOX_X} 0 ${MARKET_MAP_VIEWBOX_WIDTH} ${MARKET_MAP_VIEWBOX_HEIGHT}`}
           >
             <title>World map showing London and selected connected markets</title>
-            <defs>
-              <clipPath id="markets-map-land-clip">
-                <rect x="0" y="0" width={MARKET_MAP_WIDTH} height="540" />
-              </clipPath>
-            </defs>
-            <path className="markets-map__land" clipPath="url(#markets-map-land-clip)" d={MARKET_LAND_PATH} />
+            <path className="markets-map__land" d={MARKET_LAND_PATH} />
             <g className="markets-map__pins" role="list">
               {projectedMarkets.map(({ market, point }, index) => {
                 const labelX = market.labelAlign === "left" ? 16 : market.labelAlign === "right" ? -16 : 0;

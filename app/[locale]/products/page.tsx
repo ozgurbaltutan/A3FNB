@@ -96,26 +96,35 @@ const categoryMeta: Record<string, {
   },
 };
 
-function cardCopy(item: { cardSummary?: string; description: string }) {
-  return item.cardSummary ?? item.description;
-}
+const categoryCardCopy: Record<string, string> = {
+  sugar: "Cane and beet sugar grades for food production, beverages and retail packing.",
+  "green-coffee-beans": "Green coffee beans selected for roasters, traders and wholesale programs.",
+  "cocoa-products": "Cocoa powder, butter, mass and liquor for food producers.",
+  "grains-seeds": "Wheat, corn and sunflower seed options for milling, food manufacturing and trade.",
+  "dairy-milk-powders": "Milk powders and dairy ingredients for bakery, beverages and food production.",
+  "oils-fats": "Edible oils and fats for retail, foodservice and manufacturing.",
+  "starches-sweeteners": "Starches, syrups and sweeteners for texture, body and sweetness control.",
+  "dried-fruit-nuts": "Dried fruits, raisins and nuts for bakery, snacking and retail programs.",
+  "frozen-foods": "Frozen vegetables, fruits, potato products and bakery items for retail and foodservice.",
+  "consumer-foods": "Retail and foodservice products including pasta, sauces, condiments and canned foods.",
+};
 
 function productLineupItem(category: ProductCategory): ProductLineupItem {
   const featuredProduct = homeLanding.featuredProducts.find((product) => product.id === category.slug);
   const imageKey = category.imageKey as keyof typeof homeAssets.media | undefined;
   const image = featuredProduct?.image ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial);
-  const icon = featuredProduct?.icon ?? homeAssets.icons[category.iconKey as keyof typeof homeAssets.icons];
   const meta = categoryMeta[category.slug];
 
   return {
     id: category.slug,
     title: category.title,
-    description: featuredProduct ? cardCopy(featuredProduct) : category.shortDescription,
+    description: categoryCardCopy[category.slug] ?? category.shortDescription,
     href: productCategoryHref(category),
-    icon,
     image,
     imageAlt: featuredProduct?.imageAlt ?? `${category.title} sourcing category for commercial buyers`,
     group: meta?.group ?? "commodities",
+    quoteHref: `/en/request-a-quote?category=${encodeURIComponent(category.slug)}`,
+    quoteLabel: category.ctaLabel,
     facts: meta?.facts ?? [
       { label: "Formats", value: category.exampleProducts.slice(0, 3).join(", ") },
       { label: "Applications", value: "Commercial sourcing by requirement" },

@@ -26,7 +26,7 @@ const AUTO_REVEAL_SELECTORS = [
   "main .product-range-offering",
   "main .product-documents-item",
   "main .product-buyer-info__column",
-  "main .product-portfolio-card",
+  "main .product-image-card",
   "main .contact-form-panel",
   "main .contact-info-panel",
   "main .legal-page__notice",

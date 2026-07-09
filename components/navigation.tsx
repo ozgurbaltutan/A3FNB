@@ -8,6 +8,8 @@ import { clsx } from "clsx";
 import { company, navigation, productCategories, productCategoryHref } from "@/content/site";
 import { Container, LinkButton } from "@/components/ui";
 
+type MegaMenuPhase = "closed" | "opening" | "open" | "closing";
+
 const menuProducts = productCategories.map((category) => ({
   label: category.title,
   href: productCategoryHref(category),
@@ -29,9 +31,12 @@ const footerSocialLinks = [
   { label: "Instagram", href: "#", icon: "instagram" },
 ];
 
+const activeFooterSocialLinks = footerSocialLinks.filter((item) => item.href && item.href !== "#");
+
 export function Header() {
   const [open, setOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const [megaPhase, setMegaPhase] = useState<MegaMenuPhase>("closed");
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/en" || pathname === "/";
@@ -44,8 +49,27 @@ export function Header() {
   useEffect(() => {
     setOpen(false);
     setProductsOpen(false);
+    setMegaPhase("closed");
     setScrolled(false);
   }, [pathname]);
+
+  useEffect(() => {
+    let frame = 0;
+    let timeout = 0;
+
+    if (productsOpen) {
+      setMegaPhase("opening");
+      frame = window.requestAnimationFrame(() => setMegaPhase("open"));
+    } else {
+      setMegaPhase((current) => (current === "closed" ? current : "closing"));
+      timeout = window.setTimeout(() => setMegaPhase("closed"), 260);
+    }
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+    };
+  }, [productsOpen]);
 
   useEffect(() => {
     const updateScrollState = () => {
@@ -75,7 +99,7 @@ export function Header() {
         "site-header top-0 z-50 w-full",
         "fixed",
         isMediaSurface ? "site-header--media text-surface" : "site-header--light text-ink",
-        (productsOpen || open) && "site-header--open",
+        (megaPhase !== "closed" || open) && "site-header--open",
       )}
       onMouseLeave={() => setProductsOpen(false)}
       onKeyDown={(event) => {
@@ -153,21 +177,23 @@ export function Header() {
           Menu
         </button>
       </Container>
-      <MegaMenu open={productsOpen} surface={megaSurface} onNavigate={() => setProductsOpen(false)} />
+      <MegaMenu phase={megaPhase} surface={megaSurface} onNavigate={() => setProductsOpen(false)} />
       <MobileNav open={open} surface={mobileSurface} onClose={() => setOpen(false)} />
     </header>
   );
 }
 
-function MegaMenu({ open, surface, onNavigate }: { open: boolean; surface: "media" | "light"; onNavigate: () => void }) {
+function MegaMenu({ phase, surface, onNavigate }: { phase: MegaMenuPhase; surface: "media" | "light"; onNavigate: () => void }) {
+  const active = phase === "opening" || phase === "open";
+
   return (
     <div
       className={clsx(
         "mega-menu hidden lg:block",
         surface === "media" ? "mega-menu--media text-surface" : "mega-menu--light text-ink",
-        open ? "is-open" : "is-closed",
+        `is-${phase}`,
       )}
-      aria-hidden={!open}
+      aria-hidden={!active}
     >
       <Container className="a3-container mega-menu__inner grid gap-10 py-9 lg:grid-cols-[minmax(20rem,0.58fr)_minmax(0,1fr)] lg:gap-14">
         <div className="mega-menu__intro">
@@ -264,6 +290,10 @@ function MobileNav({ open, surface, onClose }: { open: boolean; surface: "media"
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const registeredOfficeLines = [
+    company.registeredOffice.street,
+    `${company.registeredOffice.city}, England, ${company.registeredOffice.postalCode}`,
+  ];
 
   return (
     <footer className="site-footer">
@@ -279,38 +309,61 @@ export function Footer() {
                 priority={false}
               />
             </Link>
-            <p className="type-p3 mt-4 max-w-[25rem] text-surface/68">{company.positioning}</p>
-            <div className="site-footer__social" aria-label="Social links">
-              {footerSocialLinks.map((item) => (
-                <a className="footer-social-link premium-focus" href={item.href} aria-label={item.label} key={item.label}>
-                  <FooterSocialIcon icon={item.icon} />
-                </a>
-              ))}
-            </div>
+            <p className="site-footer__description type-p3">{company.positioning}</p>
+            {activeFooterSocialLinks.length > 0 ? (
+              <div className="site-footer__social" aria-label="Social links">
+                {activeFooterSocialLinks.map((item) => {
+                  const isExternal = item.href.startsWith("http");
+
+                  return (
+                    <a
+                      className="footer-social-link premium-focus"
+                      href={item.href}
+                      aria-label={item.label}
+                      key={item.label}
+                      rel={isExternal ? "noreferrer" : undefined}
+                      target={isExternal ? "_blank" : undefined}
+                    >
+                      <FooterSocialIcon icon={item.icon} />
+                    </a>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
           <div className="site-footer__columns">
             <FooterColumn
               title="Site"
               links={navigation.map((item) => ({ label: item.label, href: item.href }))}
+              className="site-footer__column site-footer__column--site"
             />
-            <FooterColumn title="Products" links={footerProducts} />
-            <FooterColumn title="Legal" links={footerLegalLinks} />
-            <div>
+            <FooterColumn
+              title="Products"
+              links={footerProducts}
+              className="site-footer__column site-footer__column--products"
+              listClassName="footer-link-grid footer-link-grid--products"
+            />
+            <FooterColumn title="Legal" links={footerLegalLinks} className="site-footer__column site-footer__column--legal" />
+            <div className="site-footer__column site-footer__column--contact">
               <p className="footer-heading">Contact</p>
-              <div className="type-p3 grid gap-3">
+              <div className="footer-contact-list type-p3">
                 <a className="footer-link footer-link--contact premium-focus" href={`mailto:${company.email}`}>
                   {company.email}
                 </a>
                 <a className="footer-link footer-link--contact premium-focus" href={`tel:${company.phone.replace(/\s+/g, "")}`}>
                   {company.phone}
                 </a>
-                <p className="max-w-[18rem] text-surface/68">{company.registeredOffice.display}</p>
+                <p className="footer-contact-address">
+                  {registeredOfficeLines.map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </p>
               </div>
             </div>
           </div>
         </div>
         <div className="site-footer__legal">
-          <p>Copyright {currentYear} {company.legalName}. All rights reserved.</p>
+          <p className="site-footer__copyright">Copyright {currentYear} {company.legalName}. All rights reserved.</p>
           <div className="site-footer__legal-items">
             <span>Company No. {company.companyNumber}</span>
             <span>VAT {company.vatNumber}</span>
@@ -349,14 +402,18 @@ function FooterSocialIcon({ icon }: { icon: string }) {
 function FooterColumn({
   title,
   links,
+  className,
+  listClassName,
 }: {
   title: string;
   links: { label: string; href: string }[];
+  className?: string;
+  listClassName?: string;
 }) {
   return (
-    <div>
+    <div className={className}>
       <p className="footer-heading">{title}</p>
-      <div className="grid gap-2">
+      <div className={clsx("footer-link-list", listClassName)}>
         {links.map((link) => (
           <Link className="footer-link premium-focus" href={link.href} key={link.href}>
             {link.label}

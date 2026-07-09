@@ -1,11 +1,12 @@
 ﻿"use client";
 
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InnerPageHero } from "@/components/inner-page-hero";
+import { ProductImageCarousel } from "@/components/product-image-carousel";
 import { Container, LinkButton } from "@/components/ui";
 import { homeAssets, productCategories, productCategoryHref } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
@@ -485,47 +486,43 @@ function ProductRangeSimple({ profiles }: { profiles: NonNullable<ProductDetailP
 }
 
 function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio }) {
-  const initialVisibleCount = portfolio.initialVisibleCount ?? 4;
-  const [revealedProductId, setRevealedProductId] = useState<string | null>(null);
+  const [activePortfolioItemId, setActivePortfolioItemId] = useState<string | null>(null);
   const [activeFilterId, setActiveFilterId] = useState<string>(portfolio.filters?.[0]?.id ?? "all");
-  const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
-  const pointerStartedCollapsedId = useRef<string | null>(null);
-  const revealSentinelRef = useRef<HTMLDivElement | null>(null);
-  const revealLockRef = useRef(false);
+  const modalTriggerRefs = useRef<Record<string, HTMLElement | null>>({});
   const filteredItemIds =
     portfolio.filters?.find((filter) => filter.id === activeFilterId)?.itemIds ?? portfolio.items.map((item) => item.id);
   const filteredItems = filteredItemIds
     .map((id) => portfolio.items.find((item) => item.id === id))
     .filter((item): item is ProductPortfolioItem => Boolean(item));
-  const visibleItems = filteredItems.slice(0, visibleCount);
+  const activePortfolioItem = portfolio.items.find((item) => item.id === activePortfolioItemId) ?? null;
 
   useEffect(() => {
-    setVisibleCount(initialVisibleCount);
-    setRevealedProductId(null);
-    revealLockRef.current = false;
-  }, [activeFilterId, initialVisibleCount]);
+    setActivePortfolioItemId(null);
+  }, [activeFilterId]);
 
   useEffect(() => {
-    const sentinel = revealSentinelRef.current;
-    if (!sentinel || visibleCount >= filteredItems.length) return;
+    if (!activePortfolioItem) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting || revealLockRef.current) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-        revealLockRef.current = true;
-        setVisibleCount((currentCount) => Math.min(currentCount + 4, filteredItems.length));
-        window.setTimeout(() => {
-          revealLockRef.current = false;
-        }, 260);
-      },
-      { rootMargin: "120px 0px" },
-    );
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [activePortfolioItem]);
 
-    observer.observe(sentinel);
+  function closePortfolioModal() {
+    const itemId = activePortfolioItemId;
+    setActivePortfolioItemId(null);
 
-    return () => observer.disconnect();
-  }, [filteredItems.length, visibleCount]);
+    window.setTimeout(() => {
+      if (itemId) modalTriggerRefs.current[itemId]?.focus();
+    }, 0);
+  }
+
+  function openPortfolioModal(itemId: string) {
+    setActivePortfolioItemId(itemId);
+  }
 
   return (
     <section className="product-detail-section product-portfolio-section" id={portfolio.id ?? "range"}>
@@ -543,7 +540,7 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
                 key={filter.id}
                 onClick={() => {
                   setActiveFilterId(filter.id);
-                  setRevealedProductId(null);
+                  setActivePortfolioItemId(null);
                 }}
                 role="tab"
                 type="button"
@@ -553,82 +550,141 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
             ))}
           </div>
         ) : null}
-        <div className="product-portfolio-lineup">
-          {visibleItems.map((item, index) => {
-            const isRevealed = revealedProductId === item.id;
-            const revealDetails = getPortfolioRevealDetails(item);
-
-            return (
-              <article
-                className={clsx("product-portfolio-card", isRevealed && "is-revealed")}
-                id={item.id}
-                key={item.id}
-                style={{ "--portfolio-reveal-index": index % 4 } as CSSProperties}
-                onBlurCapture={(event) => {
-                  const nextTarget = event.relatedTarget;
-                  if (!(nextTarget instanceof Node) || !event.currentTarget.contains(nextTarget)) {
-                    setRevealedProductId((currentId) => (currentId === item.id ? null : currentId));
-                  }
-                }}
-                onFocusCapture={() => setRevealedProductId(item.id)}
-                onMouseEnter={() => setRevealedProductId(item.id)}
-                onMouseLeave={(event) => {
-                  if (event.currentTarget.contains(document.activeElement)) {
-                    return;
-                  }
-                  setRevealedProductId((currentId) => (currentId === item.id ? null : currentId));
-                }}
-              >
-                <div className="product-portfolio-card__media">
-                  <Image alt={item.imageAlt} fill sizes="(max-width: 767px) 100vw, 25vw" src={item.image} />
-                </div>
-                <div className="product-portfolio-card__body">
-                  <div className="product-portfolio-card__copy">
-                    <strong>{item.title}</strong>
-                    <p>{item.description}</p>
-                  </div>
-                  <div aria-hidden={!isRevealed} className="product-portfolio-card__reveal">
-                    {revealDetails.map((detail) => (
-                      <div className="product-portfolio-card__detail" key={detail.title}>
-                        <span>{detail.title}</span>
-                        <strong>{detail.description}</strong>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Link
-                  aria-expanded={isRevealed}
-                  aria-label={`${isRevealed && item.cta ? item.cta.label : "View details"}: ${item.title}`}
-                  className="product-portfolio-card__trigger premium-focus"
-                  href={item.cta?.href ?? "#"}
-                  onPointerDownCapture={() => {
-                    pointerStartedCollapsedId.current = revealedProductId === item.id ? null : item.id;
-                  }}
-                  onClick={(event) => {
-                    const shouldReveal = pointerStartedCollapsedId.current === item.id || !isRevealed || !item.cta;
-                    pointerStartedCollapsedId.current = null;
-
-                    if (shouldReveal) {
-                      event.preventDefault();
-                      setRevealedProductId(item.id);
-                    }
-                  }}
-                >
-                  {isRevealed && item.cta ? item.cta.label : "View details"}
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-        {filteredItems.length > visibleItems.length ? (
-          <div aria-hidden="true" className="product-portfolio-reveal-sentinel" ref={revealSentinelRef} />
+        <ProductImageCarousel
+          ariaLabel={`${portfolio.title} products`}
+          getItemLabel={(item) => `View commercial details for ${item.title}`}
+          items={filteredItems}
+          key={activeFilterId}
+          mode="button"
+          onItemActivate={(item) => openPortfolioModal(item.id)}
+          setItemRef={(id, node) => {
+            modalTriggerRefs.current[id] = node;
+          }}
+          showPlus
+        />
+        {activePortfolioItem ? (
+          <ProductPortfolioModal product={activePortfolioItem} onClose={closePortfolioModal} />
         ) : null}
       </Container>
     </section>
   );
 }
 
-function getPortfolioRevealDetails(product: ProductPortfolioItem) {
+function ProductPortfolioModal({
+  product,
+  onClose,
+}: {
+  product: ProductPortfolioItem;
+  onClose: () => void;
+}) {
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const titleId = `product-portfolio-modal-${product.id}`;
+  const details = getPortfolioModalDetails(product);
+  const packing = product.packing.slice(0, 2);
+  const specRows = product.specs?.slice(0, 4) ?? [];
+  const titleParts = splitPortfolioTitle(product.title);
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, [product.id]);
+
+  return (
+    <div
+      className="product-info-modal product-info-modal--portfolio"
+      onClick={onClose}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") onClose();
+      }}
+      role="presentation"
+    >
+      <section
+        aria-labelledby={titleId}
+        aria-modal="true"
+        className="product-info-modal__panel product-info-modal__panel--editorial"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+      >
+        <button
+          aria-label="Close product details"
+          className="product-info-modal__close premium-focus"
+          onClick={onClose}
+          ref={closeButtonRef}
+          type="button"
+        />
+        <div className="product-info-modal__editorial">
+          <header className="product-info-modal__editorial-header">
+            {titleParts.label ? <p className="product-info-modal__title-label">{titleParts.label}</p> : null}
+            <h2 id={titleId}>{titleParts.heading}</h2>
+          </header>
+
+          <section className="product-info-modal__surface">
+            <div className="product-info-modal__surface-copy">
+              <h3>Commercial fit</h3>
+              <p>{product.overview || product.fit}</p>
+            </div>
+            <figure className="product-info-modal__wide-media">
+              <Image src={product.image} alt={product.imageAlt} fill sizes="(min-width: 1024px) 960px, 100vw" />
+            </figure>
+            {product.applications.length ? (
+              <ul className="product-info-modal__applications-list" aria-label="Applications">
+                {product.applications.slice(0, 4).map((application) => (
+                  <li key={application}>{application}</li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
+
+          <section className="product-info-modal__surface">
+            <div className="product-info-modal__surface-copy">
+              <h3>Specification snapshot</h3>
+              <p>Key commercial details are summarized here for a quick grade review.</p>
+            </div>
+            <dl className="product-info-modal__facts product-info-modal__facts--editorial">
+              {details.map((detail) => (
+                <div key={detail.title}>
+                  <dt>{detail.title}</dt>
+                  <dd>{detail.description}</dd>
+                </div>
+              ))}
+              {specRows.map((row) => (
+                <div key={row.parameter}>
+                  <dt>{row.parameter}</dt>
+                  <dd>{row.specification}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <section className="product-info-modal__surface product-info-modal__surface--request">
+            <div className="product-info-modal__surface-copy">
+              <h3>Packing &amp; request</h3>
+              <p>{product.fit}</p>
+            </div>
+            {packing.length ? (
+              <dl className="product-info-modal__facts product-info-modal__facts--editorial">
+                {packing.map((detail) => (
+                  <div key={detail.title}>
+                    <dt>{detail.title}</dt>
+                    <dd>{detail.description}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+            {product.cta ? (
+              <div className="product-info-modal__actions">
+                <LinkButton href={product.cta.href} variant="primary">
+                  {product.cta.label}
+                </LinkButton>
+              </div>
+            ) : null}
+          </section>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function getPortfolioModalDetails(product: ProductPortfolioItem) {
   const details = product.keyDetails?.length
     ? product.keyDetails
     : [
@@ -637,9 +693,22 @@ function getPortfolioRevealDetails(product: ProductPortfolioItem) {
         ...product.packing.slice(0, 1),
       ];
 
-  return ["Source", "Typical uses", "Packing"]
+  return ["Source", "Sugar type", "ICUMSA grade", "ICUMSA range", "Typical uses", "Packing"]
     .map((title) => details.find((detail) => detail.title.toLowerCase() === title.toLowerCase()))
     .filter((detail): detail is ProductDetailItem => Boolean(detail));
+}
+
+function splitPortfolioTitle(title: string) {
+  const [firstPart, ...restParts] = title.split("/").map((part) => part.trim()).filter(Boolean);
+
+  if (!firstPart || restParts.length === 0) {
+    return { heading: title, label: null };
+  }
+
+  return {
+    heading: firstPart,
+    label: restParts.join(" / "),
+  };
 }
 
 function findSpecValue(rows: ProductSpecRow[] | undefined, parameter: string) {
