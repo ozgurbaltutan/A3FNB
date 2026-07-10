@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +8,9 @@ import { clsx } from "clsx";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InnerPageHero } from "@/components/inner-page-hero";
 import { ProductImageGrid } from "@/components/product-image-carousel";
+import { ProcessAccordion } from "@/components/process-accordion";
 import { Container, LinkButton } from "@/components/ui";
+import { CountUpMetric } from "@/components/count-up-metric";
 import { homeAssets, productCategories, productCategoryHref } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
 
@@ -71,6 +74,7 @@ type ProductRangeGroup = {
 type ProductPortfolioItem = {
   id: string;
   title: string;
+  cardTitle?: string;
   description: string;
   image: string;
   imageAlt: string;
@@ -85,20 +89,11 @@ type ProductPortfolioItem = {
   cta?: ProductDetailLink;
 };
 
-type ProductPortfolioGroup = {
-  title: string;
-  description: string;
-  itemIds: string[];
-};
-
 type ProductPortfolio = {
   id?: string;
   title: string;
   text: string;
-  display?: "lineup";
-  initialVisibleCount?: number;
   filters?: { id: string; label: string; itemIds: string[] }[];
-  groups?: ProductPortfolioGroup[];
   items: ProductPortfolioItem[];
 };
 
@@ -148,6 +143,17 @@ type ProductStorySection = {
   imagePosition?: "left" | "right";
 };
 
+type ProductKeyFacts = {
+  title: string;
+  edition?: string;
+  items: {
+    value: string;
+    label?: string;
+    description: string;
+  }[];
+  sources?: ProductDetailLink[];
+};
+
 type ProductDetailProps = {
   breadcrumb: NavigationItem[];
   hero?: ProductDetailHero;
@@ -158,6 +164,7 @@ type ProductDetailProps = {
   };
   storySections?: ProductStorySection[];
   afterSupportStorySections?: ProductStorySection[];
+  keyFacts?: ProductKeyFacts;
   profiles?: {
     title: string;
     text: string;
@@ -203,6 +210,7 @@ export function ProductDetailLayout({
   intro,
   storySections,
   afterSupportStorySections,
+  keyFacts,
   profiles,
   productRange,
   productPortfolio,
@@ -242,6 +250,7 @@ export function ProductDetailLayout({
         <ProductProfiles profiles={profiles} />
       ) : null}
       {productPortfolio ? <ProductPortfolioSection portfolio={productPortfolio} /> : null}
+      {keyFacts ? <ProductKeyFactsSection facts={keyFacts} /> : null}
       {portfolioStorySections.map((section, index) => (
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
@@ -265,6 +274,46 @@ export function ProductDetailLayout({
       {related?.length ? <RelatedProducts links={related} /> : null}
       <ProductFinalCta cta={finalCta} />
     </>
+  );
+}
+
+function ProductKeyFactsSection({ facts }: { facts: ProductKeyFacts }) {
+  return (
+    <section className="product-detail-section product-key-facts" id="sugar-key-facts">
+      <Container className="a3-container product-key-facts__inner">
+        <div className="product-key-facts__header">
+          <h2 className="type-section">{facts.title}</h2>
+          {facts.edition ? <p>{facts.edition}</p> : null}
+        </div>
+        <div className="product-key-facts__grid">
+          {facts.items.map((fact) => {
+            return (
+              <article className="product-key-facts__item" key={`${fact.value}-${fact.description}`}>
+                <p className="product-key-facts__value type-metric">
+                  <CountUpMetric value={fact.value} />
+                  {fact.label ? <small>{fact.label}</small> : null}
+                </p>
+                <p className="product-key-facts__description">{fact.description}</p>
+              </article>
+            );
+          })}
+        </div>
+        {facts.sources?.length ? (
+          <p className="product-key-facts__sources">
+            <span>Sources:</span>{" "}
+            {facts.sources.map((source, index) => (
+              <span key={source.href}>
+                {index ? ", " : null}
+                <a href={source.href} rel="noreferrer" target="_blank">
+                  {source.label}
+                </a>
+              </span>
+            ))}
+            .
+          </p>
+        ) : null}
+      </Container>
+    </section>
   );
 }
 
@@ -560,7 +609,6 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
           setItemRef={(id, node) => {
             modalTriggerRefs.current[id] = node;
           }}
-          showPlus
         />
         {activePortfolioItem ? (
           <ProductPortfolioModal product={activePortfolioItem} onClose={closePortfolioModal} />
@@ -578,30 +626,62 @@ function ProductPortfolioModal({
   onClose: () => void;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
   const titleId = `product-portfolio-modal-${product.id}`;
+  const descriptionId = `${titleId}-description`;
   const details = getPortfolioModalDetails(product);
-  const packing = product.packing.slice(0, 2);
   const specRows = product.specs?.slice(0, 4) ?? [];
-  const titleParts = splitPortfolioTitle(product.title);
 
   useEffect(() => {
     closeButtonRef.current?.focus();
   }, [product.id]);
 
+  function handleDialogKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onClose();
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const focusable = Array.from(
+      panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? [],
+    ).filter((element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true");
+
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+
+    const firstFocusable = focusable[0];
+    const lastFocusable = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstFocusable) {
+      event.preventDefault();
+      lastFocusable.focus();
+    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+      event.preventDefault();
+      firstFocusable.focus();
+    }
+  }
+
   return (
     <div
       className="product-info-modal product-info-modal--portfolio"
       onClick={onClose}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") onClose();
-      }}
       role="presentation"
     >
       <section
+        aria-describedby={descriptionId}
         aria-labelledby={titleId}
         aria-modal="true"
-        className="product-info-modal__panel product-info-modal__panel--editorial"
+        className="product-info-modal__panel product-info-modal__panel--technical"
         onClick={(event) => event.stopPropagation()}
+        onKeyDown={handleDialogKeyDown}
+        ref={panelRef}
         role="dialog"
       >
         <button
@@ -611,73 +691,47 @@ function ProductPortfolioModal({
           ref={closeButtonRef}
           type="button"
         />
-        <div className="product-info-modal__editorial">
-          <header className="product-info-modal__editorial-header">
-            {titleParts.label ? <p className="product-info-modal__title-label">{titleParts.label}</p> : null}
-            <h2 id={titleId}>{titleParts.heading}</h2>
+        <div className="product-info-modal__technical">
+          <header className="product-info-modal__technical-header">
+            <h2 id={titleId}>{product.title}</h2>
+            <p id={descriptionId}>{product.overview || product.fit}</p>
           </header>
 
-          <section className="product-info-modal__surface">
-            <div className="product-info-modal__surface-copy">
-              <h3>Commercial fit</h3>
-              <p>{product.overview || product.fit}</p>
-            </div>
-            <figure className="product-info-modal__wide-media">
-              <Image src={product.image} alt={product.imageAlt} fill sizes="(min-width: 1024px) 960px, 100vw" />
-            </figure>
-            {product.applications.length ? (
-              <ul className="product-info-modal__applications-list" aria-label="Applications">
-                {product.applications.slice(0, 4).map((application) => (
-                  <li key={application}>{application}</li>
-                ))}
-              </ul>
-            ) : null}
-          </section>
-
-          <section className="product-info-modal__surface">
-            <div className="product-info-modal__surface-copy">
-              <h3>Specification snapshot</h3>
-              <p>Key commercial details are summarized here for a quick grade review.</p>
-            </div>
-            <dl className="product-info-modal__facts product-info-modal__facts--editorial">
-              {details.map((detail) => (
-                <div key={detail.title}>
-                  <dt>{detail.title}</dt>
-                  <dd>{detail.description}</dd>
-                </div>
-              ))}
-              {specRows.map((row) => (
-                <div key={row.parameter}>
-                  <dt>{row.parameter}</dt>
-                  <dd>{row.specification}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          <section className="product-info-modal__surface product-info-modal__surface--request">
-            <div className="product-info-modal__surface-copy">
-              <h3>Packing &amp; request</h3>
-              <p>{product.fit}</p>
-            </div>
-            {packing.length ? (
-              <dl className="product-info-modal__facts product-info-modal__facts--editorial">
-                {packing.map((detail) => (
+          {details.length ? (
+            <section className="product-info-modal__technical-section">
+              <h3>Commercial details</h3>
+              <dl className="product-info-modal__facts product-info-modal__facts--technical">
+                {details.map((detail) => (
                   <div key={detail.title}>
                     <dt>{detail.title}</dt>
                     <dd>{detail.description}</dd>
                   </div>
                 ))}
               </dl>
-            ) : null}
-            {product.cta ? (
-              <div className="product-info-modal__actions">
-                <LinkButton href={product.cta.href} variant="primary">
-                  {product.cta.label}
-                </LinkButton>
-              </div>
-            ) : null}
-          </section>
+            </section>
+          ) : null}
+
+          {specRows.length ? (
+            <section className="product-info-modal__technical-section">
+              <h3>Specification snapshot</h3>
+              <dl className="product-info-modal__facts product-info-modal__facts--technical">
+                {specRows.map((row) => (
+                  <div key={row.parameter}>
+                    <dt>{row.parameter}</dt>
+                    <dd>{row.specification}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ) : null}
+
+          {product.cta ? (
+            <footer className="product-info-modal__technical-actions">
+              <LinkButton href={product.cta.href} variant="primary">
+                {product.cta.label}
+              </LinkButton>
+            </footer>
+          ) : null}
         </div>
       </section>
     </div>
@@ -685,30 +739,13 @@ function ProductPortfolioModal({
 }
 
 function getPortfolioModalDetails(product: ProductPortfolioItem) {
-  const details = product.keyDetails?.length
+  return product.keyDetails?.length
     ? product.keyDetails
     : [
         { title: "Source", description: product.source },
         { title: "Typical uses", description: product.fit },
         ...product.packing.slice(0, 1),
       ];
-
-  return ["Source", "Sugar type", "ICUMSA grade", "ICUMSA range", "Typical uses", "Packing"]
-    .map((title) => details.find((detail) => detail.title.toLowerCase() === title.toLowerCase()))
-    .filter((detail): detail is ProductDetailItem => Boolean(detail));
-}
-
-function splitPortfolioTitle(title: string) {
-  const [firstPart, ...restParts] = title.split("/").map((part) => part.trim()).filter(Boolean);
-
-  if (!firstPart || restParts.length === 0) {
-    return { heading: title, label: null };
-  }
-
-  return {
-    heading: firstPart,
-    label: restParts.join(" / "),
-  };
 }
 
 function findSpecValue(rows: ProductSpecRow[] | undefined, parameter: string) {
@@ -779,40 +816,22 @@ function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProp
 }
 
 function ShipmentOptions({ options }: { options: ProductShipmentOptions }) {
-  const [activeItem, setActiveItem] = useState<string | null>(options.items[0]?.title ?? null);
-
   return (
     <section className="product-detail-section shipment-options-section" id="shipment-options">
       <Container className="a3-container shipment-options-section__inner">
         <div className="shipment-options-section__copy">
           <h2 className="type-section">{options.title}</h2>
           <p className="type-section-lead">{options.text}</p>
-          <div className="process-accordion shipment-options-section__steps">
-            {options.items.map((item, index) => {
-              const isActive = activeItem === item.title;
-              const panelId = `shipment-option-${index + 1}`;
-              const number = String(index + 1).padStart(2, "0");
-
-              return (
-                <article className={clsx("process-accordion-item", isActive && "is-active")} key={item.title}>
-                  <button
-                    aria-controls={panelId}
-                    aria-expanded={isActive}
-                    className="process-accordion-trigger"
-                    onClick={() => setActiveItem((currentItem) => (currentItem === item.title ? null : item.title))}
-                    type="button"
-                  >
-                    <span className="process-accordion-index">{number}</span>
-                    <span className="process-accordion-title">{item.title}</span>
-                    <span className="process-accordion-arrow" aria-hidden="true" />
-                  </button>
-                  <div className="process-accordion-panel" id={panelId}>
-                    <p>{item.description}</p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <ProcessAccordion
+            ariaLabel={`${options.title} details`}
+            className="shipment-options-section__steps"
+            items={options.items.map((item, index) => ({
+              id: item.title,
+              number: String(index + 1).padStart(2, "0"),
+              title: item.title,
+              description: item.description,
+            }))}
+          />
         </div>
         <figure className="shipment-options-section__media">
           <Image src={options.image} alt={options.imageAlt} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
@@ -1023,7 +1042,6 @@ function ProductDocuments({ documents }: { documents: NonNullable<ProductDetailP
 }
 
 function ProductSupport({ support }: { support: ProductSupportSection }) {
-  const [activeStep, setActiveStep] = useState<string | null>("01");
   const useMediaLayout = support.variant === "media" && support.image;
 
   return (
@@ -1033,32 +1051,16 @@ function ProductSupport({ support }: { support: ProductSupportSection }) {
           <h2 className="type-section">{support.title}</h2>
           <p className="type-section-lead">{support.text}</p>
           {useMediaLayout ? (
-            <div className="process-accordion product-detail-support__steps">
-              {support.steps.map((step, index) => {
-                const number = String(index + 1).padStart(2, "0");
-                const isActive = activeStep === number;
-                const panelId = `product-support-step-${number}`;
-
-                return (
-                <article className={clsx("process-accordion-item", isActive && "is-active")} key={step.title}>
-                  <button
-                    aria-controls={panelId}
-                    aria-expanded={isActive}
-                    className="process-accordion-trigger"
-                    onClick={() => setActiveStep((currentStep) => (currentStep === number ? null : number))}
-                    type="button"
-                  >
-                    <span className="process-accordion-index">{number}</span>
-                    <span className="process-accordion-title">{step.title}</span>
-                    <span className="process-accordion-arrow" aria-hidden="true" />
-                  </button>
-                  <div className="process-accordion-panel" id={panelId}>
-                    <p>{step.description}</p>
-                  </div>
-                </article>
-                );
-              })}
-            </div>
+            <ProcessAccordion
+              ariaLabel={`${support.title} steps`}
+              className="product-detail-support__steps"
+              items={support.steps.map((step, index) => ({
+                id: step.title,
+                number: String(index + 1).padStart(2, "0"),
+                title: step.title,
+                description: step.description,
+              }))}
+            />
           ) : (
             <div className="product-detail-support__list">
               {support.steps.map((step, index) => (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { company, navigation, productCategories, productCategoryHref } from "@/content/site";
@@ -13,9 +13,47 @@ const menuProducts = productCategories.map((category) => ({
   href: productCategoryHref(category),
 }));
 
-const footerProducts = [{ label: "View All Products", href: "/en/products" }, ...menuProducts];
+const footerProducts = menuProducts;
+const footerCompanyLinks = ["About", "How We Work", "Markets & Sourcing", "Resources"].flatMap((label) => {
+  const item = navigation.find((navigationItem) => navigationItem.label === label);
+  return item ? [{ label: item.label, href: item.href }] : [];
+});
 const productsNavigationItem = navigation.find((item) => item.label === "Products");
 const mobileProductLinks = productsNavigationItem?.children ?? footerProducts;
+
+type FooterSectionId = "company" | "products" | "legal" | "contact";
+
+const footerSectionTitles: Record<FooterSectionId, string> = {
+  company: "Company",
+  products: "Products",
+  legal: "Legal",
+  contact: "Contact",
+};
+
+const FOOTER_COMPACT_QUERY = "(max-width: 1023px)";
+
+function subscribeToFooterBreakpoint(onStoreChange: () => void) {
+  const mediaQuery = window.matchMedia(FOOTER_COMPACT_QUERY);
+  mediaQuery.addEventListener("change", onStoreChange);
+
+  return () => mediaQuery.removeEventListener("change", onStoreChange);
+}
+
+function getFooterBreakpointSnapshot() {
+  return window.matchMedia(FOOTER_COMPACT_QUERY).matches;
+}
+
+function getFooterBreakpointServerSnapshot() {
+  return false;
+}
+
+function useCompactFooter() {
+  return useSyncExternalStore(
+    subscribeToFooterBreakpoint,
+    getFooterBreakpointSnapshot,
+    getFooterBreakpointServerSnapshot,
+  );
+}
 
 const footerLegalLinks = [
   { label: "Cookie Policy", href: "/en/cookie-policy" },
@@ -308,10 +346,19 @@ function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const isCompact = useCompactFooter();
+  const [openSection, setOpenSection] = useState<FooterSectionId | null>(null);
   const registeredOfficeLines = [
     company.registeredOffice.street,
     `${company.registeredOffice.city}, England, ${company.registeredOffice.postalCode}`,
   ];
+  const sectionOrder: FooterSectionId[] = isCompact
+    ? ["company", "products", "contact", "legal"]
+    : ["company", "products", "legal", "contact"];
+
+  useEffect(() => {
+    if (!isCompact) setOpenSection(null);
+  }, [isCompact]);
 
   return (
     <footer className="site-footer">
@@ -350,38 +397,31 @@ export function Footer() {
             ) : null}
           </div>
           <div className="site-footer__columns">
-            <FooterColumn
-              title="Site"
-              links={navigation.map((item) => ({ label: item.label, href: item.href }))}
-              className="site-footer__column site-footer__column--site"
-            />
-            <FooterColumn
-              title="Products"
-              links={footerProducts}
-              className="site-footer__column site-footer__column--products"
-              listClassName="footer-link-grid footer-link-grid--products"
-            />
-            <FooterColumn title="Legal" links={footerLegalLinks} className="site-footer__column site-footer__column--legal" />
-            <div className="site-footer__column site-footer__column--contact">
-              <p className="footer-heading">Contact</p>
-              <div className="footer-contact-list type-p3">
-                <a className="footer-link footer-link--contact premium-focus" href={`mailto:${company.email}`}>
-                  {company.email}
-                </a>
-                <a className="footer-link footer-link--contact premium-focus" href={`tel:${company.phone.replace(/\s+/g, "")}`}>
-                  {company.phone}
-                </a>
-                <p className="footer-contact-address">
-                  {registeredOfficeLines.map((line) => (
-                    <span key={line}>{line}</span>
-                  ))}
-                </p>
-              </div>
-            </div>
+            {sectionOrder.map((sectionId) => {
+              const isOpen = openSection === sectionId;
+
+              return (
+                <FooterSection
+                  id={sectionId}
+                  isCompact={isCompact}
+                  isOpen={isOpen}
+                  key={sectionId}
+                  onToggle={() => setOpenSection((current) => (current === sectionId ? null : sectionId))}
+                  title={footerSectionTitles[sectionId]}
+                >
+                  {sectionId === "company" ? <FooterLinks links={footerCompanyLinks} /> : null}
+                  {sectionId === "products" ? (
+                    <FooterLinks links={footerProducts} className="footer-link-grid footer-link-grid--products" />
+                  ) : null}
+                  {sectionId === "legal" ? <FooterLinks links={footerLegalLinks} /> : null}
+                  {sectionId === "contact" ? <FooterContact registeredOfficeLines={registeredOfficeLines} /> : null}
+                </FooterSection>
+              );
+            })}
           </div>
         </div>
         <div className="site-footer__legal">
-          <p className="site-footer__copyright">Copyright {currentYear} {company.legalName}. All rights reserved.</p>
+          <p className="site-footer__copyright">Copyright © {currentYear} {company.legalName}. All rights reserved.</p>
           <div className="site-footer__legal-items">
             <span>Company No. {company.companyNumber}</span>
             <span>VAT {company.vatNumber}</span>
@@ -417,27 +457,83 @@ function FooterSocialIcon({ icon }: { icon: string }) {
   );
 }
 
-function FooterColumn({
+function FooterSection({
+  id,
   title,
-  links,
-  className,
-  listClassName,
+  isCompact,
+  isOpen,
+  onToggle,
+  children,
 }: {
+  id: FooterSectionId;
   title: string;
-  links: { label: string; href: string }[];
-  className?: string;
-  listClassName?: string;
+  isCompact: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: ReactNode;
 }) {
+  const headingId = `footer-${id}-heading`;
+  const panelId = `footer-${id}-panel`;
+
   return (
-    <div className={className}>
-      <p className="footer-heading">{title}</p>
-      <div className={clsx("footer-link-list", listClassName)}>
-        {links.map((link) => (
-          <Link className="footer-link premium-focus" href={link.href} key={link.href}>
-            {link.label}
-          </Link>
-        ))}
+    <section className={clsx("site-footer__column", `site-footer__column--${id}`, isOpen && "is-open")} aria-labelledby={headingId}>
+      {isCompact ? (
+        <button
+          aria-controls={panelId}
+          aria-expanded={isOpen}
+          className="footer-accordion-trigger premium-focus"
+          id={headingId}
+          onClick={onToggle}
+          type="button"
+        >
+          <span>{title}</span>
+          <span aria-hidden="true" className="footer-accordion-chevron" />
+        </button>
+      ) : (
+        <p className="footer-heading" id={headingId}>{title}</p>
+      )}
+      <div
+        aria-labelledby={isCompact ? headingId : undefined}
+        className="footer-section-panel"
+        hidden={isCompact && !isOpen}
+        id={panelId}
+        role={isCompact ? "region" : undefined}
+      >
+        <div className="footer-section-panel__inner">{children}</div>
       </div>
+    </section>
+  );
+}
+
+function FooterLinks({ links, className }: { links: { label: string; href: string }[]; className?: string }) {
+  return (
+    <div className={clsx("footer-link-list", className)}>
+      {links.map((link) => (
+        <Link className="footer-link premium-focus" href={link.href} key={link.href}>
+          {link.label}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function FooterContact({ registeredOfficeLines }: { registeredOfficeLines: string[] }) {
+  return (
+    <div className="footer-contact-list type-p3">
+      <Link className="footer-link footer-link--contact premium-focus" href="/en/contact">
+        Contact us
+      </Link>
+      <a className="footer-link footer-link--contact premium-focus" href={`mailto:${company.email}`}>
+        {company.email}
+      </a>
+      <a className="footer-link footer-link--contact premium-focus" href={`tel:${company.phone.replace(/\s+/g, "")}`}>
+        {company.phone}
+      </a>
+      <p className="footer-contact-address">
+        {registeredOfficeLines.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </p>
     </div>
   );
 }

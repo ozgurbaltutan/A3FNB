@@ -7,6 +7,7 @@ import { CarouselRail, useCarouselRail } from "@/components/carousel-rail";
 export type ProductImageCarouselItem = {
   id: string;
   title: string;
+  cardTitle?: string;
   description: string;
   image: string;
   imageAlt: string;
@@ -15,9 +16,9 @@ export type ProductImageCarouselItem = {
 type ProductImageCarouselBaseProps<TItem extends ProductImageCarouselItem> = {
   ariaLabel: string;
   className?: string;
+  contentMode?: "default" | "title-only";
   getItemLabel?: (item: TItem) => string;
   items: TItem[];
-  showPlus?: boolean;
 };
 
 type ProductImageCarouselLinkProps<TItem extends ProductImageCarouselItem> =
@@ -46,10 +47,10 @@ type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
   imageSizes?: string;
   item: TItem;
   mode: "link" | "button";
+  contentMode?: "default" | "title-only";
   onActivate?: (item: TItem) => void;
   priority?: boolean;
   setItemRef?: (id: string, node: HTMLElement | null) => void;
-  showPlus?: boolean;
 };
 
 function ProductImageCard<TItem extends ProductImageCarouselItem>({
@@ -58,12 +59,14 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   imageSizes = "(max-width: 767px) 82vw, (max-width: 1199px) 38vw, 24vw",
   item,
   mode,
+  contentMode = "default",
   onActivate,
   priority = false,
   setItemRef,
-  showPlus = false,
 }: ProductImageCardProps<TItem>) {
   const label = getItemLabel?.(item) ?? item.title;
+  const cardTitle = item.cardTitle ?? item.title;
+  const cardClassName = `product-image-card${contentMode === "title-only" ? " product-image-card--title-only" : ""}`;
   const content = (
     <>
       <div className="product-image-card__media">
@@ -77,21 +80,16 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
       </div>
       <div className="product-image-card__body">
         <div className="product-image-card__copy">
-          <strong>{item.title}</strong>
-          <p>{item.description}</p>
+          <strong>{cardTitle}</strong>
+          {contentMode === "default" ? <p>{item.description}</p> : null}
         </div>
       </div>
-      {showPlus ? (
-        <span className="card-plus-button product-image-card__trigger" aria-hidden="true">
-          <span aria-hidden="true" />
-        </span>
-      ) : null}
     </>
   );
 
   if (mode === "link") {
     return (
-      <Link aria-label={label} className="product-image-card" href={href ?? "#"}>
+      <Link aria-label={label} className={cardClassName} href={href ?? "#"}>
         {content}
       </Link>
     );
@@ -100,7 +98,7 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   return (
     <button
       aria-label={label}
-      className="product-image-card"
+      className={cardClassName}
       onClick={() => onActivate?.(item)}
       ref={(node) => setItemRef?.(item.id, node)}
       type="button"
@@ -111,7 +109,7 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
 }
 
 export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(props: ProductImageCarouselProps<TItem>) {
-  const { ariaLabel, className = "", getItemLabel, items, showPlus = false } = props;
+  const { ariaLabel, className = "", contentMode = "default", getItemLabel, items } = props;
   const rail = useCarouselRail({ itemCount: items.length });
   const hasControls = items.length > 1;
 
@@ -134,8 +132,8 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
                 item={item}
                 key={item.id}
                 mode="link"
+                contentMode={contentMode}
                 priority={index < 2}
-                showPlus={showPlus}
               />
             );
           }
@@ -146,10 +144,10 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
               item={item}
               key={item.id}
               mode="button"
+              contentMode={contentMode}
               onActivate={props.onItemActivate}
               priority={index < 2}
               setItemRef={props.setItemRef}
-              showPlus={showPlus}
             />
           );
         })}
@@ -179,7 +177,7 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
 export type ProductImageGridProps<TItem extends ProductImageCarouselItem> = ProductImageCarouselProps<TItem>;
 
 export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: ProductImageGridProps<TItem>) {
-  const { ariaLabel, className = "", getItemLabel, items, showPlus = false } = props;
+  const { ariaLabel, className = "", contentMode = "default", getItemLabel, items } = props;
 
   return (
     <ul aria-label={ariaLabel} className={`product-card-grid product-image-grid ${className}`.trim()}>
@@ -192,8 +190,8 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="link"
+              contentMode={contentMode}
               priority={index < 4}
-              showPlus={showPlus}
             />
           ) : (
             <ProductImageCard
@@ -201,10 +199,10 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="button"
+              contentMode={contentMode}
               onActivate={props.onItemActivate}
               priority={index < 4}
               setItemRef={props.setItemRef}
-              showPlus={showPlus}
             />
           )}
         </li>

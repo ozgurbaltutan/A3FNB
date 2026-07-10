@@ -85,17 +85,58 @@ export default function SugarPage() {
           hideBreadcrumb: true,
           variant: "compact",
         }}
+        keyFacts={{
+          title: "Sugar key facts",
+          edition: "Market figures: USDA FAS, May 2026 · 2026/27 forecast",
+          items: [
+            {
+              value: "8,000",
+              label: "BC",
+              description: "Sugar cane was first domesticated around this time, probably in New Guinea.",
+            },
+            {
+              value: "80%",
+              description: "Of the world’s sugar comes from sugar cane; 20% comes from sugar beet.",
+            },
+            {
+              value: "184.9",
+              label: "million metric tons",
+              description: "Forecast global sugar production for 2026/27.",
+            },
+            {
+              value: "About 54%",
+              description: "Brazil’s forecast share of global sugar exports for 2026/27—33.6 million of 62.3 million metric tons.",
+            },
+            {
+              value: "1908",
+              description: "The Ford Model T could run on ethanol, gasoline, or a blend of the two.",
+            },
+          ],
+          sources: [
+            {
+              label: "USDA FAS Sugar: World Markets and Trade",
+              href: "https://apps.fas.usda.gov/psdonline/circulars/sugar.pdf",
+            },
+            {
+              label: "U.S. Department of Energy Bioenergy Technologies Office",
+              href: "https://www.energy.gov/sites/prod/files/2015/03/f20/beto_coloring_activity_book.pdf",
+            },
+            {
+              label: "USDA ERS Ethanol’s Evolving Role",
+              href: "https://ers.usda.gov/sites/default/files/_laserfiche/outlooks/37284/33109_ius1d_002.pdf",
+            },
+          ],
+        }}
         productPortfolio={{
           id: "range",
           title: "Sugar portfolio",
           text:
-            "Explore refined, crystal, raw and beet sugar options organized by source, ICUMSA grade and commercial application.",
-          display: "lineup",
-          initialVisibleCount: 4,
+            "We source high-quality Brazilian cane sugar and European beet sugar by origin and specific ICUMSA grade. Every supply option is rigorously assessed to ensure it meets the technical standards required by food manufacturers, primary processors, and industrial consumers worldwide.",
           items: [
             {
               id: "icumsa-45",
               title: "ICUMSA 45 / White Refined Sugar",
+              cardTitle: "ICUMSA 45",
               description:
                 "A refined white cane sugar for food production, beverages, retail packing and direct consumption.",
               image: "/media/products/sugar/white-sugar-cubes.webp",
@@ -130,6 +171,7 @@ export default function SugarPage() {
             {
               id: "icumsa-150",
               title: "ICUMSA 150 / Crystal Sugar",
+              cardTitle: "ICUMSA 150",
               description:
                 "A crystal cane sugar option for bakery, beverage and general food manufacturing.",
               image: "/media/products/sugar/raw-sugar-bowl.webp",
@@ -164,6 +206,7 @@ export default function SugarPage() {
             {
               id: "icumsa-600-1200",
               title: "ICUMSA 600-1200 / Brown Raw Sugar",
+              cardTitle: "ICUMSA 600-1200",
               description:
                 "A brown raw cane sugar option for industrial use, food production and further refining.",
               image: "/media/products/sugar/sugarcane-field.webp",
@@ -198,6 +241,7 @@ export default function SugarPage() {
             {
               id: "icumsa-60-100",
               title: "ICUMSA 60-100 / White Beet Sugar",
+              cardTitle: "ICUMSA 60-100",
               description:
                 "A white beet sugar option for food production, beverages, bakery, confectionery and industrial applications.",
               image: "/media/products/sugar/beet-sugar-bowl.webp",
@@ -234,7 +278,7 @@ export default function SugarPage() {
         technicalSpecs={{
           title: "Technical specifications",
           text:
-            "The main sugar grade values from the public catalogue, shown for comparison before requesting a quotation.",
+            "The main sugar grade values for comparison before requesting a quotation.",
           profiles: [
             { title: "ICUMSA 45", subtitle: "White refined cane sugar", rows: icumsa45Specs },
             { title: "ICUMSA 150", subtitle: "Crystal cane sugar", rows: icumsa150Specs },
@@ -242,25 +286,21 @@ export default function SugarPage() {
             { title: "ICUMSA 60-100", subtitle: "White beet sugar", rows: icumsa60Specs },
           ],
         }}
-        storySections={[
-          {
-            title: "From grade to workable supply",
-            paragraphs: [
-              "A sugar quotation only becomes useful when the grade, packing format, volume, destination and required documents are clear. Those details shape the supplier route, loading model and commercial terms.",
-              "A3 reviews the requested ICUMSA level with producer capability, export readiness and shipment conditions before presenting a supply option that can move forward.",
-            ],
-            image: "/media/products/sugar/sugarcane-field.webp",
-            imageAlt: "Sugar cane field for cane sugar sourcing",
-            imagePosition: "left",
-          },
-        ]}
         shipmentOptions={{
-          title: "Shipment options",
+          title: "From grade to workable supply",
           text:
-            "Packing, loading model, shipment route and document needs define the operational side of a workable sugar offer.",
+            "A3 connects cane and beet sugar supply with grade-specific market insight, flexible commercial support and end-to-end coordination from origin to final delivery.",
           image: "/media/products/sugar/sugar-big-bags-warehouse.webp",
           imageAlt: "Sugar big bags prepared in a warehouse",
           items: [
+            {
+              title: "Market intelligence",
+              description: "Sourcing insight and grade-specific information to support better procurement decisions.",
+            },
+            {
+              title: "Commercial de-risking",
+              description: "Flexible financing and payment solutions designed to optimise procurement and manage costs.",
+            },
             {
               title: "Packing options",
               description: "Review retail bags, 50kg bags, big bags or bulk needs according to grade, destination and loading model.",
@@ -270,12 +310,12 @@ export default function SugarPage() {
               description: "Share expected monthly or one-off volume, timing and preferred loading format so workable supply can be checked.",
             },
             {
-              title: "Destination and route",
-              description: "Share the destination market and port so route, availability and shipment terms can be reviewed.",
+              title: "Route and integrated logistics",
+              description: "Share the destination market and port so availability, route and end-to-end shipment coordination can be reviewed.",
             },
             {
-              title: "Documents if needed",
-              description: "Specification, COA, origin or shipment documents are checked by request when required by the buyer or destination.",
+              title: "Documents and shipment follow-up",
+              description: "Specification, COA, origin and shipment documents are checked by request, with follow-up from loading through delivery.",
             },
           ],
         }}

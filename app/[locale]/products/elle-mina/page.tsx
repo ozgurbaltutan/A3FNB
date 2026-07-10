@@ -51,8 +51,6 @@ export default function ElleMinaPage() {
           title: "Elle Mina portfolio",
           text:
             "Explore consumer and professional margarine and butter formats for retail, foodservice, bakery and distribution buyers.",
-          display: "lineup",
-          initialVisibleCount: 4,
           items: elleMinaProducts.map((product) => {
             const fit = product.applications.join(", ");
 

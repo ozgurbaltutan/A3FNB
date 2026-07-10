@@ -98,8 +98,6 @@ export default function CoffeePage() {
           title: "Coffee portfolio",
           text:
             "Explore Brazilian green coffee profiles by type, cup profile, lot context, packing and export document readiness.",
-          display: "lineup",
-          initialVisibleCount: 4,
           items: coffeeProfiles.map((profile) => ({
             id: profile.id,
             title: profile.title,

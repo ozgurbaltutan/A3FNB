@@ -398,8 +398,6 @@ function productPortfolioFor(category: ProductCategory) {
     id: "range",
     title: `${category.title} portfolio`,
     text: `Explore ${category.title.toLowerCase()} options organized by product type, application, packing and commercial requirement.`,
-    display: "lineup" as const,
-    initialVisibleCount: 4,
     items: offeringsFor(category).map((offering) => {
       const commonFit = factValue(offering.facts, "Common fit") ?? factValue(offering.facts, "Applications") ?? category.shortDescription;
       const source = sourceForCategory(category);

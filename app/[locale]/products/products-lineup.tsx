@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { InnerPageHero } from "@/components/inner-page-hero";
@@ -9,11 +9,6 @@ import { Container, LinkButton } from "@/components/ui";
 import { homeLanding } from "@/content/site";
 
 type ProductLineupGroup = "commodities" | "ingredients" | "retail-foodservice";
-
-type ProductLineupFact = {
-  label: string;
-  value: string;
-};
 
 export type ProductLineupItem = {
   id: string;
@@ -23,9 +18,6 @@ export type ProductLineupItem = {
   image: string;
   imageAlt: string;
   group: ProductLineupGroup;
-  facts: ProductLineupFact[];
-  quoteHref?: string;
-  quoteLabel?: string;
 };
 
 const filters: { id: "all" | ProductLineupGroup; label: string }[] = [
@@ -62,17 +54,9 @@ const supportItems = [
   },
 ];
 
-const initialVisibleCount = 4;
-
 export function ProductsLineupPage({ products }: { products: ProductLineupItem[] }) {
   const [activeFilter, setActiveFilter] = useState<(typeof filters)[number]["id"]>("all");
-  const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
-  const [isMobileLineup, setIsMobileLineup] = useState(false);
   const [activeSupport, setActiveSupport] = useState<string>(supportItems[0].title);
-  const [activeProductId, setActiveProductId] = useState<string | null>(null);
-  const revealSentinelRef = useRef<HTMLDivElement | null>(null);
-  const revealLockRef = useRef(false);
-  const modalTriggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const filteredProducts = useMemo(
     () =>
@@ -81,83 +65,10 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
         : products.filter((product) => product.group === activeFilter),
     [activeFilter, products],
   );
-  const visibleProducts = isMobileLineup ? filteredProducts : filteredProducts.slice(0, visibleCount);
   const activeSupportItem = supportItems.find((item) => item.title === activeSupport) ?? supportItems[0];
-  const activeProduct = products.find((product) => product.id === activeProductId) ?? null;
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-
-    function updateLineupMode() {
-      setIsMobileLineup(mediaQuery.matches);
-    }
-
-    updateLineupMode();
-    mediaQuery.addEventListener("change", updateLineupMode);
-
-    return () => mediaQuery.removeEventListener("change", updateLineupMode);
-  }, []);
-
-  useEffect(() => {
-    setVisibleCount(initialVisibleCount);
-  }, [activeFilter]);
-
-  useEffect(() => {
-    if (!activeProduct) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [activeProduct]);
-
-  useEffect(() => {
-    if (isMobileLineup) return;
-    if (visibleCount >= filteredProducts.length) return;
-    const sentinel = revealSentinelRef.current;
-    if (!sentinel) return;
-
-    if (typeof IntersectionObserver === "undefined") {
-      setVisibleCount(filteredProducts.length);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        if (revealLockRef.current) return;
-        revealLockRef.current = true;
-        setVisibleCount((current) => Math.min(current + 4, filteredProducts.length));
-        window.setTimeout(() => {
-          revealLockRef.current = false;
-        }, 360);
-      },
-      { rootMargin: "96px 0px 96px", threshold: 0.01 },
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [filteredProducts.length, isMobileLineup, visibleCount]);
 
   function selectFilter(filterId: (typeof filters)[number]["id"]) {
-    revealLockRef.current = false;
     setActiveFilter(filterId);
-    setVisibleCount(initialVisibleCount);
-  }
-
-  function closeProductModal() {
-    const productId = activeProductId;
-    setActiveProductId(null);
-
-    window.setTimeout(() => {
-      if (productId) modalTriggerRefs.current[productId]?.focus();
-    }, 0);
-  }
-
-  function openProductModal(productId: string) {
-    setActiveProductId(productId);
   }
 
   return (
@@ -197,7 +108,7 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
           </div>
 
           <div className="product-card-grid products-lineup-grid">
-            {visibleProducts.map((product, index) => (
+            {filteredProducts.map((product, index) => (
               <article
                 className="products-lineup-card"
                 key={product.id}
@@ -226,27 +137,11 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
                     </div>
                   </div>
                 </Link>
-                <button
-                  aria-label={`View sourcing details for ${product.title}`}
-                  className="card-plus-button products-lineup-card__detail-button premium-focus"
-                  onClick={() => openProductModal(product.id)}
-                  ref={(node) => {
-                    modalTriggerRefs.current[product.id] = node;
-                  }}
-                  type="button"
-                >
-                  <span aria-hidden="true" />
-                </button>
               </article>
             ))}
           </div>
-          <div className="products-lineup-reveal-sentinel" ref={revealSentinelRef} aria-hidden="true" />
         </Container>
       </section>
-
-      {activeProduct ? (
-        <ProductLineupModal product={activeProduct} onClose={closeProductModal} />
-      ) : null}
 
       <section className="private-label-band">
         <Container className="a3-container private-label-band__inner">
@@ -357,73 +252,5 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
         </Container>
       </section>
     </>
-  );
-}
-
-function ProductLineupModal({
-  product,
-  onClose,
-}: {
-  product: ProductLineupItem;
-  onClose: () => void;
-}) {
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const titleId = `product-lineup-modal-${product.id}`;
-  const quoteHref = product.quoteHref ?? `/en/request-a-quote?category=${encodeURIComponent(product.id)}`;
-  const quoteLabel = product.quoteLabel ?? "Request quote";
-
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-  }, [product.id]);
-
-  return (
-    <div
-      className="product-info-modal"
-      onClick={onClose}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") onClose();
-      }}
-      role="presentation"
-    >
-      <section
-        aria-labelledby={titleId}
-        aria-modal="true"
-        className="product-info-modal__panel"
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-      >
-        <button
-          aria-label="Close product details"
-          className="product-info-modal__close premium-focus"
-          onClick={onClose}
-          ref={closeButtonRef}
-          type="button"
-        />
-        <div className="product-info-modal__media">
-          <Image src={product.image} alt={product.imageAlt} fill sizes="(min-width: 768px) 360px, 100vw" />
-        </div>
-        <div className="product-info-modal__content">
-          <div className="product-info-modal__eyebrow">Product category</div>
-          <h2 id={titleId}>{product.title}</h2>
-          <p>{product.description}</p>
-          <dl className="product-info-modal__facts">
-            {product.facts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="product-info-modal__actions">
-            <LinkButton href={product.href} variant="primary">
-              Open category
-            </LinkButton>
-            <LinkButton href={quoteHref} variant="outline">
-              {quoteLabel}
-            </LinkButton>
-          </div>
-        </div>
-      </section>
-    </div>
   );
 }

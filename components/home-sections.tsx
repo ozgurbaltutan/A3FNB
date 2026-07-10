@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
@@ -10,7 +10,9 @@ import countriesAtlas from "world-atlas/countries-110m.json";
 import { homeAssets, homeLanding, marketLocations, productCategories, productCategoryHref, type MarketLocation } from "@/content/site";
 import { EditorialBridge, EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { ProductImageCarousel } from "@/components/product-image-carousel";
+import { ProcessAccordion } from "@/components/process-accordion";
 import { LinkButton } from "@/components/ui";
+import { CountUpMetric } from "@/components/count-up-metric";
 
 type FeaturedProduct = {
   id: string;
@@ -86,76 +88,6 @@ function HomeShell({ children, className = "" }: { children: React.ReactNode; cl
       {children}
     </div>
   );
-}
-
-function CountUpMetric({ value }: { value: string }) {
-  const ref = useRef<HTMLSpanElement | null>(null);
-  const [displayValue, setDisplayValue] = useState("0");
-
-  useEffect(() => {
-    const match = value.match(/^(\d+)(.*)$/);
-    if (!match) {
-      setDisplayValue(value);
-      return;
-    }
-
-    const target = Number(match[1]);
-    const suffix = match[2] ?? "";
-    const node = ref.current;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let frame = 0;
-    let started = false;
-    let observer: IntersectionObserver | null = null;
-
-    if (reducedMotion.matches) {
-      setDisplayValue(value);
-      return;
-    }
-
-    const animate = () => {
-      const duration = 950;
-      const start = performance.now();
-
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setDisplayValue(`${Math.round(target * eased)}${suffix}`);
-
-        if (progress < 1) {
-          frame = requestAnimationFrame(tick);
-        }
-      };
-
-      frame = requestAnimationFrame(tick);
-    };
-
-    if (!node || !("IntersectionObserver" in window)) {
-      animate();
-      return () => cancelAnimationFrame(frame);
-    }
-
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting || started) {
-          return;
-        }
-
-        started = true;
-        animate();
-        observer?.disconnect();
-      },
-      { threshold: 0.4 },
-    );
-
-    observer.observe(node);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      observer?.disconnect();
-    };
-  }, [value]);
-
-  return <span ref={ref}>{displayValue}</span>;
 }
 
 function SectionIntro({
@@ -296,6 +228,7 @@ function FeaturedSourcingCategories() {
           <ProductImageCarousel
             ariaLabel="Products"
             className="reveal reveal--up"
+            contentMode="title-only"
             getHref={(product) => product.href}
             getItemLabel={(product) => `View ${product.title} category`}
             items={products}
@@ -383,38 +316,21 @@ function MarketsPreview() {
 }
 
 function HowA3Works() {
-  const [activeStep, setActiveStep] = useState<string | null>(homeLanding.process.steps[0].number);
-
   return (
     <section className="home-section home-section--process">
       <HomeShell className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="process-content">
           <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
-          <div className="process-accordion reveal reveal--up reveal-delay-2">
-            {homeLanding.process.steps.map((step) => {
-              const isActive = activeStep === step.number;
-              const panelId = `process-step-${step.number}`;
-
-              return (
-                <article className={`process-accordion-item ${isActive ? "is-active" : ""}`} key={step.number}>
-                  <button
-                    aria-controls={panelId}
-                    aria-expanded={isActive}
-                    className="process-accordion-trigger"
-                    onClick={() => setActiveStep((currentStep) => (currentStep === step.number ? null : step.number))}
-                    type="button"
-                  >
-                    <span className="process-accordion-index">{step.number}</span>
-                    <span className="process-accordion-title">{step.title}</span>
-                    <span className="process-accordion-arrow" aria-hidden="true" />
-                  </button>
-                  <div className="process-accordion-panel" id={panelId}>
-                    <p>{step.description}</p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <ProcessAccordion
+            ariaLabel={`${homeLanding.process.title} steps`}
+            className="reveal reveal--up reveal-delay-2"
+            items={homeLanding.process.steps.map((step) => ({
+              id: step.number,
+              number: step.number,
+              title: step.title,
+              description: step.description,
+            }))}
+          />
         </div>
         <div className="process-media reveal reveal--fade reveal-delay-1">
           <Image
