@@ -6,7 +6,7 @@ import Link from "next/link";
 import { clsx } from "clsx";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InnerPageHero } from "@/components/inner-page-hero";
-import { ProductImageCarousel } from "@/components/product-image-carousel";
+import { ProductImageGrid } from "@/components/product-image-carousel";
 import { Container, LinkButton } from "@/components/ui";
 import { homeAssets, productCategories, productCategoryHref } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
@@ -550,7 +550,7 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
             ))}
           </div>
         ) : null}
-        <ProductImageCarousel
+        <ProductImageGrid
           ariaLabel={`${portfolio.title} products`}
           getItemLabel={(item) => `View commercial details for ${item.title}`}
           items={filteredItems}

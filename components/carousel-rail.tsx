@@ -22,7 +22,7 @@ type CarouselRailProps = {
   viewportRef: RefObject<HTMLDivElement | null>;
 };
 
-const DEFAULT_SCROLL_DURATION = 520;
+const DEFAULT_SCROLL_DURATION = 580;
 
 function cubicBezier(progress: number, x1: number, y1: number, x2: number, y2: number) {
   const sampleCurveX = (time: number) => ((1 - 3 * x2 + 3 * x1) * time + (3 * x2 - 6 * x1)) * time * time + 3 * x1 * time;
@@ -45,8 +45,8 @@ function cubicBezier(progress: number, x1: number, y1: number, x2: number, y2: n
   return sampleCurveY(Math.min(1, Math.max(0, time)));
 }
 
-function appleRailEase(progress: number) {
-  return cubicBezier(progress, 0.42, 0, 0.2, 1);
+function railEase(progress: number) {
+  return cubicBezier(progress, 0.25, 0.1, 0.25, 1);
 }
 
 function clampScrollTarget(target: number, viewport: HTMLElement) {
@@ -60,14 +60,9 @@ function getSnapPositions(viewport: HTMLElement, track: HTMLElement | null) {
     return [viewport.scrollLeft];
   }
 
-  const viewportLeft = viewport.getBoundingClientRect().left;
   const cards = Array.from(track.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
 
-  return cards.map((card) => {
-    const cardLeft = card.getBoundingClientRect().left;
-
-    return clampScrollTarget(viewport.scrollLeft + cardLeft - viewportLeft, viewport);
-  });
+  return cards.map((card) => clampScrollTarget(card.offsetLeft - track.offsetLeft, viewport));
 }
 
 function closestSnapIndex(positions: number[], scrollLeft: number) {
@@ -82,12 +77,13 @@ function closestSnapIndex(positions: number[], scrollLeft: number) {
 export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION }: UseCarouselRailOptions) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
+  const targetIndexRef = useRef<number | null>(null);
   const [controls, setControls] = useState<CarouselRailState>({
     canScrollNext: true,
     canScrollPrevious: false,
   });
 
-  const cancelScrollAnimation = useCallback(() => {
+  const cancelScrollAnimation = useCallback((resetTarget = true) => {
     if (frameRef.current !== null) {
       window.cancelAnimationFrame(frameRef.current);
       frameRef.current = null;
@@ -95,6 +91,10 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
 
     if (viewportRef.current) {
       delete viewportRef.current.dataset.carouselAnimating;
+    }
+
+    if (resetTarget) {
+      targetIndexRef.current = null;
     }
   }, []);
 
@@ -128,10 +128,6 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
         return;
       }
 
-      if (frameRef.current !== null) {
-        return;
-      }
-
       const snapPositions = getSnapPositions(viewport, track);
 
       if (snapPositions.length === 0) {
@@ -140,13 +136,18 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
       }
 
       const start = viewport.scrollLeft;
-      const currentIndex = closestSnapIndex(snapPositions, start);
+      const currentIndex = targetIndexRef.current ?? closestSnapIndex(snapPositions, start);
       const targetIndex = direction === "next"
         ? Math.min(snapPositions.length - 1, currentIndex + 1)
         : Math.max(0, currentIndex - 1);
       const target = snapPositions[targetIndex] ?? start;
 
+      if (frameRef.current !== null) {
+        cancelScrollAnimation(false);
+      }
+
       if (Math.abs(target - start) < 1) {
+        targetIndexRef.current = null;
         updateControls();
         return;
       }
@@ -156,16 +157,18 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
       if (reducedMotion) {
         viewport.scrollLeft = target;
         delete viewport.dataset.carouselAnimating;
+        targetIndexRef.current = null;
         updateControls();
         return;
       }
 
       const startedAt = performance.now();
+      targetIndexRef.current = targetIndex;
       viewport.dataset.carouselAnimating = "true";
 
       const tick = (now: number) => {
         const progress = Math.min(1, (now - startedAt) / duration);
-        viewport.scrollLeft = start + (target - start) * appleRailEase(progress);
+        viewport.scrollLeft = start + (target - start) * railEase(progress);
 
         if (progress < 1) {
           frameRef.current = window.requestAnimationFrame(tick);
@@ -175,12 +178,13 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
         frameRef.current = null;
         viewport.scrollLeft = target;
         delete viewport.dataset.carouselAnimating;
+        targetIndexRef.current = null;
         updateControls();
       };
 
       frameRef.current = window.requestAnimationFrame(tick);
     },
-    [duration, updateControls],
+    [cancelScrollAnimation, duration, updateControls],
   );
 
   useEffect(() => {
@@ -193,8 +197,12 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
 
     updateControls();
 
+    const interruptAnimation = () => cancelScrollAnimation();
     const resizeObserver = new ResizeObserver(updateControls);
     viewport.addEventListener("scroll", updateControls, { passive: true });
+    viewport.addEventListener("pointerdown", interruptAnimation, { passive: true });
+    viewport.addEventListener("touchstart", interruptAnimation, { passive: true });
+    viewport.addEventListener("wheel", interruptAnimation, { passive: true });
     window.addEventListener("resize", updateControls);
     resizeObserver.observe(viewport);
     resizeObserver.observe(track);
@@ -202,6 +210,9 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
     return () => {
       cancelScrollAnimation();
       viewport.removeEventListener("scroll", updateControls);
+      viewport.removeEventListener("pointerdown", interruptAnimation);
+      viewport.removeEventListener("touchstart", interruptAnimation);
+      viewport.removeEventListener("wheel", interruptAnimation);
       window.removeEventListener("resize", updateControls);
       resizeObserver.disconnect();
     };

@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { company, navigation, productCategories, productCategoryHref } from "@/content/site";
 import { Container, LinkButton } from "@/components/ui";
-
-type MegaMenuPhase = "closed" | "opening" | "open" | "closing";
 
 const menuProducts = productCategories.map((category) => ({
   label: category.title,
@@ -34,208 +32,219 @@ const footerSocialLinks = [
 const activeFooterSocialLinks = footerSocialLinks.filter((item) => item.href && item.href !== "#");
 
 export function Header() {
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
-  const [megaPhase, setMegaPhase] = useState<MegaMenuPhase>("closed");
-  const [scrolled, setScrolled] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+  const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
-  const isHome = pathname === "/en" || pathname === "/";
-  const isHeroTop = !scrolled;
-  const headerSurface = isHeroTop ? "media" : "light";
-  const megaSurface = isHeroTop ? "media" : "light";
-  const mobileSurface = isHeroTop ? "media" : "light";
-  const isMediaSurface = headerSurface === "media";
 
   useEffect(() => {
-    setOpen(false);
+    let frame = 0;
+
+    setMobileOpen(false);
     setProductsOpen(false);
-    setMegaPhase("closed");
-    setScrolled(false);
+    frame = window.requestAnimationFrame(() => setAtTop(window.scrollY <= 1));
+
+    return () => window.cancelAnimationFrame(frame);
   }, [pathname]);
 
   useEffect(() => {
     let frame = 0;
-    let timeout = 0;
-
-    if (productsOpen) {
-      setMegaPhase("opening");
-      frame = window.requestAnimationFrame(() => setMegaPhase("open"));
-    } else {
-      setMegaPhase((current) => (current === "closed" ? current : "closing"));
-      timeout = window.setTimeout(() => setMegaPhase("closed"), 260);
-    }
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(timeout);
-    };
-  }, [productsOpen]);
-
-  useEffect(() => {
     const updateScrollState = () => {
-      const hero = document.querySelector<HTMLElement>(isHome ? ".home-hero" : ".inner-page-hero");
-      if (!hero) {
-        setScrolled(!isHome || window.scrollY > 64);
-        return;
-      }
+      if (frame) return;
 
-      const headerOffset = window.innerWidth >= 1024 ? 112 : 96;
-      setScrolled(hero.getBoundingClientRect().bottom <= headerOffset);
+      frame = window.requestAnimationFrame(() => {
+        setAtTop(window.scrollY <= 1);
+        frame = 0;
+      });
     };
 
     updateScrollState();
     window.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
 
     return () => {
       window.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
+      window.cancelAnimationFrame(frame);
     };
-  }, [isHome]);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen && !productsOpen) return;
+
+    const closeMenus = () => {
+      setMobileOpen(false);
+      setProductsOpen(false);
+    };
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) closeMenus();
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenus();
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileOpen, productsOpen]);
 
   return (
     <header
-      className={clsx(
-        "site-header top-0 z-50 w-full",
-        "fixed",
-        isMediaSurface ? "site-header--media text-surface" : "site-header--light text-ink",
-        (megaPhase !== "closed" || open) && "site-header--open",
-      )}
-      onMouseLeave={() => setProductsOpen(false)}
+      ref={headerRef}
+      className="site-header fixed top-0 z-50 w-full"
+      data-at-top={atTop}
+      data-mega-open={productsOpen}
+      data-mobile-open={mobileOpen}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
           setProductsOpen(false);
-          setOpen(false);
+          setMobileOpen(false);
         }
       }}
       onBlurCapture={(event) => {
         const nextFocus = event.relatedTarget instanceof Node ? event.relatedTarget : null;
         if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
           setProductsOpen(false);
+          setMobileOpen(false);
         }
       }}
     >
-      <Container className="a3-container site-header__surface flex min-h-[var(--header-height)] items-center justify-between gap-6">
-        <Link
-          className="site-header__logo-link premium-focus inline-flex items-center"
-          href="/en"
-          aria-label="A3 Food & Beverage home"
-          onFocus={() => setProductsOpen(false)}
-          onMouseEnter={() => setProductsOpen(false)}
-        >
-          <Image
-            src={isMediaSurface ? "/brand/a3logo_full_light.svg" : "/brand/a3logo_full.svg"}
-            alt="A3 Food & Beverage"
-            width={112}
-            height={44}
-            priority
-            className="h-10 w-auto"
-          />
-        </Link>
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
-          {navigation.map((item) =>
-            item.label === "Products" ? (
-              <Link
-                key={item.href}
-                className={clsx("site-nav-link premium-focus type-nav", isMediaSurface ? "site-nav-link--hero" : "site-nav-link--solid")}
-                href={item.href}
-                aria-haspopup="true"
-                aria-expanded={productsOpen}
-                onMouseEnter={() => setProductsOpen(true)}
-                onFocus={() => setProductsOpen(true)}
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <Link
-                key={item.href}
-                className={clsx("site-nav-link premium-focus type-nav", isMediaSurface ? "site-nav-link--hero" : "site-nav-link--solid")}
-                href={item.href}
-                onFocus={() => setProductsOpen(false)}
-                onMouseEnter={() => setProductsOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
-        </nav>
-        <div className="hidden lg:block" onFocusCapture={() => setProductsOpen(false)} onMouseEnter={() => setProductsOpen(false)}>
-          <LinkButton href="/en/request-a-quote" size="small" variant={isMediaSurface ? "mediaSecondary" : "primary"}>
-            Request a Quote
-          </LinkButton>
+      <Container className="a3-container site-header__container">
+        <div className="site-header__shell" onMouseLeave={() => setProductsOpen(false)}>
+          <div className="site-header__surface flex min-h-[var(--header-height)] items-center justify-between gap-6">
+            <Link
+              className="site-header__logo-link premium-focus"
+              href="/en"
+              aria-label="A3 Food & Beverage home"
+              onFocus={() => setProductsOpen(false)}
+              onMouseEnter={() => setProductsOpen(false)}
+            >
+              <Image
+                src="/brand/a3logo_full_light.svg"
+                alt="A3 Food & Beverage"
+                width={112}
+                height={44}
+                priority
+                className="site-header__logo site-header__logo--light"
+              />
+              <Image
+                src="/brand/a3logo_full.svg"
+                alt=""
+                width={112}
+                height={44}
+                aria-hidden="true"
+                className="site-header__logo site-header__logo--dark"
+              />
+            </Link>
+            <nav className="site-header__nav hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
+              {navigation.map((item) =>
+                item.label === "Products" ? (
+                  <Link
+                    key={item.href}
+                    className="site-nav-link site-nav-link--products premium-focus type-nav"
+                    href={item.href}
+                    aria-haspopup="true"
+                    aria-expanded={productsOpen}
+                    aria-controls="desktop-products-navigation"
+                    onMouseEnter={() => setProductsOpen(true)}
+                    onFocus={() => setProductsOpen(true)}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={item.href}
+                    className="site-nav-link premium-focus type-nav"
+                    href={item.href}
+                    onFocus={() => setProductsOpen(false)}
+                    onMouseEnter={() => setProductsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ),
+              )}
+            </nav>
+            <div className="site-header__quote hidden lg:block" onFocusCapture={() => setProductsOpen(false)} onMouseEnter={() => setProductsOpen(false)}>
+              <LinkButton href="/en/request-a-quote" size="small" variant="mediaSecondary" className="site-header__quote-button">
+                Request a Quote
+              </LinkButton>
+            </div>
+            <button
+              className="site-header__menu-button button-base button-media-secondary premium-focus type-button rounded-[var(--radius-control)] border px-4 py-3 lg:hidden"
+              type="button"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation"
+              onClick={() => {
+                setProductsOpen(false);
+                setMobileOpen((value) => !value);
+              }}
+            >
+              Menu
+            </button>
+          </div>
+          <MegaMenu open={productsOpen} onNavigate={() => setProductsOpen(false)} />
+          <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
         </div>
-        <button
-          className={clsx(
-            "button-base premium-focus type-button rounded-[var(--radius-control)] border px-4 py-3 lg:hidden",
-            isMediaSurface ? "button-media-secondary" : "button-secondary",
-          )}
-          type="button"
-          aria-expanded={open}
-          aria-controls="mobile-navigation"
-          onClick={() => setOpen((value) => !value)}
-        >
-          Menu
-        </button>
       </Container>
-      <MegaMenu phase={megaPhase} surface={megaSurface} onNavigate={() => setProductsOpen(false)} />
-      <MobileNav open={open} surface={mobileSurface} onClose={() => setOpen(false)} />
     </header>
   );
 }
 
-function MegaMenu({ phase, surface, onNavigate }: { phase: MegaMenuPhase; surface: "media" | "light"; onNavigate: () => void }) {
-  const active = phase === "opening" || phase === "open";
-
+function MegaMenu({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   return (
     <div
-      className={clsx(
-        "mega-menu hidden lg:block",
-        surface === "media" ? "mega-menu--media text-surface" : "mega-menu--light text-ink",
-        `is-${phase}`,
-      )}
-      aria-hidden={!active}
+      id="desktop-products-navigation"
+      className="mega-menu"
+      data-open={open}
+      aria-hidden={!open}
+      inert={!open ? true : undefined}
     >
-      <Container className="a3-container mega-menu__inner grid gap-10 py-9 lg:grid-cols-[minmax(20rem,0.58fr)_minmax(0,1fr)] lg:gap-14">
-        <div className="mega-menu__intro">
-          <div className="mega-menu__brand-card">
-            <Link className="mega-menu__brand-title premium-focus" href="/en/products" onClick={onNavigate}>
-              Product categories
-            </Link>
-            <p className="mega-menu__brand-copy">
-              Food commodities, ingredients and packaged products selected around buyer requirements,
-              producer availability and workable commercial terms.
-            </p>
-            <Link className="mega-menu__all-link premium-focus" href="/en/products" onClick={onNavigate}>
-              <span>View all product categories</span>
-              <span aria-hidden="true">→</span>
-            </Link>
-            <div className="mega-menu__exclusive">
-              <p className="mega-menu__exclusive-label">Own brand</p>
-              <Link className="mega-menu__all-link premium-focus" href="/en/products/elle-mina" onClick={onNavigate}>
-                <span>Elle Mina margarine &amp; butter</span>
-                <span aria-hidden="true">→</span>
+      <div className="mega-menu__clip">
+        <div className="mega-menu__inner grid gap-10 lg:grid-cols-[minmax(20rem,0.58fr)_minmax(0,1fr)] lg:gap-14">
+          <div className="mega-menu__intro">
+            <div className="mega-menu__brand-card">
+              <Link className="mega-menu__brand-title premium-focus" href="/en/products" onClick={onNavigate}>
+                Product categories
               </Link>
+              <p className="mega-menu__brand-copy">
+                Food commodities, ingredients and packaged products selected around buyer requirements,
+                producer availability and workable commercial terms.
+              </p>
+              <Link className="mega-menu__all-link premium-focus" href="/en/products" onClick={onNavigate}>
+                <span>View all product categories</span>
+                <span aria-hidden="true">{"\u2192"}</span>
+              </Link>
+              <div className="mega-menu__exclusive">
+                <p className="mega-menu__exclusive-label">Own brand</p>
+                <Link className="mega-menu__all-link premium-focus" href="/en/products/elle-mina" onClick={onNavigate}>
+                  <span>Elle Mina margarine &amp; butter</span>
+                  <span aria-hidden="true">{"\u2192"}</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="mega-menu__categories">
+              {menuProducts.map((item) => (
+                <Link className="mega-menu__category premium-focus" href={item.href} key={item.href} onClick={onNavigate}>
+                  <span>{item.label}</span>
+                  <span className="mega-menu__category-arrow" aria-hidden="true">
+                    {"\u2192"}
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
-        <div>
-          <div className="mega-menu__categories">
-            {menuProducts.map((item) => (
-              <Link className="mega-menu__category premium-focus" href={item.href} key={item.href} onClick={onNavigate}>
-                <span>{item.label}</span>
-                <span className="mega-menu__category-arrow" aria-hidden="true">
-                  →
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </Container>
+      </div>
     </div>
   );
 }
 
-function MobileNav({ open, surface, onClose }: { open: boolean; surface: "media" | "light"; onClose: () => void }) {
+function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [productsExpanded, setProductsExpanded] = useState(false);
 
   useEffect(() => {
@@ -244,46 +253,55 @@ function MobileNav({ open, surface, onClose }: { open: boolean; surface: "media"
     }
   }, [open]);
 
-  if (!open) return null;
-
   return (
     <div
       id="mobile-navigation"
-      className={clsx("mobile-navigation lg:hidden", surface === "media" ? "mobile-navigation--media" : "mobile-navigation--light")}
+      className="mobile-navigation"
+      data-open={open}
+      aria-hidden={!open}
+      inert={!open ? true : undefined}
     >
-      <Container className="a3-container mobile-navigation__inner grid gap-2 py-5">
-        {navigation.map((item) =>
-          item.label === "Products" ? (
-            <div className="mobile-navigation__group" key={item.href}>
-              <button
-                className="mobile-navigation__trigger premium-focus type-nav"
-                type="button"
-                aria-expanded={productsExpanded}
-                aria-controls="mobile-products-navigation"
-                onClick={() => setProductsExpanded((value) => !value)}
-              >
-                <span>{item.label}</span>
-                <span className="mobile-navigation__chevron" aria-hidden="true" />
-              </button>
-              <div
-                id="mobile-products-navigation"
-                className={clsx("mobile-navigation__children", productsExpanded ? "is-open" : "is-closed")}
-                hidden={!productsExpanded}
-              >
-                {mobileProductLinks.map((child) => (
-                  <Link className="mobile-navigation__child premium-focus" href={child.href} key={child.href} onClick={onClose}>
-                    {child.label}
-                  </Link>
-                ))}
+      <div className="mobile-navigation__clip">
+        <div className="mobile-navigation__inner grid gap-2">
+          {navigation.map((item) =>
+            item.label === "Products" ? (
+              <div className="mobile-navigation__group" key={item.href}>
+                <button
+                  className="mobile-navigation__trigger premium-focus type-nav"
+                  type="button"
+                  aria-expanded={productsExpanded}
+                  aria-controls="mobile-products-navigation"
+                  onClick={() => setProductsExpanded((value) => !value)}
+                >
+                  <span>{item.label}</span>
+                  <span className="mobile-navigation__chevron" aria-hidden="true" />
+                </button>
+                <div
+                  id="mobile-products-navigation"
+                  className="mobile-navigation__children"
+                  data-open={productsExpanded}
+                  aria-hidden={!productsExpanded}
+                  inert={!productsExpanded ? true : undefined}
+                >
+                  <div className="mobile-navigation__children-clip">
+                    <div className="mobile-navigation__children-list">
+                      {mobileProductLinks.map((child) => (
+                        <Link className="mobile-navigation__child premium-focus" href={child.href} key={child.href} onClick={onClose}>
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Link className="mobile-navigation__link premium-focus type-nav" href={item.href} key={item.href} onClick={onClose}>
-              {item.label}
-            </Link>
-          ),
-        )}
-      </Container>
+            ) : (
+              <Link className="mobile-navigation__link premium-focus type-nav" href={item.href} key={item.href} onClick={onClose}>
+                {item.label}
+              </Link>
+            ),
+          )}
+        </div>
+      </div>
     </div>
   );
 }

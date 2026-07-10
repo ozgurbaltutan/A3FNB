@@ -196,7 +196,7 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
             ))}
           </div>
 
-          <div className="products-lineup-grid">
+          <div className="product-card-grid products-lineup-grid">
             {visibleProducts.map((product, index) => (
               <article
                 className="products-lineup-card"
@@ -218,10 +218,12 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
                     />
                   </span>
                   <div className="products-lineup-card__body">
-                    <div className="products-lineup-card__title-row">
-                      <h2>{product.title}</h2>
+                    <div className="products-lineup-card__copy">
+                      <div className="products-lineup-card__title-row">
+                        <h2>{product.title}</h2>
+                      </div>
+                      <p>{product.description}</p>
                     </div>
-                    <p>{product.description}</p>
                   </div>
                 </Link>
                 <button

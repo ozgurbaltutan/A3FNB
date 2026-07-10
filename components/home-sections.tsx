@@ -313,8 +313,8 @@ function MarketsPreview() {
     .filter((item): item is { market: MarketLocation; point: { x: number; y: number } } => Boolean(item.point));
 
   return (
-    <section className="markets-layer-section bg-deep-dark text-surface">
-      <HomeShell className="markets-layer-stage grid items-center gap-5 py-16 lg:grid-cols-2 lg:py-20">
+    <section className="home-section home-section--markets markets-layer-section bg-deep-dark text-surface">
+      <HomeShell className="markets-layer-stage grid items-center gap-5 lg:grid-cols-2">
         <div className="markets-copy">
           <h2 className="reveal reveal--up type-section text-surface">
             Markets we connect.
@@ -386,7 +386,7 @@ function HowA3Works() {
   const [activeStep, setActiveStep] = useState<string | null>(homeLanding.process.steps[0].number);
 
   return (
-    <section className="py-16 lg:py-24">
+    <section className="home-section home-section--process">
       <HomeShell className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div className="process-content">
           <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
@@ -432,7 +432,7 @@ function HowA3Works() {
 
 function BuyerPaths() {
   return (
-    <section className="py-16 lg:py-20">
+    <section className="home-section home-section--buyer-paths">
       <HomeShell>
         <SectionIntro
           title="Who A3 works with"
@@ -473,7 +473,7 @@ function BuyerPaths() {
 
 function BeforeYouEnquire() {
   return (
-    <section className="before-enquire-band py-14 lg:py-16">
+    <section className="home-section home-section--catalogues before-enquire-band">
       <HomeShell className="grid gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center lg:gap-14">
         <div className="reveal reveal--up max-w-[520px]">
           <h2 className="type-section text-ink">
@@ -511,7 +511,7 @@ function BeforeYouEnquire() {
 
 function FinalCta() {
   return (
-    <section className="final-cta-section bg-teal text-surface">
+    <section className="home-section--final-cta final-cta-section bg-teal text-surface">
       <HomeShell className="final-cta-shell grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.62fr)]">
         <div className="final-cta-copy reveal reveal--up">
           <h2 className="type-section max-w-[520px] text-surface">

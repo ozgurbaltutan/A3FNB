@@ -43,6 +43,7 @@ export type ProductImageCarouselProps<TItem extends ProductImageCarouselItem> =
 type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
   getItemLabel?: (item: TItem) => string;
   href?: string;
+  imageSizes?: string;
   item: TItem;
   mode: "link" | "button";
   onActivate?: (item: TItem) => void;
@@ -54,6 +55,7 @@ type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
 function ProductImageCard<TItem extends ProductImageCarouselItem>({
   getItemLabel,
   href,
+  imageSizes = "(max-width: 767px) 82vw, (max-width: 1199px) 38vw, 24vw",
   item,
   mode,
   onActivate,
@@ -69,7 +71,7 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
           alt={item.imageAlt}
           fill
           priority={priority}
-          sizes="(max-width: 767px) 82vw, (max-width: 1199px) 38vw, 24vw"
+          sizes={imageSizes}
           src={item.image}
         />
       </div>
@@ -171,5 +173,42 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
         </div>
       ) : null}
     </div>
+  );
+}
+
+export type ProductImageGridProps<TItem extends ProductImageCarouselItem> = ProductImageCarouselProps<TItem>;
+
+export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: ProductImageGridProps<TItem>) {
+  const { ariaLabel, className = "", getItemLabel, items, showPlus = false } = props;
+
+  return (
+    <ul aria-label={ariaLabel} className={`product-card-grid product-image-grid ${className}`.trim()}>
+      {items.map((item, index) => (
+        <li className="product-image-grid__item" key={item.id}>
+          {props.mode === "link" ? (
+            <ProductImageCard
+              getItemLabel={getItemLabel}
+              href={props.getHref(item)}
+              imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
+              item={item}
+              mode="link"
+              priority={index < 4}
+              showPlus={showPlus}
+            />
+          ) : (
+            <ProductImageCard
+              getItemLabel={getItemLabel}
+              imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
+              item={item}
+              mode="button"
+              onActivate={props.onItemActivate}
+              priority={index < 4}
+              setItemRef={props.setItemRef}
+              showPlus={showPlus}
+            />
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
