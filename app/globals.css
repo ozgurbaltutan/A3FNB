@@ -12354,9 +12354,7 @@ body .enquiry-success h2 {
 }
 
 .process-showcase-list {
-  min-height: 33rem;
   align-self: center;
-  border-top: 1px solid var(--color-border);
 }
 
 .process-accordion--showcase .process-accordion-trigger {
