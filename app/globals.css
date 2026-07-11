@@ -3573,7 +3573,7 @@ svg {
 
 .markets-map-pin__label {
   fill: var(--color-surface);
-  font-size: 30px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.15;
   opacity: 0;
@@ -3581,7 +3581,7 @@ svg {
   pointer-events: none;
   stroke: rgba(3, 16, 14, 0.84);
   stroke-linejoin: round;
-  stroke-width: 4;
+  stroke-width: 3;
   transition:
     opacity var(--motion-base) var(--ease-premium);
 }
@@ -3663,8 +3663,8 @@ svg {
   }
 
   .markets-map-pin__label {
-    font-size: 42px;
-    stroke-width: 5;
+    font-size: 22px;
+    stroke-width: 3.5;
   }
 
   .markets-map-pin__leader {
