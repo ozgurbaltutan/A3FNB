@@ -108,7 +108,7 @@ export function CountUpMetric({ value }: { value: string }) {
 
   return (
     <span aria-label={value} aria-live="off" ref={ref}>
-      {displayValue}
+      <span aria-hidden="true">{displayValue}</span>
     </span>
   );
 }

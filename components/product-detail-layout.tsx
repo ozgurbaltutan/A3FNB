@@ -11,7 +11,7 @@ import { ProductImageGrid } from "@/components/product-image-carousel";
 import { ProcessAccordion } from "@/components/process-accordion";
 import { Container, LinkButton } from "@/components/ui";
 import { CountUpMetric } from "@/components/count-up-metric";
-import { homeAssets, productCategories, productCategoryHref } from "@/content/site";
+import { homeAssets } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
 
 type ProductDetailItem = {
@@ -93,6 +93,12 @@ type ProductPortfolio = {
   id?: string;
   title: string;
   text: string;
+  groups?: {
+    id: string;
+    title: string;
+    description?: string;
+    itemIds: string[];
+  }[];
   filters?: { id: string; label: string; itemIds: string[] }[];
   items: ProductPortfolioItem[];
 };
@@ -101,6 +107,19 @@ type ProductTechnicalSpecProfile = {
   title: string;
   subtitle?: string;
   rows: ProductSpecRow[];
+};
+
+type ProductTechnicalSpecGroup = {
+  id: string;
+  title: string;
+  text?: string;
+  selectorLabel?: string;
+  profiles: ProductTechnicalSpecProfile[];
+};
+
+type ProductSectionNavigationItem = {
+  label: string;
+  href: string;
 };
 
 type ProductDocumentItem = ProductDetailItem & {
@@ -165,6 +184,7 @@ type ProductDetailProps = {
   storySections?: ProductStorySection[];
   afterSupportStorySections?: ProductStorySection[];
   keyFacts?: ProductKeyFacts;
+  sectionNavigation?: ProductSectionNavigationItem[];
   profiles?: {
     title: string;
     text: string;
@@ -180,7 +200,11 @@ type ProductDetailProps = {
   technicalSpecs?: {
     title: string;
     text?: string;
-    profiles: ProductTechnicalSpecProfile[];
+    selectorLabel?: string;
+    disclaimer?: string;
+    catalogue?: ProductDetailLink;
+    profiles?: ProductTechnicalSpecProfile[];
+    groups?: ProductTechnicalSpecGroup[];
   };
   documents?: {
     title: string;
@@ -201,6 +225,7 @@ type ProductDetailProps = {
     image?: string;
     imageAlt?: string;
     tone?: "teal" | "ink";
+    compact?: boolean;
   };
 };
 
@@ -211,6 +236,7 @@ export function ProductDetailLayout({
   storySections,
   afterSupportStorySections,
   keyFacts,
+  sectionNavigation,
   profiles,
   productRange,
   productPortfolio,
@@ -223,7 +249,7 @@ export function ProductDetailLayout({
   related,
   finalCta,
 }: ProductDetailProps) {
-  const useBuyerInformation = Boolean(technicalSpecs && (productRange || productPortfolio) && (sections.length || documents || support));
+  const useBuyerInformation = Boolean(technicalSpecs && (productRange || productPortfolio) && (sections.length || support));
   const storyHero = !hero && !productPortfolio ? storySections?.[0] : undefined;
   const leadingStorySections = productPortfolio ? [] : (storyHero ? (storySections?.slice(1) ?? []) : (storySections ?? []));
   const portfolioStorySections = productPortfolio ? (storySections ?? []) : [];
@@ -231,6 +257,7 @@ export function ProductDetailLayout({
   return (
     <>
       {hero ? <ProductDetailHero hero={hero} breadcrumb={breadcrumb} /> : null}
+      {sectionNavigation?.length ? <ProductSectionNavigation items={sectionNavigation} /> : null}
       {storyHero ? (
         <InnerPageHero
           title={storyHero.title}
@@ -251,6 +278,7 @@ export function ProductDetailLayout({
       ) : null}
       {productPortfolio ? <ProductPortfolioSection portfolio={productPortfolio} /> : null}
       {keyFacts ? <ProductKeyFactsSection facts={keyFacts} /> : null}
+      {documents ? <ProductDocuments documents={documents} /> : null}
       {portfolioStorySections.map((section, index) => (
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
@@ -258,13 +286,12 @@ export function ProductDetailLayout({
       {shipmentOptions ? <ShipmentOptions options={shipmentOptions} /> : null}
       {origin ? <ProductOrigin origin={origin} /> : null}
       {useBuyerInformation ? (
-        <BuyerInformation sections={sections} documents={documents} support={support} />
+        <BuyerInformation sections={sections} support={support} />
       ) : (
         <>
           {sections.map((section) => (
             <ProductInfoSection key={section.title} section={section} />
           ))}
-          {documents ? <ProductDocuments documents={documents} /> : null}
           {support ? <ProductSupport support={support} /> : null}
         </>
       )}
@@ -279,7 +306,7 @@ export function ProductDetailLayout({
 
 function ProductKeyFactsSection({ facts }: { facts: ProductKeyFacts }) {
   return (
-    <section className="product-detail-section product-key-facts" id="sugar-key-facts">
+    <section className="product-detail-section product-key-facts" id="market-context">
       <Container className="a3-container product-key-facts__inner">
         <div className="product-key-facts__header">
           <h2 className="type-section">{facts.title}</h2>
@@ -314,6 +341,22 @@ function ProductKeyFactsSection({ facts }: { facts: ProductKeyFacts }) {
         ) : null}
       </Container>
     </section>
+  );
+}
+
+function ProductSectionNavigation({ items }: { items: ProductSectionNavigationItem[] }) {
+  return (
+    <nav aria-label="On this product page" className="product-section-nav">
+      <Container className="a3-container product-section-nav__inner">
+        <div className="product-section-nav__links">
+          {items.map((item) => (
+            <a className="premium-focus type-nav" href={item.href} key={item.href}>
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </Container>
+    </nav>
   );
 }
 
@@ -374,6 +417,7 @@ function ProductDetailHero({
         imageAlt={hero.imageAlt}
         breadcrumb={hero.hideBreadcrumb ? undefined : breadcrumb}
         className="product-detail-opening"
+        id="overview"
       >
         {hero.note ? <p className="product-detail-note inner-page-hero__note">{hero.note}</p> : null}
       </InnerPageHero>
@@ -536,27 +580,26 @@ function ProductRangeSimple({ profiles }: { profiles: NonNullable<ProductDetailP
 
 function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio }) {
   const [activePortfolioItemId, setActivePortfolioItemId] = useState<string | null>(null);
-  const [activeFilterId, setActiveFilterId] = useState<string>(portfolio.filters?.[0]?.id ?? "all");
   const modalTriggerRefs = useRef<Record<string, HTMLElement | null>>({});
-  const filteredItemIds =
-    portfolio.filters?.find((filter) => filter.id === activeFilterId)?.itemIds ?? portfolio.items.map((item) => item.id);
-  const filteredItems = filteredItemIds
-    .map((id) => portfolio.items.find((item) => item.id === id))
-    .filter((item): item is ProductPortfolioItem => Boolean(item));
   const activePortfolioItem = portfolio.items.find((item) => item.id === activePortfolioItemId) ?? null;
-
-  useEffect(() => {
-    setActivePortfolioItemId(null);
-  }, [activeFilterId]);
+  const visibleGroups = portfolio.groups?.map((group) => ({
+    ...group,
+    items: group.itemIds
+      .map((id) => portfolio.items.find((item) => item.id === id))
+      .filter((item): item is ProductPortfolioItem => Boolean(item)),
+  })).filter((group) => group.items.length) ?? [];
 
   useEffect(() => {
     if (!activePortfolioItem) return;
 
-    const previousOverflow = document.body.style.overflow;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
     };
   }, [activePortfolioItem]);
 
@@ -580,36 +623,39 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
           <h2 className="type-section">{portfolio.title}</h2>
           <p className="type-section-lead">{portfolio.text}</p>
         </div>
-        {portfolio.filters?.length ? (
-          <div className="product-portfolio-filters" aria-label={`${portfolio.title} filters`} role="tablist">
-            {portfolio.filters.map((filter) => (
-              <button
-                aria-selected={activeFilterId === filter.id}
-                className={clsx("product-portfolio-filter premium-focus", activeFilterId === filter.id && "is-active")}
-                key={filter.id}
-                onClick={() => {
-                  setActiveFilterId(filter.id);
-                  setActivePortfolioItemId(null);
-                }}
-                role="tab"
-                type="button"
-              >
-                {filter.label}
-              </button>
+        {visibleGroups.length ? (
+          <div className="product-portfolio-groups">
+            {visibleGroups.map((group) => (
+              <section aria-labelledby={`product-group-${group.id}`} className="product-portfolio-group" key={group.id}>
+                <header className="product-portfolio-group__header">
+                  <h3 id={`product-group-${group.id}`}>{group.title}</h3>
+                  {group.description ? <p>{group.description}</p> : null}
+                </header>
+                <ProductImageGrid
+                  ariaLabel={`${group.title} products`}
+                  getItemLabel={(item) => `View commercial details for ${item.title}`}
+                  items={group.items}
+                  mode="button"
+                  onItemActivate={(item) => openPortfolioModal(item.id)}
+                  setItemRef={(id, node) => {
+                    modalTriggerRefs.current[id] = node;
+                  }}
+                />
+              </section>
             ))}
           </div>
-        ) : null}
-        <ProductImageGrid
-          ariaLabel={`${portfolio.title} products`}
-          getItemLabel={(item) => `View commercial details for ${item.title}`}
-          items={filteredItems}
-          key={activeFilterId}
-          mode="button"
-          onItemActivate={(item) => openPortfolioModal(item.id)}
-          setItemRef={(id, node) => {
-            modalTriggerRefs.current[id] = node;
-          }}
-        />
+        ) : (
+          <ProductImageGrid
+            ariaLabel={`${portfolio.title} products`}
+            getItemLabel={(item) => `View commercial details for ${item.title}`}
+            items={portfolio.items}
+            mode="button"
+            onItemActivate={(item) => openPortfolioModal(item.id)}
+            setItemRef={(id, node) => {
+              modalTriggerRefs.current[id] = node;
+            }}
+          />
+        )}
         {activePortfolioItem ? (
           <ProductPortfolioModal product={activePortfolioItem} onClose={closePortfolioModal} />
         ) : null}
@@ -630,7 +676,6 @@ function ProductPortfolioModal({
   const titleId = `product-portfolio-modal-${product.id}`;
   const descriptionId = `${titleId}-description`;
   const details = getPortfolioModalDetails(product);
-  const specRows = product.specs?.slice(0, 4) ?? [];
 
   useEffect(() => {
     closeButtonRef.current?.focus();
@@ -711,20 +756,6 @@ function ProductPortfolioModal({
             </section>
           ) : null}
 
-          {specRows.length ? (
-            <section className="product-info-modal__technical-section">
-              <h3>Specification snapshot</h3>
-              <dl className="product-info-modal__facts product-info-modal__facts--technical">
-                {specRows.map((row) => (
-                  <div key={row.parameter}>
-                    <dt>{row.parameter}</dt>
-                    <dd>{row.specification}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          ) : null}
-
           {product.cta ? (
             <footer className="product-info-modal__technical-actions">
               <LinkButton href={product.cta.href} variant="primary">
@@ -766,7 +797,9 @@ function ProductRangeMeta({ rows, className }: { rows: ProductSpecRow[]; classNa
 }
 
 function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProps["technicalSpecs"]> }) {
-  const parameters = Array.from(new Set(specs.profiles.flatMap((profile) => profile.rows.map((row) => row.parameter))));
+  const groups: ProductTechnicalSpecGroup[] = specs.groups?.length
+    ? specs.groups
+    : [{ id: "all-products", title: specs.title, selectorLabel: specs.selectorLabel, profiles: specs.profiles ?? [] }];
 
   return (
     <section className="product-detail-section product-technical-specs" id="technical-specifications">
@@ -775,42 +808,84 @@ function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProp
           <h2 className="type-section">{specs.title}</h2>
           {specs.text ? <p className="type-section-lead">{specs.text}</p> : null}
         </div>
-        <div className="product-technical-specs__matrix" role="table" aria-label={specs.title}>
-          <div className="product-technical-specs__head" role="row">
-            <span role="columnheader">Parameter</span>
-            {specs.profiles.map((profile) => (
-              <strong role="columnheader" key={profile.title}>
-                {profile.title}
-                {profile.subtitle ? <small>{profile.subtitle}</small> : null}
-              </strong>
-            ))}
-          </div>
-          {parameters.map((parameter) => (
-            <div className="product-technical-specs__row" role="row" key={parameter}>
-              <span role="rowheader">{parameter}</span>
-              {specs.profiles.map((profile) => {
-                const value = profile.rows.find((row) => row.parameter === parameter)?.specification ?? "-";
-                return (
-                  <strong role="cell" key={`${profile.title}-${parameter}`}>
-                    {value}
-                  </strong>
-                );
-              })}
-            </div>
+        <div className="product-technical-specs__groups">
+          {groups.map((group) => (
+            <ProductTechnicalSpecMatrix group={group} key={group.id} />
           ))}
         </div>
-        <div className="product-technical-specs__cards">
-          {specs.profiles.map((profile) => (
-            <article key={profile.title}>
-              <h3>
-                {profile.title}
-                {profile.subtitle ? <span>{profile.subtitle}</span> : null}
-              </h3>
-              <ProductSpecTable rows={profile.rows} />
-            </article>
-          ))}
-        </div>
+        {specs.disclaimer || specs.catalogue ? (
+          <footer className="product-technical-specs__footer">
+            {specs.disclaimer ? <p className="product-technical-specs__disclaimer">{specs.disclaimer}</p> : null}
+            {specs.catalogue ? (
+              <Link className="product-technical-specs__catalogue premium-focus" href={specs.catalogue.href} target="_blank">
+                {specs.catalogue.label}
+              </Link>
+            ) : null}
+          </footer>
+        ) : null}
       </Container>
+    </section>
+  );
+}
+
+function ProductTechnicalSpecMatrix({ group }: { group: ProductTechnicalSpecGroup }) {
+  const parameters = Array.from(new Set(group.profiles.flatMap((profile) => profile.rows.map((row) => row.parameter))));
+  const [activeProfileTitle, setActiveProfileTitle] = useState(group.profiles[0]?.title ?? "");
+  const activeProfile = group.profiles.find((profile) => profile.title === activeProfileTitle) ?? group.profiles[0];
+  const selectorId = `mobile-technical-profile-${group.id}`;
+
+  if (!group.profiles.length) return null;
+
+  return (
+    <section aria-labelledby={`technical-group-${group.id}`} className="product-technical-specs__group">
+      <header className="product-technical-specs__group-header">
+        <h3 id={`technical-group-${group.id}`}>{group.title}</h3>
+        {group.text ? <p>{group.text}</p> : null}
+      </header>
+      <div className="product-technical-specs__matrix">
+        <table>
+          <caption>{group.title}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Parameter</th>
+              {group.profiles.map((profile) => (
+                <th scope="col" key={profile.title}>
+                  {profile.title}
+                  {profile.subtitle ? <small>{profile.subtitle}</small> : null}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {parameters.map((parameter) => (
+              <tr key={parameter}>
+                <th scope="row">{parameter}</th>
+                {group.profiles.map((profile) => {
+                  const value = profile.rows.find((row) => row.parameter === parameter)?.specification ?? "—";
+                  return <td key={`${profile.title}-${parameter}`}>{value}</td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="product-technical-specs__cards">
+        <label htmlFor={selectorId}>{group.selectorLabel ?? `Select a ${group.title.toLowerCase()} product`}</label>
+        <select id={selectorId} onChange={(event) => setActiveProfileTitle(event.target.value)} value={activeProfileTitle}>
+          {group.profiles.map((profile) => (
+            <option key={profile.title} value={profile.title}>{profile.title}</option>
+          ))}
+        </select>
+        {activeProfile ? (
+          <article>
+            <h3>
+              {activeProfile.title}
+              {activeProfile.subtitle ? <span>{activeProfile.subtitle}</span> : null}
+            </h3>
+            <ProductSpecTable rows={activeProfile.rows} />
+          </article>
+        ) : null}
+      </div>
     </section>
   );
 }
@@ -940,11 +1015,9 @@ function ProductInfoSection({ section }: { section: ProductDetailSection }) {
 
 function BuyerInformation({
   sections,
-  documents,
   support,
 }: {
   sections: ProductDetailSection[];
-  documents?: NonNullable<ProductDetailProps["documents"]>;
   support?: ProductSupportSection;
 }) {
   const requirement = sections[0];
@@ -968,25 +1041,6 @@ function BuyerInformation({
                   <section key={item.title}>
                     <h4>{item.title}</h4>
                     <p>{item.description}</p>
-                  </section>
-                ))}
-              </div>
-            </article>
-          ) : null}
-          {documents ? (
-            <article className="product-buyer-info__column">
-              <h3>Documents and quality</h3>
-              <p>{documents.text}</p>
-              <div className="product-buyer-info__list">
-                {documents.items.map((item) => (
-                  <section key={item.title}>
-                    <h4>{item.title}</h4>
-                    <p>{item.description}</p>
-                    {item.href ? (
-                      <Link className="product-documents-item__link premium-focus" href={item.href}>
-                        {item.linkLabel ?? "View resource"}
-                      </Link>
-                    ) : null}
                   </section>
                 ))}
               </div>
@@ -1089,7 +1143,7 @@ function RelatedProducts({ links }: { links: ProductDetailLink[] }) {
   return (
     <section className="product-detail-related">
       <Container className="a3-container product-detail-related__inner">
-        <h2 className="type-panel-title">You may be interested in</h2>
+        <h2 className="type-panel-title">Related categories</h2>
         <div className="product-detail-related__links">
           {links.map((link) => (
             <RelatedProductLink link={link} key={link.href} />
@@ -1101,17 +1155,9 @@ function RelatedProducts({ links }: { links: ProductDetailLink[] }) {
 }
 
 function RelatedProductLink({ link }: { link: ProductDetailLink }) {
-  const category = productCategories.find((item) => productCategoryHref(item) === link.href);
-  const description =
-    category?.shortDescription ??
-    (link.href.includes("markets-sourcing")
-      ? "Origin and destination market context for commercial sourcing requirements."
-      : "Continue the sourcing conversation with A3.");
-
   return (
     <Link className="product-detail-related__link premium-focus" href={link.href}>
-      <span>{category?.title ?? link.label}</span>
-      <small>{description}</small>
+      <span>{link.label}</span>
     </Link>
   );
 }
@@ -1119,6 +1165,24 @@ function RelatedProductLink({ link }: { link: ProductDetailLink }) {
 function ProductFinalCta({ cta }: { cta: ProductDetailProps["finalCta"] }) {
   const image = cta.image ?? homeAssets.media.finalCta;
   const imageAlt = cta.imageAlt ?? "Commercial food market and buyer activity";
+
+  if (cta.compact) {
+    return (
+      <section className="product-detail-contact-band text-surface" id="contact">
+        <Container className="a3-container product-detail-contact-band__inner">
+          <div className="product-detail-contact-band__copy">
+            <h2 className="type-section text-surface">{cta.title}</h2>
+            <p className="type-section-lead text-surface">{cta.text}</p>
+          </div>
+          <div className="product-detail-contact-band__links">
+            <LinkButton className="product-detail-contact-band__action" href={cta.primary.href} variant="darkOutline">
+              {cta.primary.label}
+            </LinkButton>
+          </div>
+        </Container>
+      </section>
+    );
+  }
 
   return (
     <section className={clsx("final-cta-section product-detail-final-cta text-surface", cta.tone === "ink" ? "bg-ink" : "bg-teal")}>

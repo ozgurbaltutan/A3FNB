@@ -77,7 +77,7 @@ export default function ElleMinaPage() {
                 { title: "Brand", description: "Elle Mina product range reviewed by inquiry." },
                 { title: "Market fit", description: "Destination market, label needs and commercial route are checked before quotation." },
               ],
-              cta: { label: "Request this product", href: elleMinaQuoteHref(product.id) },
+              cta: { label: "Request quote for this product", href: elleMinaQuoteHref(product.id) },
             };
           }),
         }}

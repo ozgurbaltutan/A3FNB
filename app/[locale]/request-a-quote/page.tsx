@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { ContactPageLayout } from "@/components/contact-page-layout";
-import { SendRequirementForm } from "@/components/send-requirement-form";
+import { EnquiryPageLayout } from "@/components/enquiry-page-layout";
+import { QuoteEnquiryForm } from "@/components/enquiry-forms";
 import { JsonLd } from "@/components/seo/json-ld";
-import { company, pages } from "@/content/site";
+import { pages } from "@/content/site";
+import { enquiryCatalog, resolveEnquiryContext } from "@/lib/enquiry-catalog";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 const breadcrumb = [
@@ -14,44 +15,28 @@ export function generateMetadata(): Metadata {
   return buildMetadata(pages.requestQuote.seo);
 }
 
-export default function RequestAQuotePage() {
+export default async function RequestAQuotePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string | string[]; product?: string | string[] }>;
+}) {
+  const query = await searchParams;
+  const categoryValue = Array.isArray(query.category) ? query.category[0] : query.category;
+  const productValue = Array.isArray(query.product) ? query.product[0] : query.product;
+  const { category, product } = resolveEnquiryContext(categoryValue, productValue);
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(breadcrumb)} />
-      <ContactPageLayout
-        title={pages.requestQuote.title}
-        text="Share the product, origin, packing, volume and destination details A3 needs to review supplier fit and the best commercial next step."
-        image="/media/home/final-cta.webp"
-        imageAlt="Food sourcing and product handling used to represent a sourcing request"
-        formTitle="Send your requirement"
-        formText="Use the fields below to give A3 enough context for a focused sourcing or quote discussion. A prepared email draft will open for review before sending."
-        infoTitle="What helps A3 respond"
-        infoText="Clear product and shipment context helps the team review availability, documentation needs and realistic next steps."
-        infoGroups={[
-          {
-            title: "Helpful details",
-            items: [
-              { label: "Product", value: "Category, grade or specification" },
-              { label: "Supply context", value: "Origin, packing, volume and timing" },
-              { label: "Destination", value: "Country, port or target market" },
-              { label: "Documents", value: "Certification and specification needs" },
-            ],
-          },
-          {
-            title: "Direct contact",
-            items: [
-              { label: "Email", value: company.email, href: `mailto:${company.email}` },
-              { label: "Phone / WhatsApp", value: company.phone, href: `tel:${company.phone.replace(/\s+/g, "")}` },
-            ],
-          },
-        ]}
-        supportTitle="Looking for general contact?"
-        supportText="For company information, partnership conversations or non-product enquiries, use the shorter contact route."
-        supportPrimary={{ label: "Contact A3", href: "/en/contact" }}
-        supportSecondary={{ label: "Explore Products", href: "/en/products" }}
+      <EnquiryPageLayout
+        title={product ? undefined : "Request a food sourcing quote"}
+        text={product ? undefined : "Select a product category and share the essential details needed for a focused sourcing review."}
       >
-        <SendRequirementForm />
-      </ContactPageLayout>
+        <QuoteEnquiryForm
+          catalog={enquiryCatalog}
+          initialCategorySlug={category?.slug}
+          initialProductId={product?.id}
+        />
+      </EnquiryPageLayout>
     </>
   );
 }

@@ -75,6 +75,7 @@ export function Header() {
   const [atTop, setAtTop] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
+  const onLightSurface = pathname === "/en/request-a-quote" || pathname === "/en/supplier-enquiry";
 
   useEffect(() => {
     let frame = 0;
@@ -134,6 +135,7 @@ export function Header() {
       ref={headerRef}
       className="site-header fixed top-0 z-50 w-full"
       data-at-top={atTop}
+      data-on-light-surface={onLightSurface}
       data-mega-open={productsOpen}
       data-mobile-open={mobileOpen}
       onKeyDown={(event) => {

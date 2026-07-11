@@ -13,6 +13,7 @@ export function InnerPageHero({
   breadcrumb,
   children,
   className,
+  id,
 }: {
   title: string;
   text?: string | string[];
@@ -21,11 +22,12 @@ export function InnerPageHero({
   breadcrumb?: NavigationItem[];
   children?: ReactNode;
   className?: string;
+  id?: string;
 }) {
   const paragraphs = typeof text === "string" ? [text] : (text ?? []);
 
   return (
-    <section className={clsx("inner-page-hero text-surface", className)}>
+    <section className={clsx("inner-page-hero text-surface", className)} id={id}>
       <Image
         src={image}
         alt={imageAlt}

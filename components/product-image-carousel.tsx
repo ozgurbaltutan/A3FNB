@@ -80,7 +80,10 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
       </div>
       <div className="product-image-card__body">
         <div className="product-image-card__copy">
-          <strong>{cardTitle}</strong>
+          <div className="product-image-card__title-row">
+            <strong>{cardTitle}</strong>
+            {mode === "button" ? <span className="product-image-card__chevron" aria-hidden="true">→</span> : null}
+          </div>
           {contentMode === "default" ? <p>{item.description}</p> : null}
         </div>
       </div>

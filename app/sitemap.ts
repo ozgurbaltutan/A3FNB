@@ -22,5 +22,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
     .filter((entry) => !existingPageUrls.has(entry.url));
 
-  return [...pageEntries, ...categoryEntries];
+  const supplierEntry: MetadataRoute.Sitemap[number] = {
+    url: absoluteUrl("/en/supplier-enquiry"),
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.65,
+  };
+
+  return [...pageEntries, ...categoryEntries, supplierEntry];
 }

@@ -188,7 +188,7 @@ export const productCategories: ProductCategory[] = [
       "A3 supports inquiry-led green coffee sourcing for commercial buyers by origin, grade, profile, packing and documentation availability.",
     iconKey: "greenCoffee",
     imageKey: "featuredCoffee",
-    exampleProducts: ["Brazilian Green Coffee", "Arabica", "Robusta / Conilon", "Certified Coffee"],
+    exampleProducts: ["Selected Specialty Lots", "Arabica Santos Fine Cup", "Arabica Santos Good Cup", "Arabica Rio Minas", "Robusta / Conilon"],
     ctaLabel: "Request Coffee Availability",
   },
   {
@@ -198,7 +198,7 @@ export const productCategories: ProductCategory[] = [
     longDescription:
       "A3 reviews selected cocoa product requirements by product type, origin options, specification, packing and destination market.",
     iconKey: "cocoa",
-    exampleProducts: ["Cocoa Beans", "Cocoa Powder", "Cocoa Butter", "Cocoa Liquor"],
+    exampleProducts: ["Cocoa Beans", "Cocoa Powder", "Cocoa Butter", "Cocoa Mass (Cocoa Liquor)"],
     ctaLabel: "Send Cocoa Requirement",
   },
   {
@@ -208,7 +208,7 @@ export const productCategories: ProductCategory[] = [
     longDescription:
       "A3 reviews bulk grain and seed requirements by crop, origin, shipment model, documentation and commercial fit.",
     iconKey: "grainsOilseeds",
-    exampleProducts: ["Wheat", "Corn", "Sunflower Seed"],
+    exampleProducts: ["Milling Wheat", "Durum Wheat for Pasta", "Corn / Maize", "Sunflower Seed"],
     ctaLabel: "Send Grain Requirement",
   },
   {
@@ -219,7 +219,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews dairy ingredient and milk powder requirements by product type, specification, certification need and destination market.",
     iconKey: "dairyIngredients",
     imageKey: "featuredDairyIngredients",
-    exampleProducts: ["Whole Milk Powder", "Skimmed Milk Powder", "Dairy Ingredients"],
+    exampleProducts: ["Whole Milk Powder", "Skimmed Milk Powder", "Instant Milk Powder", "Fat-Filled Milk Powder", "Whey Powder", "Lactose", "Dairy / Whey Permeate Powder", "Butter", "Cheese", "Cheese Analogues", "UHT Milk"],
     ctaLabel: "Send Dairy Requirement",
   },
   {
@@ -230,7 +230,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews edible oils and fats by product type, origin, packing format, channel requirement and destination market.",
     iconKey: "edibleOilsFats",
     imageKey: "featuredEdibleOilsFats",
-    exampleProducts: ["Sunflower Oil", "Olive Oil", "Palm Olein", "Specialty Fats"],
+    exampleProducts: ["Sunflower Oil", "Corn / Maize Oil", "Olive Oil", "Palm Oil", "Palm Olein", "Margarines", "Bakery & Pastry Fats", "Specialty Fats"],
     ctaLabel: "Request Oil Availability",
   },
   {
@@ -241,7 +241,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews starch and sweetener requirements by application, specification, packing format and commercial use case.",
     iconKey: "starchesIndustrial",
     imageKey: "featuredStarchesIndustrial",
-    exampleProducts: ["Corn Starch", "Modified Starches", "Maltodextrin", "Glucose Syrup", "Fructose Syrup"],
+    exampleProducts: ["Corn Starch", "Tapioca Starch", "Wheat Starch", "Potato Starch", "Rice Starch", "Pea Starch", "Modified Starches", "Vital Wheat Gluten", "Pea Protein", "Glucose Syrup", "Fructose Syrup", "Maltodextrin", "Dextrose Monohydrate", "Dextrose Anhydrous", "Sorbitol", "Maltitol", "Xylitol", "Erythritol", "Glycerol", "Allulose", "Stevia"],
     ctaLabel: "Send Ingredient Requirement",
   },
   {
@@ -252,7 +252,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews dried fruit and nut requirements by product type, grade, origin, application, packing and documentation need.",
     iconKey: "driedFruitNuts",
     imageKey: "featuredDriedFruitNuts",
-    exampleProducts: ["Dried Fruits", "Raisins", "Nuts", "Application-specific Grades"],
+    exampleProducts: ["Raisins & Sultanas", "Dried Apricots", "Dates", "Dried Figs", "In-Shell Pistachios", "Pistachio Kernels", "Walnuts"],
     ctaLabel: "Send Dried Fruit & Nuts Requirement",
   },
   {
@@ -263,7 +263,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews frozen food product requirements by category, packing format, producer availability and temperature-control needs.",
     iconKey: "frozenFoods",
     imageKey: "featuredFrozenFoods",
-    exampleProducts: ["Frozen Vegetables", "Frozen Fruits", "Frozen Potato Products", "Frozen Bakery"],
+    exampleProducts: ["French Fries / Frozen Potato Products", "Frozen Poultry", "Frozen Seafood", "Frozen Fruit & Vegetables", "Frozen Pastry & Bakery Products"],
     ctaLabel: "Send Frozen Food Requirement",
   },
   {
@@ -274,7 +274,7 @@ export const productCategories: ProductCategory[] = [
       "A3 reviews consumer food requirements by brand, packing, target market, private-label potential and commercial channel fit.",
     iconKey: "consumerFoods",
     imageKey: "featuredPackagedConsumerFoods",
-    exampleProducts: ["Pasta", "Sauces", "Condiments", "Canned Foods", "Tomato Paste"],
+    exampleProducts: ["Ketchup", "Mayonnaise", "Canned Foods", "Pasta", "Tomato Paste"],
     ctaLabel: "Send Consumer Food Requirement",
   },
 ];
