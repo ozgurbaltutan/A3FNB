@@ -65,15 +65,17 @@ export function EditorialMedia({
 }: EditorialMediaProps) {
   return (
     <figure className={clsx("editorial-media reveal reveal--fade", className)}>
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        priority={priority}
-        sizes="(min-width: 1024px) 58vw, 100vw"
-        className="object-cover"
-        style={position ? { objectPosition: position } : undefined}
-      />
+      <span className="editorial-media__clip">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes="(min-width: 1024px) 58vw, 100vw"
+          className="object-cover"
+          style={position ? { objectPosition: position } : undefined}
+        />
+      </span>
     </figure>
   );
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CarouselRail, useCarouselRail } from "@/components/carousel-rail";
 
 export type ProductImageCarouselItem = {
@@ -18,6 +19,7 @@ type ProductImageCarouselBaseProps<TItem extends ProductImageCarouselItem> = {
   className?: string;
   contentMode?: "default" | "title-only";
   getItemLabel?: (item: TItem) => string;
+  header?: ReactNode;
   items: TItem[];
 };
 
@@ -70,19 +72,15 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   const content = (
     <>
       <div className="product-image-card__media">
-        <Image
-          alt={item.imageAlt}
-          fill
-          priority={priority}
-          sizes={imageSizes}
-          src={item.image}
-        />
+        <Image alt={item.imageAlt} fill priority={priority} sizes={imageSizes} src={item.image} />
       </div>
       <div className="product-image-card__body">
         <div className="product-image-card__copy">
           <div className="product-image-card__title-row">
             <strong>{cardTitle}</strong>
-            <span className="product-image-card__chevron" aria-hidden="true">→</span>
+            <svg aria-hidden="true" className="product-image-card__chevron" viewBox="0 0 20 20">
+              <path d="M4 10h11M11 6l4 4-4 4" />
+            </svg>
           </div>
           {contentMode === "default" ? <p>{item.description}</p> : null}
         </div>
@@ -91,11 +89,7 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   );
 
   if (mode === "link") {
-    return (
-      <Link aria-label={label} className={cardClassName} href={href ?? "#"}>
-        {content}
-      </Link>
-    );
+    return <Link aria-label={label} className={cardClassName} href={href ?? "#"}>{content}</Link>;
   }
 
   return (
@@ -111,68 +105,92 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   );
 }
 
+function CarouselControls({
+  ariaLabel,
+  canScrollNext,
+  canScrollPrevious,
+  onNext,
+  onPrevious,
+}: {
+  ariaLabel: string;
+  canScrollNext: boolean;
+  canScrollPrevious: boolean;
+  onNext: () => void;
+  onPrevious: () => void;
+}) {
+  return (
+    <div className="product-image-carousel__controls" aria-label={`${ariaLabel} controls`}>
+      <button
+        aria-label={`Previous ${ariaLabel}`}
+        className="product-image-carousel__control product-image-carousel__control--previous"
+        disabled={!canScrollPrevious}
+        onClick={onPrevious}
+        type="button"
+      />
+      <button
+        aria-label={`Next ${ariaLabel}`}
+        className="product-image-carousel__control product-image-carousel__control--next"
+        disabled={!canScrollNext}
+        onClick={onNext}
+        type="button"
+      />
+    </div>
+  );
+}
+
 export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(props: ProductImageCarouselProps<TItem>) {
-  const { ariaLabel, className = "", contentMode = "default", getItemLabel, items } = props;
+  const { ariaLabel, className = "", contentMode = "default", getItemLabel, header, items } = props;
   const rail = useCarouselRail({ itemCount: items.length });
   const hasControls = items.length > 1;
 
   return (
     <div className={`product-image-carousel ${className}`}>
+      {header || hasControls ? (
+        <div className="product-image-carousel__header">
+          <div className="product-image-carousel__intro">{header}</div>
+          {hasControls ? (
+            <CarouselControls
+              ariaLabel={ariaLabel}
+              canScrollNext={rail.canScrollNext}
+              canScrollPrevious={rail.canScrollPrevious}
+              onNext={rail.scrollNext}
+              onPrevious={rail.scrollPrevious}
+            />
+          ) : null}
+        </div>
+      ) : null}
       <CarouselRail
         ariaLabel={ariaLabel}
         className="product-image-carousel__rail"
+        onKeyDown={rail.handleKeyDown}
         stageClassName="product-image-carousel__stage"
         trackClassName="product-image-carousel__track"
         viewportClassName="product-image-carousel__viewport"
         viewportRef={rail.viewportRef}
       >
-        {items.map((item, index) => {
-          if (props.mode === "link") {
-            return (
-              <ProductImageCard
-                getItemLabel={getItemLabel}
-                href={props.getHref(item)}
-                item={item}
-                key={item.id}
-                mode="link"
-                contentMode={contentMode}
-                priority={index < 2}
-              />
-            );
-          }
-
-          return (
-            <ProductImageCard
-              getItemLabel={getItemLabel}
-              item={item}
-              key={item.id}
-              mode="button"
-              contentMode={contentMode}
-              onActivate={props.onItemActivate}
-              priority={index < 2}
-              setItemRef={props.setItemRef}
-            />
-          );
-        })}
+        {items.map((item, index) => props.mode === "link" ? (
+          <ProductImageCard
+            contentMode={contentMode}
+            getItemLabel={getItemLabel}
+            href={props.getHref(item)}
+            item={item}
+            key={item.id}
+            mode="link"
+            priority={index < 2}
+          />
+        ) : (
+          <ProductImageCard
+            contentMode={contentMode}
+            getItemLabel={getItemLabel}
+            item={item}
+            key={item.id}
+            mode="button"
+            onActivate={props.onItemActivate}
+            priority={index < 2}
+            setItemRef={props.setItemRef}
+          />
+        ))}
       </CarouselRail>
-      {hasControls ? (
-        <div className="product-image-carousel__controls" aria-label={`${ariaLabel} controls`}>
-          <button
-            aria-label={`Previous ${ariaLabel}`}
-            className="product-image-carousel__control product-image-carousel__control--previous"
-            disabled={!rail.canScrollPrevious}
-            onClick={rail.scrollPrevious}
-            type="button"
-          />
-          <button
-            aria-label={`Next ${ariaLabel}`}
-            className="product-image-carousel__control product-image-carousel__control--next"
-            disabled={!rail.canScrollNext}
-            onClick={rail.scrollNext}
-            type="button"
-          />
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -188,21 +206,21 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
         <li className="product-image-grid__item" key={item.id}>
           {props.mode === "link" ? (
             <ProductImageCard
+              contentMode={contentMode}
               getItemLabel={getItemLabel}
               href={props.getHref(item)}
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="link"
-              contentMode={contentMode}
               priority={index < 4}
             />
           ) : (
             <ProductImageCard
+              contentMode={contentMode}
               getItemLabel={getItemLabel}
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="button"
-              contentMode={contentMode}
               onActivate={props.onItemActivate}
               priority={index < 4}
               setItemRef={props.setItemRef}

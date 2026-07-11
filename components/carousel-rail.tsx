@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
 
 type CarouselRailState = {
   canScrollNext: boolean;
@@ -9,7 +9,6 @@ type CarouselRailState = {
 
 type UseCarouselRailOptions = {
   itemCount: number;
-  duration?: number;
 };
 
 type CarouselRailProps = {
@@ -20,90 +19,51 @@ type CarouselRailProps = {
   viewportClassName?: string;
   trackClassName?: string;
   viewportRef: RefObject<HTMLDivElement | null>;
+  onKeyDown?: (event: KeyboardEvent<HTMLDivElement>) => void;
 };
-
-const DEFAULT_SCROLL_DURATION = 580;
-
-function cubicBezier(progress: number, x1: number, y1: number, x2: number, y2: number) {
-  const sampleCurveX = (time: number) => ((1 - 3 * x2 + 3 * x1) * time + (3 * x2 - 6 * x1)) * time * time + 3 * x1 * time;
-  const sampleCurveY = (time: number) => ((1 - 3 * y2 + 3 * y1) * time + (3 * y2 - 6 * y1)) * time * time + 3 * y1 * time;
-  const sampleDerivativeX = (time: number) => (3 * (1 - 3 * x2 + 3 * x1) * time + 2 * (3 * x2 - 6 * x1)) * time + 3 * x1;
-
-  let time = progress;
-
-  for (let index = 0; index < 5; index += 1) {
-    const currentX = sampleCurveX(time) - progress;
-    const derivative = sampleDerivativeX(time);
-
-    if (Math.abs(currentX) < 0.001 || Math.abs(derivative) < 0.001) {
-      break;
-    }
-
-    time -= currentX / derivative;
-  }
-
-  return sampleCurveY(Math.min(1, Math.max(0, time)));
-}
-
-function railEase(progress: number) {
-  return cubicBezier(progress, 0.25, 0.1, 0.25, 1);
-}
 
 function clampScrollTarget(target: number, viewport: HTMLElement) {
   const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-
   return Math.min(maxScroll, Math.max(0, target));
 }
 
-function getSnapPositions(viewport: HTMLElement, track: HTMLElement | null) {
-  if (!track) {
-    return [viewport.scrollLeft];
-  }
+function getSnapPositions(viewport: HTMLElement) {
+  const track = viewport.firstElementChild;
+  if (!(track instanceof HTMLElement)) return [viewport.scrollLeft];
 
-  const cards = Array.from(track.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
-
-  return cards.map((card) => clampScrollTarget(card.offsetLeft - track.offsetLeft, viewport));
+  return Array.from(track.children)
+    .filter((child): child is HTMLElement => child instanceof HTMLElement)
+    .map((card) => clampScrollTarget(card.offsetLeft - track.offsetLeft, viewport));
 }
 
 function closestSnapIndex(positions: number[], scrollLeft: number) {
   return positions.reduce((closestIndex, position, index) => {
-    const currentDistance = Math.abs(position - scrollLeft);
-    const closestDistance = Math.abs(positions[closestIndex] - scrollLeft);
-
-    return currentDistance < closestDistance ? index : closestIndex;
+    return Math.abs(position - scrollLeft) < Math.abs(positions[closestIndex] - scrollLeft)
+      ? index
+      : closestIndex;
   }, 0);
 }
 
-export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION }: UseCarouselRailOptions) {
+export function useCarouselRail({ itemCount }: UseCarouselRailOptions) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number | null>(null);
   const targetIndexRef = useRef<number | null>(null);
+  const settleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [controls, setControls] = useState<CarouselRailState>({
     canScrollNext: true,
     canScrollPrevious: false,
   });
 
-  const cancelScrollAnimation = useCallback((resetTarget = true) => {
-    if (frameRef.current !== null) {
-      window.cancelAnimationFrame(frameRef.current);
-      frameRef.current = null;
-    }
-
-    if (viewportRef.current) {
-      delete viewportRef.current.dataset.carouselAnimating;
-    }
-
-    if (resetTarget) {
-      targetIndexRef.current = null;
+  const clearTarget = useCallback(() => {
+    targetIndexRef.current = null;
+    if (settleTimerRef.current) {
+      clearTimeout(settleTimerRef.current);
+      settleTimerRef.current = null;
     }
   }, []);
 
   const updateControls = useCallback(() => {
     const viewport = viewportRef.current;
-
-    if (!viewport) {
-      return;
-    }
+    if (!viewport) return;
 
     const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
     const scrollLeft = Math.max(0, viewport.scrollLeft);
@@ -119,107 +79,73 @@ export function useCarouselRail({ itemCount, duration = DEFAULT_SCROLL_DURATION 
     );
   }, []);
 
-  const scrollByDirection = useCallback(
-    (direction: "previous" | "next") => {
-      const viewport = viewportRef.current;
-      const track = viewport?.firstElementChild instanceof HTMLElement ? viewport.firstElementChild : null;
+  const scrollByDirection = useCallback((direction: "previous" | "next") => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
 
-      if (!viewport) {
-        return;
-      }
+    const snapPositions = getSnapPositions(viewport);
+    const currentIndex = targetIndexRef.current ?? closestSnapIndex(snapPositions, viewport.scrollLeft);
+    const targetIndex = direction === "next"
+      ? Math.min(snapPositions.length - 1, currentIndex + 1)
+      : Math.max(0, currentIndex - 1);
+    const target = snapPositions[targetIndex] ?? viewport.scrollLeft;
 
-      const snapPositions = getSnapPositions(viewport, track);
+    if (Math.abs(target - viewport.scrollLeft) < 1) {
+      clearTarget();
+      updateControls();
+      return;
+    }
 
-      if (snapPositions.length === 0) {
-        updateControls();
-        return;
-      }
+    targetIndexRef.current = targetIndex;
+    viewport.scrollTo({
+      left: target,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
 
-      const start = viewport.scrollLeft;
-      const currentIndex = targetIndexRef.current ?? closestSnapIndex(snapPositions, start);
-      const targetIndex = direction === "next"
-        ? Math.min(snapPositions.length - 1, currentIndex + 1)
-        : Math.max(0, currentIndex - 1);
-      const target = snapPositions[targetIndex] ?? start;
+    if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+    settleTimerRef.current = setTimeout(() => {
+      targetIndexRef.current = null;
+      settleTimerRef.current = null;
+      updateControls();
+    }, 520);
+  }, [clearTarget, updateControls]);
 
-      if (frameRef.current !== null) {
-        cancelScrollAnimation(false);
-      }
-
-      if (Math.abs(target - start) < 1) {
-        targetIndexRef.current = null;
-        updateControls();
-        return;
-      }
-
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      if (reducedMotion) {
-        viewport.scrollLeft = target;
-        delete viewport.dataset.carouselAnimating;
-        targetIndexRef.current = null;
-        updateControls();
-        return;
-      }
-
-      const startedAt = performance.now();
-      targetIndexRef.current = targetIndex;
-      viewport.dataset.carouselAnimating = "true";
-
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - startedAt) / duration);
-        viewport.scrollLeft = start + (target - start) * railEase(progress);
-
-        if (progress < 1) {
-          frameRef.current = window.requestAnimationFrame(tick);
-          return;
-        }
-
-        frameRef.current = null;
-        viewport.scrollLeft = target;
-        delete viewport.dataset.carouselAnimating;
-        targetIndexRef.current = null;
-        updateControls();
-      };
-
-      frameRef.current = window.requestAnimationFrame(tick);
-    },
-    [cancelScrollAnimation, duration, updateControls],
-  );
+  const handleKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    scrollByDirection(event.key === "ArrowRight" ? "next" : "previous");
+  }, [scrollByDirection]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    const track = viewport?.firstElementChild instanceof HTMLElement ? viewport.firstElementChild : null;
+    const track = viewport?.firstElementChild;
+    if (!viewport || !(track instanceof HTMLElement)) return undefined;
 
-    if (!viewport || !track) {
-      return undefined;
-    }
+    const handleScroll = () => updateControls();
+    const handleUserInput = () => clearTarget();
+    const resizeObserver = new ResizeObserver(updateControls);
 
     updateControls();
-
-    const interruptAnimation = () => cancelScrollAnimation();
-    const resizeObserver = new ResizeObserver(updateControls);
-    viewport.addEventListener("scroll", updateControls, { passive: true });
-    viewport.addEventListener("pointerdown", interruptAnimation, { passive: true });
-    viewport.addEventListener("touchstart", interruptAnimation, { passive: true });
-    viewport.addEventListener("wheel", interruptAnimation, { passive: true });
-    window.addEventListener("resize", updateControls);
+    viewport.addEventListener("scroll", handleScroll, { passive: true });
+    viewport.addEventListener("pointerdown", handleUserInput, { passive: true });
+    viewport.addEventListener("touchstart", handleUserInput, { passive: true });
+    viewport.addEventListener("wheel", handleUserInput, { passive: true });
     resizeObserver.observe(viewport);
     resizeObserver.observe(track);
 
     return () => {
-      cancelScrollAnimation();
-      viewport.removeEventListener("scroll", updateControls);
-      viewport.removeEventListener("pointerdown", interruptAnimation);
-      viewport.removeEventListener("touchstart", interruptAnimation);
-      viewport.removeEventListener("wheel", interruptAnimation);
-      window.removeEventListener("resize", updateControls);
+      clearTarget();
+      viewport.removeEventListener("scroll", handleScroll);
+      viewport.removeEventListener("pointerdown", handleUserInput);
+      viewport.removeEventListener("touchstart", handleUserInput);
+      viewport.removeEventListener("wheel", handleUserInput);
       resizeObserver.disconnect();
     };
-  }, [cancelScrollAnimation, itemCount, updateControls]);
+  }, [clearTarget, itemCount, updateControls]);
 
   return {
     ...controls,
+    handleKeyDown,
     scrollNext: () => scrollByDirection("next"),
     scrollPrevious: () => scrollByDirection("previous"),
     viewportRef,
@@ -234,11 +160,18 @@ export function CarouselRail({
   viewportClassName = "",
   trackClassName = "",
   viewportRef,
+  onKeyDown,
 }: CarouselRailProps) {
   return (
     <div className={className}>
       <div className={stageClassName}>
-        <div aria-label={ariaLabel} className={viewportClassName} ref={viewportRef} role="region">
+        <div
+          aria-label={ariaLabel}
+          className={viewportClassName}
+          onKeyDown={onKeyDown}
+          ref={viewportRef}
+          role="region"
+        >
           <div className={trackClassName}>{children}</div>
         </div>
       </div>
