@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { useState, type CSSProperties, type KeyboardEvent } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
@@ -408,48 +408,46 @@ function HowA3Works() {
   );
 }
 
-const WORK_WITH_ROLES = [
-  {
-    id: "producers",
-    title: "Producers & farming groups",
-    description: "Origin-side partners supplying agricultural products and primary food commodities.",
-  },
-  {
-    id: "processors",
-    title: "Primary processors",
-    description: "Businesses turning raw materials into trade-ready food products and ingredients.",
-  },
-  {
-    id: "manufacturers",
-    title: "Food & beverage manufacturers",
-    description: "Production teams sourcing ingredients and products for formulation and finished goods.",
-  },
-  {
-    id: "commercial",
-    title: "Distribution & commercial buying teams",
-    description: "Importers, distributors, wholesalers, retailers and foodservice procurement teams.",
-  },
-] as const;
-
-function SupplyRoleIcon({ id }: { id: (typeof WORK_WITH_ROLES)[number]["id"] }) {
-  const paths: Record<typeof id, ReactNode> = {
-    producers: <><path d="M4 18V9m0 5 4-4m-4 3-3-3M12 19v-8m0 3 4-4m-4 2-3-3M2 21h16" /></>,
-    processors: <><path d="M3 21V9l5 3V8l5 3V5h4v16M6 17h2m3 0h2m3 0h1" /></>,
-    manufacturers: <><path d="M3 21V8h5v4l5-4v4l6-4v13M6 17h2m3 0h2m3 0h2" /></>,
-    commercial: <><path d="M3 8h14l2 5H5L3 8Zm2 5v8m12-8v8M8 17h6m-7-9 2-4h5l2 4" /></>,
-  };
-
-  return (
-    <svg aria-hidden="true" className="work-with-role__icon" viewBox="0 0 22 24">
-      {paths[id]}
-    </svg>
-  );
-}
-
 function DirectionArrow() {
   return (
     <svg aria-hidden="true" className="work-with-arrow" viewBox="0 0 20 20">
       <path d="M4 10h11M11 6l4 4-4 4" />
+    </svg>
+  );
+}
+
+function WorkWithScene({ variant }: { variant: "buyers" | "producers" | "route" }) {
+  if (variant === "buyers") {
+    return (
+      <svg aria-hidden="true" className="work-with-scene" viewBox="0 0 360 220">
+        <path d="M38 180V80h176v100M28 180h208M58 104h136M58 130h136M58 156h136" />
+        <path d="M72 88h28v16H72zm40 0h34v16h-34zm46 0h24v16h-24zM70 110h42v20H70zm54 0h28v20h-28zm40 0h20v20h-20zM72 136h26v20H72zm38 0h40v20h-40zm52 0h22v20h-22z" />
+        <path d="M244 112h68l20 24v44h-88zM312 112v24h20M260 180v-22h56v22" />
+        <circle cx="268" cy="181" r="10" /><circle cx="314" cy="181" r="10" />
+        <path className="work-with-scene__route" d="M206 58c36-24 74-23 112 2" />
+        <path d="m308 50 12 10-14 7" />
+      </svg>
+    );
+  }
+
+  if (variant === "producers") {
+    return (
+      <svg aria-hidden="true" className="work-with-scene" viewBox="0 0 360 220">
+        <path d="M34 182h292M54 182v-68h104v68M74 114V86h64v28M84 86l11-31m33 31-10-31" />
+        <path d="M176 182v-92l44 24V88l44 25V76h36v106M200 144h22m18 0h22m18 0h12" />
+        <path d="M75 157c0-15 9-25 22-25s22 10 22 25v25H75zM122 160c0-12 8-21 19-21s19 9 19 21v22h-38z" />
+        <path className="work-with-scene__route" d="M46 44c68-25 135-24 201 2" />
+        <path d="m237 36 12 10-14 7" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg aria-hidden="true" className="work-with-scene work-with-scene--route" viewBox="0 0 420 150">
+      <path className="work-with-scene__route" d="M62 75h296" />
+      <path d="m346 64 14 11-14 11" />
+      <circle cx="68" cy="75" r="28" /><circle cx="210" cy="75" r="28" /><circle cx="352" cy="75" r="28" />
+      <path d="M56 84V66m0 8 9-9m-9 6-8-8m19 21H47M195 88V67l15 8V64l15 8v16m-22-1h5m7 0h5M338 68h28l5 12h-38l5-12zm0 12v12m28-12v12m-20-3h12" />
     </svg>
   );
 }
@@ -463,40 +461,38 @@ function BuyerPaths() {
       <HomeShell>
         <SectionIntro
           title="Who we work with"
-          text="A3 works across the food and beverage supply chain, connecting origin-side capability with commercial demand in destination markets."
+          text="A3 works with producers, processors, manufacturers, distributors and commercial buying teams—bringing origin-side capability and destination demand into one workable trade route."
           className="work-with-intro"
         />
-        <ol aria-label="Food and beverage supply chain roles" className="work-with-roles reveal reveal--up reveal-delay-1">
-          {WORK_WITH_ROLES.map((role, index) => (
-            <li className="work-with-role" key={role.id}>
-              <div className="work-with-role__topline">
-                <SupplyRoleIcon id={role.id} />
-                <span className="work-with-role__index">0{index + 1}</span>
-              </div>
-              <h3>{role.title}</h3>
-              <p>{role.description}</p>
-            </li>
-          ))}
-        </ol>
-        <div className="work-with-actions reveal reveal--up reveal-delay-2">
+        <div className="work-with-bento reveal reveal--up reveal-delay-1">
           {buyers ? (
-            <Link className="work-with-action premium-focus" href={buyers.href}>
-              <span>
-                <strong>Need product options?</strong>
-                <small>Product / Origin / Volume / Destination</small>
-              </span>
-              <span className="work-with-action__link">Request product options <DirectionArrow /></span>
+            <Link className="work-with-tile work-with-tile--buyers premium-focus" href={buyers.href}>
+              <span className="work-with-tile__eyebrow">Destination-side demand</span>
+              <h3>For buyers &amp; distribution teams</h3>
+              <p>Product options shaped around specification, origin, packing, volume and destination.</p>
+              <span className="work-with-tile__context">Manufacturers · Importers · Distributors · Wholesalers · Retail &amp; foodservice</span>
+              <WorkWithScene variant="buyers" />
+              <span className="work-with-tile__link">Request product options <DirectionArrow /></span>
             </Link>
           ) : null}
           {producers ? (
-            <Link className="work-with-action premium-focus" href={producers.href}>
-              <span>
-                <strong>Have products or capacity to introduce?</strong>
-                <small>Products / Capacity / Export markets</small>
-              </span>
-              <span className="work-with-action__link">Introduce your supply <DirectionArrow /></span>
+            <Link className="work-with-tile work-with-tile--producers premium-focus" href={producers.href}>
+              <span className="work-with-tile__eyebrow">Origin-side capability</span>
+              <h3>For producers &amp; processors</h3>
+              <p>Routes for products and available capacity that are technically ready, commercially workable and suited to buyer demand.</p>
+              <span className="work-with-tile__context">Farming groups · Primary processors · Export-ready manufacturers</span>
+              <WorkWithScene variant="producers" />
+              <span className="work-with-tile__link">Introduce your supply <DirectionArrow /></span>
             </Link>
           ) : null}
+          <article className="work-with-tile work-with-tile--route">
+            <div className="work-with-tile__route-copy">
+              <span className="work-with-tile__eyebrow">A3 coordination</span>
+              <h3>Across the route</h3>
+              <p>Product fit, commercial structure, documentation and delivery coordination connect both sides.</p>
+            </div>
+            <WorkWithScene variant="route" />
+          </article>
         </div>
       </HomeShell>
     </section>

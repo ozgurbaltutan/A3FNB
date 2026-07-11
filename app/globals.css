@@ -12423,118 +12423,105 @@ body .enquiry-success h2 {
   max-width: 52rem;
 }
 
-.work-with-roles {
+.work-with-bento {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(1.25rem, 2.5vw, 2.5rem);
-  margin: clamp(3rem, 5vw, 4.5rem) 0 0;
-  padding: 0;
-  list-style: none;
+  grid-template-columns: minmax(0, 7fr) minmax(20rem, 5fr);
+  grid-template-rows: repeat(2, minmax(15rem, auto));
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+  margin-top: clamp(3rem, 5vw, 4.5rem);
 }
 
-.work-with-role {
+.work-with-tile {
   position: relative;
-  min-width: 0;
-  padding-right: clamp(0.5rem, 1vw, 1rem);
-}
-
-.work-with-role:not(:last-child)::after {
-  position: absolute;
-  top: 1.15rem;
-  right: calc(clamp(1.25rem, 2.5vw, 2.5rem) * -0.75);
-  width: clamp(1.25rem, 2.5vw, 2.5rem);
-  height: 1px;
-  content: "";
-  background: color-mix(in srgb, var(--color-ink) 20%, transparent);
-}
-
-.work-with-role__topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.work-with-role__icon {
-  width: 2.35rem;
-  height: 2.35rem;
-  fill: none;
-  stroke: color-mix(in srgb, var(--color-teal) 88%, var(--color-ink));
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.35;
-}
-
-.work-with-role__index {
-  color: color-mix(in srgb, var(--color-ink) 42%, var(--color-paper));
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.work-with-role h3 {
-  margin: 1.35rem 0 0;
-  color: var(--color-ink);
-  font-size: clamp(1.05rem, 1.35vw, 1.22rem);
-  font-weight: 650;
-  line-height: 1.25;
-}
-
-.work-with-role p {
-  margin: 0.75rem 0 0;
-  color: color-mix(in srgb, var(--color-ink) 70%, var(--color-paper));
-  font-size: 0.94rem;
-  line-height: 1.5;
-}
-
-.work-with-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  margin-top: clamp(3rem, 5vw, 4.25rem);
-}
-
-.work-with-action {
   display: flex;
   min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: clamp(1.35rem, 2.5vw, 2rem);
+  overflow: hidden;
+  flex-direction: column;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
   border: 0;
-  border-radius: var(--home-media-radius);
-  background: var(--color-surface);
-  box-shadow: var(--home-shadow-card);
-  color: var(--color-ink);
+  border-radius: calc(var(--home-media-radius) + 0.25rem);
   text-decoration: none;
-  transition: box-shadow 240ms var(--ease-premium), transform 240ms var(--ease-premium);
 }
 
-.work-with-action strong,
-.work-with-action small {
+.work-with-tile--buyers {
+  grid-row: 1 / 3;
+  min-height: 35rem;
+  background: var(--color-deep-dark);
+  box-shadow: 0 24px 58px rgba(3, 16, 14, 0.16);
+  color: var(--color-surface);
+  transition: box-shadow 260ms var(--ease-premium), transform 260ms var(--ease-premium);
+}
+
+.work-with-tile--producers {
+  min-height: 17rem;
+  background: color-mix(in srgb, var(--color-sage) 78%, var(--color-paper));
+  box-shadow: 0 18px 42px rgba(3, 16, 14, 0.09);
+  color: var(--color-ink);
+  transition: box-shadow 260ms var(--ease-premium), transform 260ms var(--ease-premium);
+}
+
+.work-with-tile--route {
+  min-height: 17rem;
+  justify-content: space-between;
+  background: color-mix(in srgb, var(--color-teal) 8%, var(--color-paper));
+  color: var(--color-ink);
+}
+
+.work-with-tile__eyebrow,
+.work-with-tile__context,
+.work-with-tile__link {
   display: block;
 }
 
-.work-with-action strong {
-  font-size: clamp(1.05rem, 1.4vw, 1.22rem);
-  line-height: 1.25;
+.work-with-tile__eyebrow {
+  color: color-mix(in srgb, currentColor 62%, transparent);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.work-with-action small {
-  margin-top: 0.55rem;
-  color: color-mix(in srgb, var(--color-ink) 62%, var(--color-paper));
-  font-size: 0.84rem;
-  line-height: 1.35;
+.work-with-tile h3 {
+  max-width: 31rem;
+  margin: 0.85rem 0 0;
+  font-size: clamp(1.55rem, 2.5vw, 2.45rem);
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
 }
 
-.work-with-action__link {
+.work-with-tile p {
+  max-width: 35rem;
+  margin: 1rem 0 0;
+  color: color-mix(in srgb, currentColor 76%, transparent);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.work-with-tile--producers h3,
+.work-with-tile--route h3 {
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+}
+
+.work-with-tile__context {
+  max-width: 34rem;
+  margin-top: 1rem;
+  color: color-mix(in srgb, currentColor 58%, transparent);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.work-with-tile__link {
   display: inline-flex;
-  flex: 0 0 auto;
+  z-index: 1;
+  width: fit-content;
   align-items: center;
   gap: 0.65rem;
-  color: color-mix(in srgb, var(--color-ink) 82%, var(--color-paper));
+  margin-top: auto;
+  padding-top: 1.5rem;
+  color: currentColor;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .work-with-arrow {
@@ -12548,14 +12535,67 @@ body .enquiry-success h2 {
   transition: transform 200ms var(--ease-premium);
 }
 
-.work-with-action:hover,
-.work-with-action:focus-visible {
-  box-shadow: var(--home-shadow-card-hover);
-  transform: translateY(-3px);
+.work-with-scene {
+  width: min(100%, 34rem);
+  height: auto;
+  margin: auto auto 0;
+  fill: none;
+  opacity: 0.62;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
 }
 
-.work-with-action:hover .work-with-arrow,
-.work-with-action:focus-visible .work-with-arrow {
+.work-with-tile--buyers .work-with-scene {
+  width: min(92%, 38rem);
+  opacity: 0.5;
+}
+
+.work-with-tile--producers .work-with-scene {
+  position: absolute;
+  right: -1.5rem;
+  bottom: -1.8rem;
+  width: min(58%, 18rem);
+  opacity: 0.26;
+}
+
+.work-with-tile--route {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.8fr) minmax(12rem, 1.2fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+.work-with-tile--route .work-with-scene {
+  width: 100%;
+  margin: 0;
+  color: color-mix(in srgb, var(--color-teal) 78%, var(--color-ink));
+  opacity: 0.72;
+}
+
+.work-with-tile--buyers:hover,
+.work-with-tile--buyers:focus-visible,
+.work-with-tile--producers:hover,
+.work-with-tile--producers:focus-visible {
+  transform: translateY(-4px);
+}
+
+.work-with-tile--buyers:hover,
+.work-with-tile--buyers:focus-visible {
+  box-shadow: 0 30px 68px rgba(3, 16, 14, 0.22);
+}
+
+.work-with-tile--producers:hover,
+.work-with-tile--producers:focus-visible {
+  box-shadow: 0 24px 52px rgba(3, 16, 14, 0.13);
+}
+
+.work-with-tile--buyers:hover .work-with-arrow,
+.work-with-tile--buyers:focus-visible .work-with-arrow,
+.work-with-tile--producers:hover .work-with-arrow,
+.work-with-tile--producers:focus-visible .work-with-arrow {
   transform: translateX(0.22rem);
 }
 
@@ -12592,13 +12632,14 @@ body .enquiry-success h2 {
     min-height: clamp(25rem, 65vw, 34rem);
   }
 
-  .work-with-roles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 3rem;
+  .work-with-bento {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
 
-  .work-with-role::after {
-    display: none;
+  .work-with-tile--buyers {
+    grid-row: auto;
+    min-height: 31rem;
   }
 }
 
@@ -12673,23 +12714,20 @@ body .enquiry-success h2 {
     min-height: 23rem;
   }
 
-  .work-with-roles,
-  .work-with-actions {
+  .work-with-tile {
+    min-height: 0;
+  }
+
+  .work-with-tile--buyers {
+    min-height: 28rem;
+  }
+
+  .work-with-tile--route {
     grid-template-columns: 1fr;
   }
 
-  .work-with-roles {
-    gap: 2.25rem;
-  }
-
-  .work-with-role {
-    padding: 0;
-  }
-
-  .work-with-action {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1.15rem;
+  .work-with-tile--route .work-with-scene {
+    margin-top: 1.25rem;
   }
 }
 
@@ -12706,7 +12744,8 @@ body .enquiry-success h2 {
   .process-showcase-media__item,
   .featured-sourcing-section .product-image-card,
   .featured-sourcing-section .product-image-card__media img,
-  .work-with-action,
+  .work-with-tile--buyers,
+  .work-with-tile--producers,
   .work-with-arrow {
     transition: none;
   }
