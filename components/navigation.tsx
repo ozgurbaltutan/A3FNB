@@ -18,6 +18,7 @@ const footerCompanyLinks = ["About", "How We Work", "Markets & Sourcing", "Resou
   const item = navigation.find((navigationItem) => navigationItem.label === label);
   return item ? [{ label: item.label, href: item.href }] : [];
 });
+footerCompanyLinks.push({ label: "Supplier / Producer Enquiry", href: "/en/supplier-enquiry" });
 const productsNavigationItem = navigation.find((item) => item.label === "Products");
 const mobileProductLinks = productsNavigationItem?.children ?? footerProducts;
 
@@ -66,8 +67,6 @@ const footerSocialLinks = [
   { label: "X / Twitter", href: "#", icon: "twitter" },
   { label: "Instagram", href: "#", icon: "instagram" },
 ];
-
-const activeFooterSocialLinks = footerSocialLinks.filter((item) => item.href && item.href !== "#");
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -377,26 +376,19 @@ export function Footer() {
               />
             </Link>
             <p className="site-footer__description type-p3">{company.positioning}</p>
-            {activeFooterSocialLinks.length > 0 ? (
-              <div className="site-footer__social" aria-label="Social links">
-                {activeFooterSocialLinks.map((item) => {
-                  const isExternal = item.href.startsWith("http");
-
-                  return (
-                    <a
-                      className="footer-social-link premium-focus"
-                      href={item.href}
-                      aria-label={item.label}
-                      key={item.label}
-                      rel={isExternal ? "noreferrer" : undefined}
-                      target={isExternal ? "_blank" : undefined}
-                    >
-                      <FooterSocialIcon icon={item.icon} />
-                    </a>
-                  );
-                })}
-              </div>
-            ) : null}
+            <div className="site-footer__social" aria-label="Social channels">
+              {footerSocialLinks.map((item) => (
+                <span
+                  aria-label={`${item.label} profile coming soon`}
+                  className="footer-social-link footer-social-link--placeholder"
+                  key={item.label}
+                  role="img"
+                  title={`${item.label} profile coming soon`}
+                >
+                  <FooterSocialIcon icon={item.icon} />
+                </span>
+              ))}
+            </div>
           </div>
           <div className="site-footer__columns">
             {sectionOrder.map((sectionId) => {

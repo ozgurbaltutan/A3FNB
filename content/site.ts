@@ -86,6 +86,21 @@ export const homeAssets = {
     featuredSugarCard: "/media/home/featured-sugar-card.png",
     featuredSweetenersSyrups: "/media/home/featured-sweeteners-syrups.webp",
     featuredPackagedConsumerFoods: "/media/home/product-consumer-foods.webp",
+    homeProductSugar: "/media/home/products/sugar.webp",
+    homeProductCoffee: "/media/home/products/green-coffee-beans.webp",
+    homeProductCocoa: "/media/home/products/cocoa-products.webp",
+    homeProductGrains: "/media/home/products/grains-seeds.webp",
+    homeProductDairy: "/media/home/products/dairy-milk-powders.webp",
+    homeProductOils: "/media/home/products/oils-fats.webp",
+    homeProductStarches: "/media/home/products/starches-sweeteners.webp",
+    homeProductDriedFruit: "/media/home/products/dried-fruit-nuts.webp",
+    homeProductFrozen: "/media/home/products/frozen-foods.webp",
+    homeProductConsumer: "/media/home/products/consumer-foods.webp",
+    processProductFit: "/media/home/process/product-fit.webp",
+    processProducerCapability: "/media/home/process/producer-capability.webp",
+    processMarketAccess: "/media/home/process/market-access.webp",
+    processCommercialTerms: "/media/home/process/commercial-terms.webp",
+    processShipmentReadiness: "/media/home/process/shipment-readiness.webp",
     howA3Works: "/media/home/how-a3-works.webp",
     finalCta: "/media/home/final-cta-market-hall.webp",
     heroVideo: "/media/hero.webm",
@@ -331,18 +346,16 @@ export const elleMinaProducts = [
 
 export const homeLanding = {
   hero: {
-    title: "Orchestrating Global Supply,\nDelivering Local Value.",
+    title: "Global food sourcing, built around your market.",
     text:
-      "A3 delivers integrated supply chain solutions, connecting commercial buyers to a vetted global network of farmers and producers with technical precision, logistical reliability, and adaptable financing and flexible payment structures.",
-    primary: { label: "Request a Quote", href: "/en/request-a-quote" },
-    secondary: { label: "Explore Products", href: "/en/products" },
+      "A3 connects commercial buyers with vetted producers and coordinates product specifications, documentation, payment terms and delivery—making each supply option workable from source to destination.",
+    primary: { label: "Explore Products", href: "/en/products" },
+    secondary: { label: "Request a Quote", href: "/en/request-a-quote" },
   },
   companySnapshot: {
     title: "Making food supply work in practice.",
-    text: [
-      "A product requirement is only the starting point. A3 reviews specification, volume, producer capacity, destination market access, documentation, payment terms and shipping window before building a workable supply option.",
-      "The goal is not just availability, but a supply flow that is realistic, secure and commercially practical.",
-    ],
+    text:
+      "A3 brings together product fit, producer capability and trade conditions before presenting a supply option. The result is a practical route from source to destination, not availability in isolation.",
     image: homeAssets.media.companyFieldLandscape,
     imageAlt: "Rolling green agricultural fields and tree-lined hills in morning light",
   },
@@ -440,7 +453,7 @@ export const homeLanding = {
       "From source markets to buyer destinations, we help bring together product access, documentation, payment terms and delivery conditions in a commercially workable way.",
     map: homeAssets.icons.marketsMap,
     metrics: [
-      { value: "50+", label: "Product lines" },
+      { value: "74", label: "Product lines" },
       { value: String(marketLocations.length), label: "Connected source and buyer markets" },
       { value: "29+", label: "Years of trade experience" },
     ],
@@ -448,118 +461,86 @@ export const homeLanding = {
   process: {
     title: "What makes a trade workable.",
     text:
-      "Availability is only the first question. A3 assesses product alignment, producer capacity, market regulations, financial structures, and logistical timing to engineer a secure and steady supply flow.",
-    image: "/media/home/trade-workable-london.webp",
-    imageAlt: "London riverside commercial district with modern office buildings near the Thames",
+      "Availability is only the starting point. A3 brings product fit, producer capability, market access, commercial terms and shipment readiness into one coordinated trade route.",
+    image: homeAssets.media.processProductFit,
+    imageAlt: "Food product samples and specifications under commercial review",
     cta: { label: "Request a Quote", href: "/en/request-a-quote" },
     steps: [
       {
         number: "01",
         title: "Product fit",
         description:
-          "We verify technical specifications, grades, and packing formats to ensure every product aligns perfectly with your specific industrial or retail requirements.",
+          "We begin with the commercial use, technical specification, grade, origin preference and packing format. Available options are assessed against the real buying requirement so the proposed product is suitable for the intended industrial, foodservice, wholesale or retail route.",
         icon: homeAssets.icons.processSource,
+        image: homeAssets.media.processProductFit,
+        imageAlt: "Food product samples and specification sheets being reviewed",
       },
       {
         number: "02",
         title: "Producer capability",
         description:
-          "We evaluate the capacity and consistency of our global network of farmers and producers to guarantee reliable, long-term supply volume and stable commercial conditions.",
+          "Producer capacity, production consistency, available volume and export readiness are reviewed together. This establishes whether the supplier can support the required programme, timing and repeat-supply expectations under commercially stable conditions.",
         icon: homeAssets.icons.processVerify,
+        image: homeAssets.media.processProducerCapability,
+        imageAlt: "Food production and warehouse capacity prepared for commercial supply",
       },
       {
         number: "03",
         title: "Market access",
         description:
-          "We navigate complex global regulations by reviewing origin-specific documentation, international certifications, and destination market import rules to ensure a seamless flow of goods.",
+          "Origin documents, certifications, labelling requirements and destination import conditions are checked before an option progresses. The route is shaped around the market that will receive the goods, rather than product availability in isolation.",
         icon: homeAssets.icons.processMatch,
+        image: homeAssets.media.processMarketAccess,
+        imageAlt: "Trade documentation and destination market preparation",
       },
       {
         number: "04",
         title: "Commercial terms",
         description:
-          "We structure the trade through optimized pricing and Incoterms, while integrating flexible financing and payment solutions to support your cash flow and reduce transaction risk.",
+          "Pricing basis, Incoterms, payment structure, shipment size and delivery responsibilities are aligned into one workable offer. Where appropriate, financing and flexible payment solutions can be incorporated to support cash flow and reduce transaction risk.",
         icon: homeAssets.icons.processCoordinate,
+        image: homeAssets.media.processCommercialTerms,
+        imageAlt: "Commercial trade terms being coordinated at a professional workspace",
       },
       {
         number: "05",
         title: "Shipment readiness",
         description:
-          "We orchestrate the final movement of goods by coordinating packing timelines, global logistics, and shipment follow-up to ensure your cargo arrives with technical precision and reliability.",
+          "Final packing, production timing, loading plan, export documents and logistics are coordinated against the agreed shipment window. A3 follows the movement from origin to destination so the approved commercial and technical conditions remain connected through delivery.",
         icon: homeAssets.icons.processFollowThrough,
+        image: homeAssets.media.processShipmentReadiness,
+        imageAlt: "Food cargo packed and ready for shipment loading",
       },
     ],
   },
   buyerPaths: [
     {
-      id: "farmers",
-      title: "Farmers",
+      id: "buyers",
+      title: "For Buyers & Distribution Partners",
       description:
-        "A3 works with farmers and producer networks that need reliable buyer access, supplier coordination and workable trade conditions.",
+        "Commercial buyers, manufacturers, distributors, wholesalers, retailers and foodservice teams can review suitable product options and workable supply conditions.",
       cardSummary:
-        "Producer-side routes shaped around capacity, export readiness and suitable buyer demand.",
-      shortHint: "Producer-side routes shaped around capacity and buyer demand.",
-      ctaLabel: "Introduce your products",
-      needs: "Products / Capacity / Export markets",
-      href: "/en/contact",
-      image: "/media/home/buyer-producer-coffee-harvest.webp",
-      imageAlt: "Coffee producer inspecting cherries during harvest at origin",
-    },
-    {
-      id: "commercial-buyers",
-      title: "Commercial Buyers",
-      description:
-        "Commercial buyers use A3 to compare reliable product options, supplier capability, documentation and workable trade structures.",
-      cardSummary:
-        "Reliable product options, supplier capability and workable trade structures for commercial buying teams.",
-      shortHint: "Reliable product options for commercial buying teams.",
+        "Product options, supplier capability and workable trade structures for commercial buying and distribution teams.",
+      shortHint: "Product options and workable trade structures for buyers and distribution partners.",
       ctaLabel: "Request product options",
       needs: "Product / Origin / Volume / Destination",
       href: "/en/request-a-quote",
       image: "/media/home/buyer-wholesale-market-warehouse.webp",
-      imageAlt: "Wholesale warehouse with stacked food products, carts and distribution aisles",
+      imageAlt: "Commercial wholesale warehouse prepared for buyer and distribution activity",
     },
     {
-      id: "distributors-wholesalers",
-      title: "Distributors & Wholesalers",
+      id: "producers",
+      title: "For Producers & Suppliers",
       description:
-        "A3 supports distributors and wholesalers with product options for resale, regional distribution and repeat supply planning.",
+        "Farmers, producer networks and export-ready suppliers can introduce products, available capacity and target market opportunities to A3.",
       cardSummary:
-        "Product options for resale, regional distribution and wholesale channels.",
-      shortHint: "Product options for resale and regional distribution.",
-      ctaLabel: "Request product options",
-      needs: "Origin / Grade / Packing / Volume",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-wholesale-market-warehouse.webp",
-      imageAlt: "Wholesale warehouse with stacked food products, carts and distribution aisles",
-    },
-    {
-      id: "retailers",
-      title: "Retailers",
-      description:
-        "Retailers work with A3 on consumer-ready packaged foods, private label discussions, market fit and supplier coordination.",
-      cardSummary:
-        "Consumer-ready packaged foods, private label discussions and supplier coordination.",
-      shortHint: "Consumer-ready packaged foods and private label discussions.",
-      ctaLabel: "Discuss retail supply",
-      needs: "Format / Market fit / Channel / Private label",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-retail-market-hall.webp",
-      imageAlt: "Retail market hall with food shops, customers and fresh product displays",
-    },
-    {
-      id: "manufacturers",
-      title: "Manufacturers",
-      description:
-        "Manufacturers use A3 to source ingredients, commodities and recurring supply options around specification and production needs.",
-      cardSummary:
-        "Ingredients, commodities and recurring supply options matched to production requirements.",
-      shortHint: "Ingredients and recurring supply options for production needs.",
-      ctaLabel: "Discuss ingredient supply",
-      needs: "Specification / Application / Repeat supply",
-      href: "/en/request-a-quote",
-      image: "/media/home/buyer-food-manufacturing-processing.webp",
-      imageAlt: "Aerial view of food crop processing and industrial production flow",
+        "Producer-side routes shaped around product fit, capacity, export readiness and suitable buyer demand.",
+      shortHint: "Introduce products, capacity and export-ready supply opportunities.",
+      ctaLabel: "Introduce your products",
+      needs: "Products / Capacity / Export markets",
+      href: "/en/supplier-enquiry",
+      image: "/media/home/buyer-producer-coffee-harvest.webp",
+      imageAlt: "Coffee producer inspecting crop quality during harvest at origin",
     },
   ],
   resources: [
@@ -567,7 +548,8 @@ export const homeLanding = {
       title: "Coffee Catalogue",
       description:
         "Green coffee catalogue with product profiles, origins and commercial details.",
-      ctaLabel: "View PDF",
+      ctaLabel: "View catalogue",
+      image: "/media/home/catalogues/coffee-catalogue-cover.webp",
       href: "/assets/a3/resources/a3-coffee-catalogue.pdf",
       ariaLabel: "Open Coffee Catalogue PDF",
     },
@@ -575,7 +557,8 @@ export const homeLanding = {
       title: "Sugar Catalogue",
       description:
         "Sugar catalogue covering cane and beet sugar options by origin, grade and packing requirement.",
-      ctaLabel: "View PDF",
+      ctaLabel: "View catalogue",
+      image: "/media/home/catalogues/sugar-catalogue-cover.webp",
       href: "/assets/a3/resources/a3-sugar-catalogue.pdf",
       ariaLabel: "Open Sugar Catalogue PDF",
     },

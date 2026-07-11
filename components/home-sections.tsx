@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { useCallback, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
@@ -55,18 +55,39 @@ function cardCopy(item: { cardSummary?: string; description: string }) {
 }
 
 function projectMarketLocation(location: MarketLocation) {
-  const point = MARKET_PROJECTION([
+  const displayPoint = MARKET_PROJECTION([
     location.visualLongitude ?? location.longitude,
     location.visualLatitude ?? location.latitude,
   ]);
+  const anchorPoint = MARKET_PROJECTION([location.longitude, location.latitude]);
 
-  return point ? { x: point[0], y: point[1] } : null;
+  return displayPoint && anchorPoint
+    ? {
+        display: { x: displayPoint[0], y: displayPoint[1] },
+        anchor: { x: anchorPoint[0], y: anchorPoint[1] },
+      }
+    : null;
 }
+
+const HOME_PRODUCT_IMAGES: Record<string, string> = {
+  "sugar": homeAssets.media.homeProductSugar,
+  "green-coffee-beans": homeAssets.media.homeProductCoffee,
+  "cocoa-products": homeAssets.media.homeProductCocoa,
+  "grains-seeds": homeAssets.media.homeProductGrains,
+  "dairy-milk-powders": homeAssets.media.homeProductDairy,
+  "oils-fats": homeAssets.media.homeProductOils,
+  "starches-sweeteners": homeAssets.media.homeProductStarches,
+  "dried-fruit-nuts": homeAssets.media.homeProductDriedFruit,
+  "frozen-foods": homeAssets.media.homeProductFrozen,
+  "consumer-foods": homeAssets.media.homeProductConsumer,
+};
 
 function productRailItem(category: (typeof productCategories)[number]): ProductRailItem {
   const featuredProduct = homeLanding.featuredProducts.find((product) => product.id === category.slug);
   const imageKey = category.imageKey as keyof typeof homeAssets.media | undefined;
-  const image = featuredProduct?.image ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial);
+  const image = HOME_PRODUCT_IMAGES[category.slug]
+    ?? featuredProduct?.image
+    ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial);
   const icon = featuredProduct?.icon ?? homeAssets.icons[category.iconKey as keyof typeof homeAssets.icons];
 
   return {
@@ -149,7 +170,8 @@ function HomeHero() {
         loop
         playsInline
         poster={homeAssets.media.companyTradeEditorial}
-        aria-label="Food and beverage sourcing background video"
+        aria-hidden="true"
+        tabIndex={-1}
       >
         <source src={homeAssets.media.heroVideo} type="video/webm" />
       </video>
@@ -216,7 +238,7 @@ function FeaturedSourcingCategories() {
       <EditorialBridge tone="surface" className="featured-sourcing-bridge">
         <div className="home-products-carousel__header reveal reveal--up">
           <div className="home-products-carousel__intro">
-            <h2 className="type-section text-ink">Products</h2>
+            <h2 className="type-section text-ink">Explore product categories.</h2>
             <p className="type-section-lead text-ink/80">
               A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
             </p>
@@ -241,9 +263,19 @@ function FeaturedSourcingCategories() {
 }
 
 function MarketsPreview() {
+  const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
   const projectedMarkets = marketLocations
     .map((market) => ({ market, point: projectMarketLocation(market) }))
-    .filter((item): item is { market: MarketLocation; point: { x: number; y: number } } => Boolean(item.point));
+    .filter((item): item is {
+      market: MarketLocation;
+      point: { display: { x: number; y: number }; anchor: { x: number; y: number } };
+    } => Boolean(item.point));
+
+  function handleMarketKeyDown(event: KeyboardEvent<SVGGElement>, marketName: string) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setSelectedMarket((current) => current === marketName ? null : marketName);
+  }
 
   return (
     <section className="home-section home-section--markets markets-layer-section bg-deep-dark text-surface">
@@ -285,19 +317,36 @@ function MarketsPreview() {
                 const labelAnchor: "start" | "middle" | "end" =
                   market.labelAlign === "left" ? "start" : market.labelAlign === "right" ? "end" : "middle";
                 const displayName = market.displayName ?? market.name;
+                const isSelected = selectedMarket === market.name;
 
                 return (
                   <g
                     aria-label={displayName}
-                    className={`markets-map-pin ${market.isHub ? "is-hub" : ""}`}
+                    aria-pressed={isSelected}
+                    className={`markets-map-pin ${market.isHub ? "is-hub" : ""} ${isSelected ? "is-selected" : ""}`}
                     focusable="true"
                     key={market.name}
-                    role="listitem"
+                    onClick={() => setSelectedMarket((current) => current === market.name ? null : market.name)}
+                    onKeyDown={(event) => handleMarketKeyDown(event, market.name)}
+                    role="button"
                     style={{ "--pin-delay": `${(index % 7) * 0.16}s` } as CSSProperties}
                     tabIndex={0}
-                    transform={`translate(${point.x} ${point.y})`}
+                    transform={`translate(${point.display.x} ${point.display.y})`}
                   >
                     <title>{displayName}</title>
+                    <line
+                      className="markets-map-pin__anchor-line"
+                      x1={point.anchor.x - point.display.x}
+                      x2="0"
+                      y1={point.anchor.y - point.display.y}
+                      y2="0"
+                    />
+                    <circle
+                      className="markets-map-pin__anchor"
+                      cx={point.anchor.x - point.display.x}
+                      cy={point.anchor.y - point.display.y}
+                      r="2.4"
+                    />
                     <line className="markets-map-pin__leader" x1="0" x2={labelX} y1="-12" y2="-29" />
                     <circle className="markets-map-pin__halo" r="11.5" />
                     <circle className="markets-map-pin__dot" r={market.isHub ? 7.2 : 6.2} />
@@ -316,6 +365,13 @@ function MarketsPreview() {
 }
 
 function HowA3Works() {
+  const firstStep = homeLanding.process.steps[0];
+  const [activeStepId, setActiveStepId] = useState<string | null>(firstStep?.number ?? null);
+  const activeStep = homeLanding.process.steps.find((step) => step.number === activeStepId) ?? firstStep;
+  const handleActiveStepChange = useCallback((stepId: string | null) => {
+    setActiveStepId(stepId);
+  }, []);
+
   return (
     <section className="home-section home-section--process">
       <HomeShell className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
@@ -324,6 +380,8 @@ function HowA3Works() {
           <ProcessAccordion
             ariaLabel={`${homeLanding.process.title} steps`}
             className="reveal reveal--up reveal-delay-2"
+            presentation="stable"
+            onActiveChange={handleActiveStepChange}
             items={homeLanding.process.steps.map((step) => ({
               id: step.number,
               number: step.number,
@@ -334,9 +392,10 @@ function HowA3Works() {
         </div>
         <div className="process-media reveal reveal--fade reveal-delay-1">
           <Image
-            className="object-cover"
-            src={homeLanding.process.image}
-            alt={homeLanding.process.imageAlt}
+            className="object-cover process-media__image"
+            key={activeStep.number}
+            src={activeStep.image}
+            alt={activeStep.imageAlt}
             fill
             sizes="(min-width: 1024px) 560px, 100vw"
           />
@@ -352,7 +411,7 @@ function BuyerPaths() {
       <HomeShell>
         <SectionIntro
           title="Who A3 works with"
-          text="A3 works with farmers, commercial buyers, distributors, retailers, foodservice teams and manufacturers that need reliable product options, supplier coordination and workable trade conditions."
+          text="A3 supports two clear routes: commercial teams looking for workable product options, and producers or suppliers looking to introduce export-ready supply."
           className="mb-8"
         />
         <div className="buyer-segment-panel">
@@ -377,6 +436,7 @@ function BuyerPaths() {
                     <span className="image-card-cta" aria-hidden="true">→</span>
                   </div>
                   <p className="buyer-segment-card__hint">{cardCopy(path)}</p>
+                  <span className="buyer-segment-card__action">{path.ctaLabel}</span>
                 </div>
               </div>
             </Link>
@@ -409,6 +469,9 @@ function BeforeYouEnquire() {
               rel="noopener noreferrer"
               aria-label={resource.ariaLabel}
             >
+              <span className="before-enquire-card__media" aria-hidden="true">
+                <Image src={resource.image} alt="" fill sizes="160px" />
+              </span>
               <span className="before-enquire-card__copy">
                 <span className="before-enquire-card__title">{resource.title}</span>
                 <span className="before-enquire-card__description">{resource.description}</span>

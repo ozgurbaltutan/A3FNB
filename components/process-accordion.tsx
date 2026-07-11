@@ -1,7 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 
 export type ProcessAccordionItem = {
   id: string;
@@ -14,6 +14,8 @@ type ProcessAccordionProps = {
   ariaLabel: string;
   items: ProcessAccordionItem[];
   className?: string;
+  presentation?: "accordion" | "stable";
+  onActiveChange?: (activeId: string | null) => void;
 };
 
 type AccordionMode = "compact" | "desktop";
@@ -48,7 +50,13 @@ function useCompactAccordion() {
   );
 }
 
-export function ProcessAccordion({ ariaLabel, items, className }: ProcessAccordionProps) {
+export function ProcessAccordion({
+  ariaLabel,
+  items,
+  className,
+  presentation = "accordion",
+  onActiveChange,
+}: ProcessAccordionProps) {
   const generatedId = useId().replaceAll(":", "");
   const isCompact = useCompactAccordion();
   const mode: AccordionMode = isCompact ? "compact" : "desktop";
@@ -64,6 +72,10 @@ export function ProcessAccordion({ ariaLabel, items, className }: ProcessAccordi
       : isCompact
         ? null
         : firstItemId;
+
+  useEffect(() => {
+    onActiveChange?.(activeId);
+  }, [activeId, onActiveChange]);
 
   function focusTrigger(index: number) {
     triggerRefs.current[index]?.focus();
@@ -86,7 +98,7 @@ export function ProcessAccordion({ ariaLabel, items, className }: ProcessAccordi
   }
 
   function handleToggle(itemId: string, index: number) {
-    const nextActiveId = activeId === itemId ? (isCompact ? null : activeId) : itemId;
+    const nextActiveId = activeId === itemId ? null : itemId;
 
     if (nextActiveId === activeId) return;
 
@@ -100,6 +112,51 @@ export function ProcessAccordion({ ariaLabel, items, className }: ProcessAccordi
     }
 
     setSelection({ mode, activeId: nextActiveId });
+  }
+
+  if (presentation === "stable" && !isCompact) {
+    const activeItem = items.find((item) => item.id === activeId) ?? null;
+
+    return (
+      <div aria-label={ariaLabel} className={clsx("process-accordion process-accordion--stable", className)} role="group">
+        <div className="process-stable-triggers">
+          {items.map((item, index) => {
+            const isActive = activeId === item.id;
+            const triggerId = `${generatedId}-${index + 1}-trigger`;
+            const panelId = `${generatedId}-stable-panel`;
+
+            return (
+              <h3 className={clsx("process-accordion-heading", isActive && "is-active")} key={item.id}>
+                <button
+                  aria-controls={panelId}
+                  aria-expanded={isActive}
+                  className="process-accordion-trigger"
+                  id={triggerId}
+                  onClick={() => handleToggle(item.id, index)}
+                  onKeyDown={(event) => handleTriggerKeyDown(event, index)}
+                  ref={(node) => {
+                    triggerRefs.current[index] = node;
+                  }}
+                  type="button"
+                >
+                  <span className="process-accordion-index">{item.number}</span>
+                  <span className="process-accordion-title">{item.title}</span>
+                  <span className="process-accordion-arrow" aria-hidden="true" />
+                </button>
+              </h3>
+            );
+          })}
+        </div>
+        <div
+          aria-live="polite"
+          className={clsx("process-stable-detail", activeItem && "is-visible")}
+          id={`${generatedId}-stable-panel`}
+          role="region"
+        >
+          <p key={activeItem?.id ?? "closed"}>{activeItem?.description ?? "Select a step to review its role in the trade route."}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
