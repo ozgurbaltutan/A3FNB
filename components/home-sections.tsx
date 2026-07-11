@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
 import countriesAtlas from "world-atlas/countries-110m.json";
 import { homeAssets, homeLanding, marketLocations, productCategories, productCategoryHref, type MarketLocation } from "@/content/site";
-import { EditorialBridge, EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
+import { EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { ProductImageCarousel } from "@/components/product-image-carousel";
 import { ProcessAccordion } from "@/components/process-accordion";
 import { LinkButton } from "@/components/ui";
@@ -30,11 +30,8 @@ type ProductRailItem = FeaturedProduct & {
   href: string;
 };
 
-const MARKET_MAP_WIDTH = 1484.26;
+const MARKET_MAP_WIDTH = 1280;
 const MARKET_MAP_HEIGHT = 620;
-const MARKET_MAP_VIEWBOX_X = 105;
-const MARKET_MAP_VIEWBOX_WIDTH = MARKET_MAP_WIDTH - MARKET_MAP_VIEWBOX_X;
-const MARKET_MAP_VIEWBOX_HEIGHT = MARKET_MAP_HEIGHT;
 const ANTARCTICA_COUNTRY_ID = "010";
 const COUNTRY_TOPOLOGY = countriesAtlas as unknown as Topology;
 const COUNTRY_FEATURES = feature(COUNTRY_TOPOLOGY, COUNTRY_TOPOLOGY.objects.countries as GeometryObject) as {
@@ -47,26 +44,63 @@ const MARKET_LAND_FEATURE = {
     (country) => String((country as { id?: number | string }).id).padStart(3, "0") !== ANTARCTICA_COUNTRY_ID,
   ),
 } as GeoPermissibleObjects;
-const MARKET_PROJECTION = geoNaturalEarth1().fitSize([MARKET_MAP_WIDTH, MARKET_MAP_HEIGHT], MARKET_LAND_FEATURE);
+const MARKET_FIT_BOUNDS = {
+  type: "MultiPoint",
+  coordinates: [[-166, -56], [178, 77]],
+} as GeoPermissibleObjects;
+const MARKET_PROJECTION = geoNaturalEarth1().fitExtent(
+  [[12, 12], [MARKET_MAP_WIDTH - 12, MARKET_MAP_HEIGHT - 12]],
+  MARKET_FIT_BOUNDS,
+);
 const MARKET_LAND_PATH = geoPath(MARKET_PROJECTION)(MARKET_LAND_FEATURE) ?? "";
-
-function cardCopy(item: { cardSummary?: string; description: string }) {
-  return item.cardSummary ?? item.description;
-}
 
 function projectMarketLocation(location: MarketLocation) {
   const displayPoint = MARKET_PROJECTION([
     location.visualLongitude ?? location.longitude,
     location.visualLatitude ?? location.latitude,
   ]);
-  const anchorPoint = MARKET_PROJECTION([location.longitude, location.latitude]);
 
-  return displayPoint && anchorPoint
-    ? {
-        display: { x: displayPoint[0], y: displayPoint[1] },
-        anchor: { x: anchorPoint[0], y: anchorPoint[1] },
+  return displayPoint ? { x: displayPoint[0], y: displayPoint[1] } : null;
+}
+
+type ProjectedMarket = {
+  market: MarketLocation;
+  point: { x: number; y: number };
+};
+
+function spreadProjectedMarkets(markets: ProjectedMarket[], minimumDistance = 23) {
+  const placed: ProjectedMarket[] = [];
+
+  return markets.map((item) => {
+    const original = item.point;
+    let resolved = original;
+
+    for (let radius = 0; radius <= 28; radius += 7) {
+      const attempts = radius === 0 ? 1 : 12;
+      let found = false;
+
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        const angle = (Math.PI * 2 * attempt) / attempts;
+        const candidate = {
+          x: original.x + Math.cos(angle) * radius,
+          y: original.y + Math.sin(angle) * radius,
+        };
+        const isClear = placed.every(({ point }) => Math.hypot(candidate.x - point.x, candidate.y - point.y) >= minimumDistance);
+
+        if (isClear) {
+          resolved = candidate;
+          found = true;
+          break;
+        }
       }
-    : null;
+
+      if (found) break;
+    }
+
+    const next = { ...item, point: resolved };
+    placed.push(next);
+    return next;
+  });
 }
 
 const HOME_PRODUCT_IMAGES: Record<string, string> = {
@@ -93,8 +127,8 @@ function productRailItem(category: (typeof productCategories)[number]): ProductR
   return {
     id: category.slug,
     title: category.title,
-    description: featuredProduct ? cardCopy(featuredProduct) : category.shortDescription,
-    cardSummary: featuredProduct?.cardSummary ?? category.shortDescription,
+    description: category.shortDescription,
+    cardSummary: category.shortDescription,
     href: productCategoryHref(category),
     icon,
     image,
@@ -234,42 +268,34 @@ function FeaturedSourcingCategories() {
   }));
 
   return (
-    <>
-      <EditorialBridge tone="surface" className="featured-sourcing-bridge">
-        <div className="home-products-carousel__header reveal reveal--up">
-          <div className="home-products-carousel__intro">
-            <h2 className="type-section text-ink">Explore product categories.</h2>
-            <p className="type-section-lead text-ink/80">
-              A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
-            </p>
-          </div>
-        </div>
-      </EditorialBridge>
-      <section className="featured-sourcing-section">
-        <HomeShell>
-          <ProductImageCarousel
-            ariaLabel="Products"
-            className="reveal reveal--up"
-            contentMode="title-only"
-            getHref={(product) => product.href}
-            getItemLabel={(product) => `View ${product.title} category`}
-            items={products}
-            mode="link"
-          />
-        </HomeShell>
-      </section>
-    </>
+    <section className="featured-sourcing-section">
+      <HomeShell>
+        <ProductImageCarousel
+          ariaLabel="Products"
+          className="reveal reveal--up"
+          getHref={(product) => product.href}
+          getItemLabel={(product) => `View ${product.title} category`}
+          header={(
+            <div className="home-products-carousel__intro">
+              <h2 className="type-section text-ink">Explore product categories.</h2>
+              <p className="type-section-lead text-ink/80">
+                A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
+              </p>
+            </div>
+          )}
+          items={products}
+          mode="link"
+        />
+      </HomeShell>
+    </section>
   );
 }
 
 function MarketsPreview() {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null);
-  const projectedMarkets = marketLocations
+  const projectedMarkets = spreadProjectedMarkets(marketLocations
     .map((market) => ({ market, point: projectMarketLocation(market) }))
-    .filter((item): item is {
-      market: MarketLocation;
-      point: { display: { x: number; y: number }; anchor: { x: number; y: number } };
-    } => Boolean(item.point));
+    .filter((item): item is ProjectedMarket => Boolean(item.point)));
 
   function handleMarketKeyDown(event: KeyboardEvent<SVGGElement>, marketName: string) {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -307,7 +333,7 @@ function MarketsPreview() {
             className="markets-map__svg"
             preserveAspectRatio="xMinYMid meet"
             role="img"
-            viewBox={`${MARKET_MAP_VIEWBOX_X} 0 ${MARKET_MAP_VIEWBOX_WIDTH} ${MARKET_MAP_VIEWBOX_HEIGHT}`}
+            viewBox={`0 0 ${MARKET_MAP_WIDTH} ${MARKET_MAP_HEIGHT}`}
           >
             <title>World map showing London and selected connected markets</title>
             <path className="markets-map__land" d={MARKET_LAND_PATH} />
@@ -331,22 +357,9 @@ function MarketsPreview() {
                     role="button"
                     style={{ "--pin-delay": `${(index % 7) * 0.16}s` } as CSSProperties}
                     tabIndex={0}
-                    transform={`translate(${point.display.x} ${point.display.y})`}
+                    transform={`translate(${point.x} ${point.y})`}
                   >
                     <title>{displayName}</title>
-                    <line
-                      className="markets-map-pin__anchor-line"
-                      x1={point.anchor.x - point.display.x}
-                      x2="0"
-                      y1={point.anchor.y - point.display.y}
-                      y2="0"
-                    />
-                    <circle
-                      className="markets-map-pin__anchor"
-                      cx={point.anchor.x - point.display.x}
-                      cy={point.anchor.y - point.display.y}
-                      r="2.4"
-                    />
                     <line className="markets-map-pin__leader" x1="0" x2={labelX} y1="-12" y2="-29" />
                     <circle className="markets-map-pin__halo" r="11.5" />
                     <circle className="markets-map-pin__dot" r={market.isHub ? 7.2 : 6.2} />
@@ -365,82 +378,125 @@ function MarketsPreview() {
 }
 
 function HowA3Works() {
-  const firstStep = homeLanding.process.steps[0];
-  const [activeStepId, setActiveStepId] = useState<string | null>(firstStep?.number ?? null);
-  const activeStep = homeLanding.process.steps.find((step) => step.number === activeStepId) ?? firstStep;
-  const handleActiveStepChange = useCallback((stepId: string | null) => {
-    setActiveStepId(stepId);
-  }, []);
-
   return (
     <section className="home-section home-section--process">
-      <HomeShell className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-        <div className="process-content">
-          <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
-          <ProcessAccordion
-            ariaLabel={`${homeLanding.process.title} steps`}
-            className="reveal reveal--up reveal-delay-2"
-            presentation="stable"
-            onActiveChange={handleActiveStepChange}
-            items={homeLanding.process.steps.map((step) => ({
-              id: step.number,
-              number: step.number,
-              title: step.title,
-              description: step.description,
-            }))}
-          />
-        </div>
-        <div className="process-media reveal reveal--fade reveal-delay-1">
-          <Image
-            className="object-cover process-media__image"
-            key={activeStep.number}
-            src={activeStep.image}
-            alt={activeStep.imageAlt}
-            fill
-            sizes="(min-width: 1024px) 560px, 100vw"
-          />
-        </div>
+      <HomeShell>
+        <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
+        <ProcessAccordion
+          ariaLabel={`${homeLanding.process.title} steps`}
+          className="reveal reveal--up reveal-delay-2"
+          presentation="showcase"
+          items={homeLanding.process.steps.map((step, index) => ({
+            id: step.number,
+            number: step.number,
+            title: step.title,
+            description: step.description,
+            media: (
+              <Image
+                alt={step.imageAlt}
+                className="object-cover"
+                fill
+                priority={index === 0}
+                sizes="(min-width: 1024px) 54vw, 100vw"
+                src={step.image}
+              />
+            ),
+          }))}
+        />
       </HomeShell>
     </section>
   );
 }
 
+const WORK_WITH_ROLES = [
+  {
+    id: "producers",
+    title: "Producers & farming groups",
+    description: "Origin-side partners supplying agricultural products and primary food commodities.",
+  },
+  {
+    id: "processors",
+    title: "Primary processors",
+    description: "Businesses turning raw materials into trade-ready food products and ingredients.",
+  },
+  {
+    id: "manufacturers",
+    title: "Food & beverage manufacturers",
+    description: "Production teams sourcing ingredients and products for formulation and finished goods.",
+  },
+  {
+    id: "commercial",
+    title: "Distribution & commercial buying teams",
+    description: "Importers, distributors, wholesalers, retailers and foodservice procurement teams.",
+  },
+] as const;
+
+function SupplyRoleIcon({ id }: { id: (typeof WORK_WITH_ROLES)[number]["id"] }) {
+  const paths: Record<typeof id, ReactNode> = {
+    producers: <><path d="M4 18V9m0 5 4-4m-4 3-3-3M12 19v-8m0 3 4-4m-4 2-3-3M2 21h16" /></>,
+    processors: <><path d="M3 21V9l5 3V8l5 3V5h4v16M6 17h2m3 0h2m3 0h1" /></>,
+    manufacturers: <><path d="M3 21V8h5v4l5-4v4l6-4v13M6 17h2m3 0h2m3 0h2" /></>,
+    commercial: <><path d="M3 8h14l2 5H5L3 8Zm2 5v8m12-8v8M8 17h6m-7-9 2-4h5l2 4" /></>,
+  };
+
+  return (
+    <svg aria-hidden="true" className="work-with-role__icon" viewBox="0 0 22 24">
+      {paths[id]}
+    </svg>
+  );
+}
+
+function DirectionArrow() {
+  return (
+    <svg aria-hidden="true" className="work-with-arrow" viewBox="0 0 20 20">
+      <path d="M4 10h11M11 6l4 4-4 4" />
+    </svg>
+  );
+}
+
 function BuyerPaths() {
+  const buyers = homeLanding.buyerPaths.find((path) => path.id === "buyers");
+  const producers = homeLanding.buyerPaths.find((path) => path.id === "producers");
+
   return (
     <section className="home-section home-section--buyer-paths">
       <HomeShell>
         <SectionIntro
-          title="Who A3 works with"
-          text="A3 supports two clear routes: commercial teams looking for workable product options, and producers or suppliers looking to introduce export-ready supply."
-          className="mb-8"
+          title="Who we work with"
+          text="A3 works across the food and beverage supply chain, connecting origin-side capability with commercial demand in destination markets."
+          className="work-with-intro"
         />
-        <div className="buyer-segment-panel">
-          {homeLanding.buyerPaths.map((path) => (
-            <Link
-              className="buyer-segment-card premium-focus"
-              href={path.href}
-              key={path.id}
-            >
-              <Image
-                className="buyer-segment-card__media"
-                src={path.image}
-                alt={path.imageAlt}
-                fill
-                sizes="(min-width: 1024px) 48vw, (min-width: 768px) 33vw, 100vw"
-              />
-              <div className="buyer-segment-card__overlay" aria-hidden="true" />
-              <div className="buyer-segment-card__content">
-                <div>
-                  <div className="buyer-segment-card__title-row">
-                    <h3 className="buyer-segment-card__title">{path.title}</h3>
-                    <span className="image-card-cta" aria-hidden="true">→</span>
-                  </div>
-                  <p className="buyer-segment-card__hint">{cardCopy(path)}</p>
-                  <span className="buyer-segment-card__action">{path.ctaLabel}</span>
-                </div>
+        <ol aria-label="Food and beverage supply chain roles" className="work-with-roles reveal reveal--up reveal-delay-1">
+          {WORK_WITH_ROLES.map((role, index) => (
+            <li className="work-with-role" key={role.id}>
+              <div className="work-with-role__topline">
+                <SupplyRoleIcon id={role.id} />
+                <span className="work-with-role__index">0{index + 1}</span>
               </div>
-            </Link>
+              <h3>{role.title}</h3>
+              <p>{role.description}</p>
+            </li>
           ))}
+        </ol>
+        <div className="work-with-actions reveal reveal--up reveal-delay-2">
+          {buyers ? (
+            <Link className="work-with-action premium-focus" href={buyers.href}>
+              <span>
+                <strong>Need product options?</strong>
+                <small>Product / Origin / Volume / Destination</small>
+              </span>
+              <span className="work-with-action__link">Request product options <DirectionArrow /></span>
+            </Link>
+          ) : null}
+          {producers ? (
+            <Link className="work-with-action premium-focus" href={producers.href}>
+              <span>
+                <strong>Have products or capacity to introduce?</strong>
+                <small>Products / Capacity / Export markets</small>
+              </span>
+              <span className="work-with-action__link">Introduce your supply <DirectionArrow /></span>
+            </Link>
+          ) : null}
         </div>
       </HomeShell>
     </section>
