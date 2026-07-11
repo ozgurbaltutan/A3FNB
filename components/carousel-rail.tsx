@@ -31,9 +31,17 @@ function getSnapPositions(viewport: HTMLElement) {
   const track = viewport.firstElementChild;
   if (!(track instanceof HTMLElement)) return [viewport.scrollLeft];
 
-  return Array.from(track.children)
+  const positions = Array.from(track.children)
     .filter((child): child is HTMLElement => child instanceof HTMLElement)
     .map((card) => clampScrollTarget(card.offsetLeft - track.offsetLeft, viewport));
+
+  return positions.reduce<number[]>((uniquePositions, position) => {
+    const previousPosition = uniquePositions.at(-1);
+    if (previousPosition === undefined || Math.abs(previousPosition - position) > 1) {
+      uniquePositions.push(position);
+    }
+    return uniquePositions;
+  }, []);
 }
 
 function closestSnapIndex(positions: number[], scrollLeft: number) {
@@ -65,11 +73,15 @@ export function useCarouselRail({ itemCount }: UseCarouselRailOptions) {
     const viewport = viewportRef.current;
     if (!viewport) return;
 
-    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const snapPositions = getSnapPositions(viewport);
+    const firstSnap = snapPositions[0] ?? 0;
+    const lastSnap = snapPositions.at(-1) ?? 0;
     const scrollLeft = Math.max(0, viewport.scrollLeft);
+    const targetIndex = targetIndexRef.current;
+    const targetPosition = targetIndex === null ? null : snapPositions[targetIndex];
     const nextState = {
-      canScrollNext: scrollLeft < maxScroll - 2,
-      canScrollPrevious: scrollLeft > 2,
+      canScrollNext: targetPosition === null ? scrollLeft < lastSnap - 2 : targetPosition < lastSnap - 1,
+      canScrollPrevious: targetPosition === null ? scrollLeft > firstSnap + 2 : targetPosition > firstSnap + 1,
     };
 
     setControls((current) =>
@@ -97,6 +109,7 @@ export function useCarouselRail({ itemCount }: UseCarouselRailOptions) {
     }
 
     targetIndexRef.current = targetIndex;
+    updateControls();
     viewport.scrollTo({
       left: target,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -122,7 +135,10 @@ export function useCarouselRail({ itemCount }: UseCarouselRailOptions) {
     if (!viewport || !(track instanceof HTMLElement)) return undefined;
 
     const handleScroll = () => updateControls();
-    const handleUserInput = () => clearTarget();
+    const handleUserInput = () => {
+      clearTarget();
+      updateControls();
+    };
     const resizeObserver = new ResizeObserver(updateControls);
 
     updateControls();

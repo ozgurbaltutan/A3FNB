@@ -12098,21 +12098,21 @@ body .enquiry-success h2 {
 }
 
 .featured-sourcing-section .product-image-carousel {
-  --rail-shadow-gutter: clamp(0.75rem, 1.5vw, 1.25rem);
+  --rail-shadow-gutter: clamp(1.75rem, 2.2vw, 2rem);
   --rail-shadow-top: 1.75rem;
   --rail-shadow-bottom: 4rem;
-  width: calc(100% + 50vw - 50% + var(--rail-shadow-gutter));
-  margin-inline-start: calc(var(--rail-shadow-gutter) * -1);
+  width: 100%;
+  margin-inline: 0;
   overflow: visible;
 }
 
 .product-image-carousel__header {
   display: flex;
-  width: calc(100% - (50vw - 50%) - var(--rail-shadow-gutter));
+  width: 100%;
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
-  margin-inline-start: var(--rail-shadow-gutter);
+  margin-inline: 0;
   margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
@@ -12177,15 +12177,21 @@ body .enquiry-success h2 {
 .product-image-carousel__viewport {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: var(--rail-shadow-top) 0 var(--rail-shadow-bottom) var(--rail-shadow-gutter);
+  padding: var(--rail-shadow-top) var(--rail-shadow-gutter) var(--rail-shadow-bottom);
   scroll-behavior: smooth;
-  scroll-padding-inline: var(--rail-shadow-gutter) var(--a3-page-gutter);
+  scroll-padding-inline: var(--rail-shadow-gutter);
   scroll-snap-type: x mandatory;
   touch-action: pan-x pan-y;
 }
 
 .product-image-carousel__track {
   gap: clamp(1rem, 1.7vw, 1.5rem);
+}
+
+.featured-sourcing-section .product-image-carousel__stage {
+  width: calc(100% + (var(--rail-shadow-gutter) * 2));
+  margin-inline: calc(var(--rail-shadow-gutter) * -1);
+  overflow: hidden;
 }
 
 .featured-sourcing-section .product-image-card {
@@ -12200,14 +12206,14 @@ body .enquiry-success h2 {
 }
 
 .featured-sourcing-section .product-image-card::before {
-  inset: auto 0 0;
-  height: 62%;
-  background: linear-gradient(180deg, transparent 0%, rgba(3, 16, 14, 0.18) 28%, rgba(3, 16, 14, 0.86) 100%);
+  inset: 0 0 auto;
+  height: 38%;
+  background: linear-gradient(180deg, rgba(3, 16, 14, 0.76) 0%, rgba(3, 16, 14, 0.42) 54%, transparent 100%);
 }
 
 .featured-sourcing-section .product-image-card__body {
-  inset: auto 0 0;
-  align-content: end;
+  inset: 0 0 auto;
+  align-content: start;
   padding: 1.3rem;
 }
 
@@ -12608,7 +12614,7 @@ body .enquiry-success h2 {
   }
 
   .product-image-carousel__header {
-    width: calc(100% - var(--rail-shadow-gutter));
+    width: 100%;
     align-items: stretch;
     flex-direction: column;
     gap: 1rem;
