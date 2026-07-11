@@ -12029,3 +12029,681 @@ body .enquiry-success h2 {
     width: 100%;
   }
 }
+
+/* Homepage audit fixes: the single authoritative layer for the reviewed sections. */
+:root {
+  --home-media-radius: clamp(1rem, 1.4vw, 1.25rem);
+  --home-shadow-editorial:
+    0 3px 10px rgba(3, 16, 14, 0.065),
+    0 24px 58px rgba(3, 16, 14, 0.105);
+  --home-shadow-card:
+    0 2px 7px rgba(3, 16, 14, 0.08),
+    0 14px 34px rgba(3, 16, 14, 0.105);
+  --home-shadow-card-hover:
+    0 5px 14px rgba(3, 16, 14, 0.09),
+    0 26px 58px rgba(3, 16, 14, 0.16);
+}
+
+.company-story-section .editorial-section__inner {
+  padding-block: clamp(5.5rem, 8vw, 7.5rem);
+}
+
+.company-story-layout {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: center;
+  gap: clamp(3.5rem, 6vw, 6rem);
+}
+
+.company-story-copy {
+  max-width: 41rem;
+}
+
+.company-story-media,
+.editorial-media {
+  overflow: visible;
+  border: 0;
+  border-radius: var(--home-media-radius);
+  background: transparent;
+  box-shadow: var(--home-shadow-editorial);
+}
+
+.company-story-media {
+  min-height: clamp(25rem, 36vw, 34rem);
+}
+
+.company-story-media::after {
+  content: none;
+}
+
+.editorial-media__clip {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--color-paper);
+}
+
+.editorial-media__clip img {
+  inset: -1px !important;
+  width: calc(100% + 2px) !important;
+  height: calc(100% + 2px) !important;
+  max-width: none !important;
+}
+
+.featured-sourcing-section {
+  overflow: visible;
+  padding-block: clamp(5.75rem, 8vw, 7.5rem) clamp(5rem, 7vw, 6.75rem);
+  background: var(--color-paper);
+}
+
+.featured-sourcing-section .product-image-carousel {
+  --rail-shadow-gutter: clamp(0.75rem, 1.5vw, 1.25rem);
+  --rail-shadow-top: 1.75rem;
+  --rail-shadow-bottom: 4rem;
+  width: calc(100% + 50vw - 50% + var(--rail-shadow-gutter));
+  margin-inline-start: calc(var(--rail-shadow-gutter) * -1);
+  overflow: visible;
+}
+
+.product-image-carousel__header {
+  display: flex;
+  width: calc(100% - (50vw - 50%) - var(--rail-shadow-gutter));
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-inline-start: var(--rail-shadow-gutter);
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.product-image-carousel__intro,
+.home-products-carousel__intro {
+  width: min(100%, 49rem);
+  max-width: 49rem;
+}
+
+.home-products-carousel__intro .type-section-lead {
+  margin-top: 1.25rem;
+  max-width: 47rem;
+}
+
+.product-image-carousel__controls {
+  position: static;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.7rem;
+  padding-bottom: 0.1rem;
+  pointer-events: auto;
+}
+
+.featured-sourcing-section .product-image-carousel__control,
+.product-image-carousel__control {
+  position: relative;
+  inset: auto;
+  width: 2.9rem;
+  height: 2.9rem;
+  border: 0;
+  background: var(--color-surface);
+  box-shadow: 0 3px 10px rgba(3, 16, 14, 0.08), 0 10px 24px rgba(3, 16, 14, 0.08);
+  color: color-mix(in srgb, var(--color-ink) 82%, var(--color-paper));
+  transform: none;
+  transition: color 180ms var(--ease-premium), box-shadow 220ms var(--ease-premium), transform 220ms var(--ease-premium), opacity 180ms ease;
+}
+
+.featured-sourcing-section .product-image-carousel__control:hover,
+.featured-sourcing-section .product-image-carousel__control:focus-visible,
+.featured-sourcing-section .product-image-carousel__control:active,
+.product-image-carousel__control:hover,
+.product-image-carousel__control:focus-visible,
+.product-image-carousel__control:active {
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: 0 5px 14px rgba(3, 16, 14, 0.1), 0 14px 28px rgba(3, 16, 14, 0.11);
+  transform: translateY(-1px);
+}
+
+.product-image-carousel__control:disabled {
+  opacity: 0.32;
+  pointer-events: none;
+  transform: none;
+}
+
+.product-image-carousel__control:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-blue) 58%, white);
+  outline-offset: 3px;
+}
+
+.product-image-carousel__viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: var(--rail-shadow-top) 0 var(--rail-shadow-bottom) var(--rail-shadow-gutter);
+  scroll-behavior: smooth;
+  scroll-padding-inline: var(--rail-shadow-gutter) var(--a3-page-gutter);
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x pan-y;
+}
+
+.product-image-carousel__track {
+  gap: clamp(1rem, 1.7vw, 1.5rem);
+}
+
+.featured-sourcing-section .product-image-card {
+  flex-basis: clamp(16rem, 18.5vw, 18.75rem);
+  height: clamp(23rem, 28vw, 26rem);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--home-media-radius);
+  box-shadow: var(--home-shadow-card);
+  transform: translate3d(0, 0, 0);
+  transition: box-shadow 260ms var(--ease-premium), transform 260ms var(--ease-premium);
+}
+
+.featured-sourcing-section .product-image-card::before {
+  inset: auto 0 0;
+  height: 62%;
+  background: linear-gradient(180deg, transparent 0%, rgba(3, 16, 14, 0.18) 28%, rgba(3, 16, 14, 0.86) 100%);
+}
+
+.featured-sourcing-section .product-image-card__body {
+  inset: auto 0 0;
+  align-content: end;
+  padding: 1.3rem;
+}
+
+.featured-sourcing-section .product-image-card__copy {
+  gap: 0.55rem;
+}
+
+.featured-sourcing-section .product-image-card__title-row > strong {
+  color: var(--color-surface) !important;
+  font-size: clamp(1.08rem, 1.25vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.16;
+}
+
+.featured-sourcing-section .product-image-card__copy p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: rgba(255, 253, 248, 0.82);
+  font-size: 0.88rem;
+  line-height: 1.42;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.featured-sourcing-section .product-image-card__chevron {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  opacity: 0.72;
+  color: var(--color-surface);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+  transform: translateX(0);
+}
+
+.featured-sourcing-section .product-image-card:hover,
+.featured-sourcing-section .product-image-card:focus-visible {
+  border: 0;
+  box-shadow: var(--home-shadow-card-hover);
+  transform: translate3d(0, -4px, 0);
+}
+
+.featured-sourcing-section .product-image-card:hover .product-image-card__media img,
+.featured-sourcing-section .product-image-card:focus-visible .product-image-card__media img {
+  filter: saturate(1.025) contrast(1.012);
+  transform: scale(1.025);
+}
+
+.featured-sourcing-section .product-image-card:hover .product-image-card__chevron,
+.featured-sourcing-section .product-image-card:focus-visible .product-image-card__chevron {
+  opacity: 1;
+  transform: translateX(0.22rem);
+}
+
+.featured-sourcing-section .product-image-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-blue) 58%, white);
+  outline-offset: 4px;
+}
+
+.featured-sourcing-section .product-image-card:active {
+  box-shadow: var(--home-shadow-card-hover);
+  transform: translate3d(0, -4px, 0);
+}
+
+.home-section--markets {
+  padding-block: clamp(6rem, 8vw, 7.5rem);
+}
+
+.markets-layer-stage {
+  grid-template-columns: minmax(30rem, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(0.75rem, 1.8vw, 2rem);
+}
+
+.markets-copy {
+  max-width: 42rem;
+}
+
+.markets-metrics {
+  gap: clamp(1.75rem, 3vw, 3.25rem);
+}
+
+.markets-metric__value {
+  font-size: clamp(2.9rem, 5.2vw, 4.75rem);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+
+.markets-metric__label {
+  margin-top: 0.7rem;
+  font-size: 0.92rem;
+  line-height: 1.28;
+}
+
+.markets-map {
+  width: min(118%, 62rem);
+  aspect-ratio: 1280 / 620;
+  margin-left: -7%;
+}
+
+.markets-map__svg {
+  overflow: hidden;
+}
+
+.markets-map-pin__anchor,
+.markets-map-pin__anchor-line {
+  display: none;
+}
+
+.home-section--process {
+  padding-block: clamp(6rem, 8vw, 7.5rem);
+  background: #fbf8f1;
+}
+
+.home-section--process .a3-container {
+  display: block;
+}
+
+.home-section--process .a3-container > .reveal:first-child {
+  max-width: 53rem;
+}
+
+.process-accordion--showcase {
+  display: grid;
+  grid-template-columns: minmax(19rem, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: stretch;
+  margin-top: clamp(2.75rem, 5vw, 4.25rem);
+  border: 0;
+  border-radius: calc(var(--home-media-radius) + 0.35rem);
+  background: color-mix(in srgb, var(--color-surface) 72%, #fbf8f1);
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  box-shadow: 0 22px 62px rgba(3, 16, 14, 0.065);
+}
+
+.process-showcase-list {
+  min-height: 33rem;
+  align-self: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.process-accordion--showcase .process-accordion-trigger {
+  min-height: 4.35rem;
+  grid-template-columns: 2.3rem minmax(0, 1fr) 1.75rem;
+  gap: 0.85rem;
+  padding-block: 1.05rem;
+}
+
+.process-accordion--showcase .process-accordion-title {
+  font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+}
+
+.process-accordion--showcase .process-accordion-panel {
+  padding-left: 3.15rem;
+  transition: grid-template-rows 300ms var(--ease-premium), opacity 210ms var(--ease-premium), padding-bottom 300ms var(--ease-premium), visibility 0s linear 300ms;
+}
+
+.process-accordion--showcase .process-accordion-item.is-active .process-accordion-panel {
+  padding-bottom: 1.35rem;
+  transition: grid-template-rows 300ms var(--ease-premium), opacity 230ms var(--ease-premium), padding-bottom 300ms var(--ease-premium), visibility 0s linear 0s;
+}
+
+.process-accordion--showcase .process-accordion-panel__inner > p {
+  max-width: 31rem;
+  color: color-mix(in srgb, var(--color-ink) 78%, var(--color-paper));
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.process-showcase-media {
+  position: relative;
+  min-height: 33rem;
+  overflow: hidden;
+  border-radius: var(--home-media-radius);
+  background: color-mix(in srgb, var(--color-sage) 65%, var(--color-paper));
+  box-shadow: var(--home-shadow-editorial);
+}
+
+.process-showcase-media__item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.012);
+  transition: opacity 230ms var(--ease-premium), transform 420ms var(--ease-premium), visibility 0s linear 230ms;
+}
+
+.process-showcase-media__item.is-active {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition-delay: 0s;
+}
+
+.process-showcase-media__item img {
+  object-position: center;
+}
+
+.home-section--buyer-paths {
+  padding-block: clamp(6rem, 8vw, 7.5rem);
+}
+
+.work-with-intro {
+  max-width: 52rem;
+}
+
+.work-with-roles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  margin: clamp(3rem, 5vw, 4.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.work-with-role {
+  position: relative;
+  min-width: 0;
+  padding-right: clamp(0.5rem, 1vw, 1rem);
+}
+
+.work-with-role:not(:last-child)::after {
+  position: absolute;
+  top: 1.15rem;
+  right: calc(clamp(1.25rem, 2.5vw, 2.5rem) * -0.75);
+  width: clamp(1.25rem, 2.5vw, 2.5rem);
+  height: 1px;
+  content: "";
+  background: color-mix(in srgb, var(--color-ink) 20%, transparent);
+}
+
+.work-with-role__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.work-with-role__icon {
+  width: 2.35rem;
+  height: 2.35rem;
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-teal) 88%, var(--color-ink));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.35;
+}
+
+.work-with-role__index {
+  color: color-mix(in srgb, var(--color-ink) 42%, var(--color-paper));
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.work-with-role h3 {
+  margin: 1.35rem 0 0;
+  color: var(--color-ink);
+  font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.work-with-role p {
+  margin: 0.75rem 0 0;
+  color: color-mix(in srgb, var(--color-ink) 70%, var(--color-paper));
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.work-with-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-top: clamp(3rem, 5vw, 4.25rem);
+}
+
+.work-with-action {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: clamp(1.35rem, 2.5vw, 2rem);
+  border: 0;
+  border-radius: var(--home-media-radius);
+  background: var(--color-surface);
+  box-shadow: var(--home-shadow-card);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: box-shadow 240ms var(--ease-premium), transform 240ms var(--ease-premium);
+}
+
+.work-with-action strong,
+.work-with-action small {
+  display: block;
+}
+
+.work-with-action strong {
+  font-size: clamp(1.05rem, 1.4vw, 1.22rem);
+  line-height: 1.25;
+}
+
+.work-with-action small {
+  margin-top: 0.55rem;
+  color: color-mix(in srgb, var(--color-ink) 62%, var(--color-paper));
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.work-with-action__link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.65rem;
+  color: color-mix(in srgb, var(--color-ink) 82%, var(--color-paper));
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.work-with-arrow {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+  transition: transform 200ms var(--ease-premium);
+}
+
+.work-with-action:hover,
+.work-with-action:focus-visible {
+  box-shadow: var(--home-shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+.work-with-action:hover .work-with-arrow,
+.work-with-action:focus-visible .work-with-arrow {
+  transform: translateX(0.22rem);
+}
+
+@media (max-width: 1023px) {
+  .company-story-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .company-story-media {
+    min-height: clamp(24rem, 68vw, 34rem);
+  }
+
+  .markets-layer-stage {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  .markets-map {
+    width: 108%;
+    margin-left: -4%;
+  }
+
+  .process-accordion--showcase {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .process-showcase-list {
+    min-height: 0;
+  }
+
+  .process-showcase-media {
+    min-height: clamp(25rem, 65vw, 34rem);
+  }
+
+  .work-with-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 3rem;
+  }
+
+  .work-with-role::after {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .company-story-section .editorial-section__inner,
+  .featured-sourcing-section,
+  .home-section--markets,
+  .home-section--process,
+  .home-section--buyer-paths {
+    padding-block: 4.5rem;
+  }
+
+  .product-image-carousel__header {
+    width: calc(100% - var(--rail-shadow-gutter));
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .product-image-carousel__controls {
+    align-self: flex-end;
+  }
+
+  .product-image-carousel__controls,
+  .featured-sourcing-section .product-image-carousel__controls {
+    display: flex;
+  }
+
+  .featured-sourcing-section .product-image-carousel__control,
+  .product-image-carousel__control {
+    width: 2.65rem;
+    height: 2.65rem;
+  }
+
+  .featured-sourcing-section .product-image-card {
+    flex-basis: min(80vw, 19rem);
+    height: 24rem;
+  }
+
+  .featured-sourcing-section .product-image-card__copy p {
+    font-size: 0.86rem;
+  }
+
+  .markets-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .markets-metric__value {
+    font-size: clamp(2.3rem, 11vw, 3.25rem);
+  }
+
+  .markets-metric__label {
+    font-size: 0.78rem;
+  }
+
+  .markets-map {
+    width: 114%;
+    margin-left: -7%;
+  }
+
+  .process-accordion--showcase {
+    margin-top: 2.5rem;
+    padding: 1.2rem;
+  }
+
+  .process-accordion--showcase .process-accordion-panel {
+    padding-left: 0;
+  }
+
+  .process-showcase-media {
+    min-height: 23rem;
+  }
+
+  .work-with-roles,
+  .work-with-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .work-with-roles {
+    gap: 2.25rem;
+  }
+
+  .work-with-role {
+    padding: 0;
+  }
+
+  .work-with-action {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-image-carousel__viewport {
+    scroll-behavior: auto;
+  }
+
+  .markets-map-pin__halo {
+    animation: none;
+    opacity: 0.34;
+  }
+
+  .process-showcase-media__item,
+  .featured-sourcing-section .product-image-card,
+  .featured-sourcing-section .product-image-card__media img,
+  .work-with-action,
+  .work-with-arrow {
+    transition: none;
+  }
+}
