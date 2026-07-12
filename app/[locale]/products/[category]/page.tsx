@@ -4,7 +4,7 @@ import { productCategories } from "@/content/site";
 
 export function generateStaticParams() {
   return productCategories
-    .filter((category) => !["green-coffee-beans", "sugar"].includes(category.slug))
+    .filter((category) => !["coffee", "sugar"].includes(category.slug))
     .map((category) => ({ locale: "en", category: category.slug }));
 }
 

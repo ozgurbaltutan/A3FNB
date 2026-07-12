@@ -105,7 +105,7 @@ function spreadProjectedMarkets(markets: ProjectedMarket[], minimumDistance = 23
 
 const HOME_PRODUCT_IMAGES: Record<string, string> = {
   "sugar": homeAssets.media.homeProductSugar,
-  "green-coffee-beans": homeAssets.media.homeProductCoffee,
+  coffee: homeAssets.media.homeProductCoffee,
   "cocoa-products": homeAssets.media.homeProductCocoa,
   "grains-seeds": homeAssets.media.homeProductGrains,
   "dairy-milk-powders": homeAssets.media.homeProductDairy,

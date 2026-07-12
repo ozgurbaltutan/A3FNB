@@ -1,5 +1,5 @@
-import CoffeePage, { generateMetadata } from "../coffee/page";
+import { permanentRedirect } from "next/navigation";
 
-export { generateMetadata };
-
-export default CoffeePage;
+export default function LegacyGreenCoffeePage() {
+  permanentRedirect("/en/products/coffee");
+}

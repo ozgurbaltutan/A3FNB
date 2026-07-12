@@ -18,30 +18,46 @@ function sugarQuoteHref(product?: string) {
 
 const icumsa45Specs = [
   { parameter: "Commercial form", specification: "Refined white cane sugar" },
-  { parameter: "Colour target", specification: "ICUMSA ≤45 IU; confirmed with offer" },
-  { parameter: "Codex reference", specification: "White sugar polarisation ≥99.7 °Z" },
-  { parameter: "Offer controls", specification: "Moisture, conductivity ash, granulation and microbiology" },
+  { parameter: "Moisture", specification: "0.04% max." },
+  { parameter: "Ash content", specification: "0.04% max." },
+  { parameter: "Polarisation", specification: "99.8° min." },
+  { parameter: "Solubility", specification: "100% dry and free flow" },
+  { parameter: "Radiation", specification: "Normal certified" },
+  { parameter: "Colour", specification: "Sparkling white" },
+  { parameter: "Granulation", specification: "Fine" },
 ];
 
 const icumsa150Specs = [
   { parameter: "Commercial form", specification: "Crystal cane sugar" },
-  { parameter: "Colour target", specification: "ICUMSA ≤150 IU; confirmed with offer" },
-  { parameter: "Codex reference", specification: "Plantation/mill white polarisation ≥99.5 °Z" },
-  { parameter: "Offer controls", specification: "Moisture, conductivity ash, granulation and microbiology" },
+  { parameter: "Moisture", specification: "0.10% max." },
+  { parameter: "Ash content", specification: "0.10% max." },
+  { parameter: "Polarisation", specification: "99.5° min." },
+  { parameter: "Solubility", specification: "100% dry and free flow" },
+  { parameter: "Radiation", specification: "Normal certified" },
+  { parameter: "Colour", specification: "Sparkling white" },
+  { parameter: "Granulation", specification: "Fine" },
 ];
 
 const icumsa600Specs = [
   { parameter: "Commercial form", specification: "Raw or less-refined brown cane sugar" },
-  { parameter: "Colour target", specification: "ICUMSA 600–1200 IU range; offer confirmed" },
-  { parameter: "Processing fit", specification: "Industrial use or further refining" },
-  { parameter: "Offer controls", specification: "Polarisation, moisture, ash, colour and foreign matter" },
+  { parameter: "Moisture", specification: "0.15% max." },
+  { parameter: "Ash content", specification: "0.15% max." },
+  { parameter: "Polarisation", specification: "97.8° to 99.2°" },
+  { parameter: "Solubility", specification: "95% dry and free flow" },
+  { parameter: "Radiation", specification: "Normal certified" },
+  { parameter: "Colour", specification: "Brown" },
+  { parameter: "Granulation", specification: "6 mm regular size" },
 ];
 
 const icumsa60Specs = [
   { parameter: "Commercial form", specification: "White beet sugar" },
-  { parameter: "Colour target", specification: "ICUMSA 60–100 IU range; offer confirmed" },
-  { parameter: "Codex reference", specification: "White sugar polarisation ≥99.7 °Z" },
-  { parameter: "Offer controls", specification: "Moisture, conductivity ash, granulation and microbiology" },
+  { parameter: "Moisture", specification: "0.06% max." },
+  { parameter: "Ash content", specification: "0.08% max." },
+  { parameter: "Polarisation", specification: "99.8° min." },
+  { parameter: "Solubility", specification: "100% dry and free flow" },
+  { parameter: "Radiation", specification: "Normal certified" },
+  { parameter: "Colour", specification: "White at 20°" },
+  { parameter: "Granulation", specification: "Fine" },
 ];
 
 export function generateMetadata(): Metadata {
@@ -63,10 +79,10 @@ export default function SugarPage() {
       <ProductDetailLayout
         breadcrumb={breadcrumb}
         hero={{
-          title: "Sugar",
+          title: "Creating a seamless flow in global sugar markets.",
           text: [
-            "Refined, raw and specialty sugar supply organised around grade, origin, packing and destination requirements.",
-            "A3 reviews each enquiry with established producers and coordinates the commercial, document and shipment details needed to establish a workable supply route.",
+            "A3 acts as a strategic partner in the international sugar trade, connecting supply and demand effectively across cane and beet sugar markets.",
+            "We manage the entire value chain—from sourcing at origin and technical specification matching to logistics, finance and final delivery.",
           ],
           image: "/media/products/sugar/hero-v2.webp",
           imageAlt: "White and raw sugar crystals with sugar cane and sugar beet",
@@ -76,42 +92,17 @@ export default function SugarPage() {
         sectionNavigation={[
           { label: "Overview", href: "#overview" },
           { label: "Grades", href: "#range" },
-          { label: "Market context", href: "#market-context" },
+          { label: "Key facts", href: "#key-facts" },
+          { label: "Process", href: "#process-flowchart" },
           { label: "Specifications", href: "#technical-specifications" },
           { label: "Supply", href: "#shipment-options" },
           { label: "Contact", href: "#contact" },
         ]}
-        keyFacts={{
-          title: "Sugar market context",
-          edition: "USDA FAS 2025/26 forecast and Sucden crop context · reviewed July 2026",
-          items: [
-            {
-              value: "80%",
-              description: "Of global sugar production comes from cane; the balance is primarily beet sugar.",
-            },
-            {
-              value: "20%",
-              description: "Approximate share of world sugar production derived from beet.",
-            },
-            {
-              value: "189.3",
-              label: "million metric tons",
-              description: "USDA forecast global sugar production for 2025/26.",
-            },
-          ],
-          sources: [
-            {
-              label: "USDA FAS Sugar: World Markets and Trade",
-              href: "https://apps.fas.usda.gov/psdonline/circulars/sugar.pdf",
-            },
-            { label: "Sucden sugar market overview", href: "https://www.sucden.com/en/products-and-activities/sugar/" },
-          ],
-        }}
         productPortfolio={{
           id: "range",
           title: "Sugar grades",
           text:
-            "Our sugar range covers Brazilian cane and European beet options, organised by origin, ICUMSA grade and intended application.",
+            "A3 Food & Beverage supplies cane sugar from Brazil and beet sugar from Europe directly from mills for food, beverage, retail and industrial buyers.",
           items: [
             {
               id: "icumsa-45",
@@ -255,6 +246,34 @@ export default function SugarPage() {
             },
           ],
         }}
+        editorialFacts={{
+          title: "Sugar key facts",
+          text: "A few milestones that show the scale and wider role of sugar in global trade and industry.",
+          items: [
+            {
+              title: "A global food commodity",
+              description: "USDA forecasts world sugar production at more than 189 million metric tons for 2025/26, reflecting the scale of supply required across food, beverage and industrial markets.",
+            },
+            {
+              title: "Brazil leads world exports",
+              description: "Brazil was the world’s largest sugar exporter in calendar year 2025, accounting for approximately 59% of global sugar exports according to USDA FAS.",
+            },
+            {
+              title: "An early role for ethanol",
+              description: "The 1908 Ford Model T was designed to run on a gasoline-and-alcohol fuel mixture—an early chapter in ethanol’s history as a transport fuel.",
+            },
+          ],
+        }}
+        flowchart={{
+          title: "Cane sugar production process",
+          text: "From cultivation and harvest through milling, purification, crystallisation and drying, the production route prepares cane sugar for export-ready supply.",
+          image: "/media/products/sugar/cane-production-flowchart.png",
+          imageAlt: "Nine-step cane sugar production process from cultivation to drying",
+          resource: {
+            label: "Download the sugar catalogue",
+            href: "/assets/a3/resources/a3-sugar-catalogue.pdf",
+          },
+        }}
         technicalSpecs={{
           title: "Technical specifications",
           text:
@@ -266,25 +285,11 @@ export default function SugarPage() {
             label: "Download sugar catalogue",
             href: "/assets/a3/resources/a3-sugar-catalogue.pdf",
           },
-          groups: [
-            {
-              id: "cane-sugar-specifications",
-              title: "Brazilian Cane Sugar",
-              text: "Trade colour designations organise the initial discussion; the complete producer specification is confirmed with the offer.",
-              selectorLabel: "Select a cane sugar profile",
-              profiles: [
-                { title: "ICUMSA 45", subtitle: "White refined cane sugar", rows: icumsa45Specs },
-                { title: "ICUMSA 150", subtitle: "Crystal cane sugar", rows: icumsa150Specs },
-                { title: "ICUMSA 600-1200", subtitle: "Brown raw cane sugar", rows: icumsa600Specs },
-              ],
-            },
-            {
-              id: "beet-sugar-specifications",
-              title: "Ukrainian Beet Sugar",
-              text: "Origin, producer availability, colour, polarisation and route documents are confirmed for the offered lot.",
-              selectorLabel: "Select a beet sugar profile",
-              profiles: [{ title: "ICUMSA 60-100", subtitle: "White beet sugar", rows: icumsa60Specs }],
-            },
+          profiles: [
+            { title: "ICUMSA 45", subtitle: "White refined cane sugar", rows: icumsa45Specs },
+            { title: "ICUMSA 150", subtitle: "Crystal cane sugar", rows: icumsa150Specs },
+            { title: "ICUMSA 600-1200", subtitle: "Brown raw cane sugar", rows: icumsa600Specs },
+            { title: "ICUMSA 60-100", subtitle: "White beet sugar", rows: icumsa60Specs },
           ],
         }}
         shipmentOptions={{
@@ -312,17 +317,54 @@ export default function SugarPage() {
             },
           ],
         }}
+        services={{
+          title: "Integrated Value Chain Services",
+          text: "Beyond sourcing, A3 provides the professional support needed to move vital supply chains.",
+          items: [
+            {
+              title: "Market Intelligence",
+              description: "Sourcing insight and grade-specific information to support better decisions.",
+            },
+            {
+              title: "Commercial De-risking",
+              description: "Flexible financing and payment solutions designed to optimise procurement and manage costs.",
+            },
+            {
+              title: "Integrated Logistics",
+              description: "End-to-end coordination of global trade flows, managing documentation and shipping follow-up from origin to destination.",
+            },
+          ],
+        }}
         related={[
-          { label: "Starches & Sweeteners", href: "/en/products/starches-sweeteners" },
-          { label: "Grains & Seeds", href: "/en/products/grains-seeds" },
-          { label: "Consumer Foods", href: "/en/products/consumer-foods" },
+          {
+            label: "Starches & Sweeteners",
+            href: "/en/products/starches-sweeteners",
+            description: "Functional starches, carbohydrate ingredients, polyols and specialty sweeteners.",
+            image: "/media/home/product-starches-sweeteners.webp",
+            imageAlt: "Starches and sweetener ingredients",
+          },
+          {
+            label: "Grains & Seeds",
+            href: "/en/products/grains-seeds",
+            description: "Wheat, maize and sunflower seed for processing and trade.",
+            image: "/media/home/products/grains-seeds.webp",
+            imageAlt: "Commercial grains and seeds",
+          },
+          {
+            label: "Consumer Foods",
+            href: "/en/products/consumer-foods",
+            description: "Packaged food options for retail, wholesale and foodservice.",
+            image: "/media/home/product-consumer-foods.webp",
+            imageAlt: "Consumer food products",
+          },
         ]}
         finalCta={{
           title: "For sugar enquiries",
           text:
             "Contact A3 to discuss product grade, packing, volume and destination requirements.",
           primary: { label: "Discuss a sugar requirement", href: sugarQuoteHref() },
-          compact: true,
+          image: "/media/products/sugar/sugar-cane-hero.webp",
+          imageAlt: "Sugar cane field and commercial sugar supply",
           tone: "ink",
         }}
       />

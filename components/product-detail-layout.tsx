@@ -6,11 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { FilteredProductGrid } from "@/components/filtered-product-grid";
 import { InnerPageHero } from "@/components/inner-page-hero";
-import { ProductImageGrid } from "@/components/product-image-carousel";
+import { MetricBand } from "@/components/metric-band";
 import { ProcessAccordion } from "@/components/process-accordion";
 import { Container, LinkButton } from "@/components/ui";
-import { CountUpMetric } from "@/components/count-up-metric";
 import { homeAssets } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
 
@@ -22,6 +22,9 @@ type ProductDetailItem = {
 type ProductDetailLink = {
   label: string;
   href: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
 };
 
 type ProductDetailHero = {
@@ -173,6 +176,32 @@ type ProductKeyFacts = {
   sources?: ProductDetailLink[];
 };
 
+type ProductEditorialFacts = {
+  title: string;
+  text?: string;
+  items: ProductDetailItem[];
+};
+
+type ProductFlowchart = {
+  title: string;
+  text: string;
+  image: string;
+  imageAlt: string;
+  resource?: ProductDetailLink;
+};
+
+type ProductOrigins = {
+  title: string;
+  text: string;
+  items: Array<ProductDetailItem & { regions: string[] }>;
+};
+
+type ProductServices = {
+  title: string;
+  text: string;
+  items: ProductDetailItem[];
+};
+
 type ProductDetailProps = {
   breadcrumb: NavigationItem[];
   hero?: ProductDetailHero;
@@ -184,6 +213,12 @@ type ProductDetailProps = {
   storySections?: ProductStorySection[];
   afterSupportStorySections?: ProductStorySection[];
   keyFacts?: ProductKeyFacts;
+  keyFactsPosition?: "before-portfolio" | "after-portfolio";
+  editorialFacts?: ProductEditorialFacts;
+  flowchart?: ProductFlowchart;
+  origins?: ProductOrigins;
+  services?: ProductServices;
+  servicesPosition?: "before-shipment" | "after-shipment";
   sectionNavigation?: ProductSectionNavigationItem[];
   profiles?: {
     title: string;
@@ -236,6 +271,12 @@ export function ProductDetailLayout({
   storySections,
   afterSupportStorySections,
   keyFacts,
+  keyFactsPosition = "after-portfolio",
+  editorialFacts,
+  flowchart,
+  origins,
+  services,
+  servicesPosition = "after-shipment",
   sectionNavigation,
   profiles,
   productRange,
@@ -271,19 +312,25 @@ export function ProductDetailLayout({
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
       {intro ? <ProductIntro intro={intro} /> : null}
+      {origins ? <ProductOriginsSection origins={origins} /> : null}
+      {keyFacts && keyFactsPosition === "before-portfolio" ? <ProductKeyFactsSection facts={keyFacts} /> : null}
       {productRange ? (
         <ProductRange profiles={productRange} />
       ) : profiles ? (
         <ProductProfiles profiles={profiles} />
       ) : null}
       {productPortfolio ? <ProductPortfolioSection portfolio={productPortfolio} /> : null}
-      {keyFacts ? <ProductKeyFactsSection facts={keyFacts} /> : null}
+      {keyFacts && keyFactsPosition === "after-portfolio" ? <ProductKeyFactsSection facts={keyFacts} /> : null}
+      {editorialFacts ? <ProductEditorialFactsSection facts={editorialFacts} /> : null}
+      {flowchart ? <ProductFlowchartSection flowchart={flowchart} /> : null}
       {documents ? <ProductDocuments documents={documents} /> : null}
       {portfolioStorySections.map((section, index) => (
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
       {technicalSpecs ? <ProductTechnicalSpecs specs={technicalSpecs} /> : null}
+      {services && servicesPosition === "before-shipment" ? <ProductServicesSection services={services} /> : null}
       {shipmentOptions ? <ShipmentOptions options={shipmentOptions} /> : null}
+      {services && servicesPosition === "after-shipment" ? <ProductServicesSection services={services} /> : null}
       {origin ? <ProductOrigin origin={origin} /> : null}
       {useBuyerInformation ? (
         <BuyerInformation sections={sections} support={support} />
@@ -305,40 +352,91 @@ export function ProductDetailLayout({
 }
 
 function ProductKeyFactsSection({ facts }: { facts: ProductKeyFacts }) {
+  return <MetricBand edition={facts.edition} id="market-context" items={facts.items} sources={facts.sources} title={facts.title} />;
+}
+
+function ProductEditorialFactsSection({ facts }: { facts: ProductEditorialFacts }) {
   return (
-    <section className="product-detail-section product-key-facts" id="market-context">
-      <Container className="a3-container product-key-facts__inner">
-        <div className="product-key-facts__header">
+    <section className="product-detail-section product-editorial-facts" id="key-facts">
+      <Container className="a3-container product-editorial-facts__inner">
+        <div className="product-section-heading">
           <h2 className="type-section">{facts.title}</h2>
-          {facts.edition ? <p>{facts.edition}</p> : null}
+          {facts.text ? <p className="type-section-lead">{facts.text}</p> : null}
         </div>
-        <div className="product-key-facts__grid">
-          {facts.items.map((fact) => {
-            return (
-              <article className="product-key-facts__item" key={`${fact.value}-${fact.description}`}>
-                <p className="product-key-facts__value type-metric">
-                  <CountUpMetric value={fact.value} />
-                  {fact.label ? <small>{fact.label}</small> : null}
-                </p>
-                <p className="product-key-facts__description">{fact.description}</p>
-              </article>
-            );
-          })}
+        <div className="product-editorial-facts__grid">
+          {facts.items.map((item, index) => (
+            <article key={item.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))}
         </div>
-        {facts.sources?.length ? (
-          <p className="product-key-facts__sources">
-            <span>Sources:</span>{" "}
-            {facts.sources.map((source, index) => (
-              <span key={source.href}>
-                {index ? ", " : null}
-                <a href={source.href} rel="noreferrer" target="_blank">
-                  {source.label}
-                </a>
-              </span>
-            ))}
-            .
-          </p>
-        ) : null}
+      </Container>
+    </section>
+  );
+}
+
+function ProductFlowchartSection({ flowchart }: { flowchart: ProductFlowchart }) {
+  return (
+    <section className="product-detail-section product-flowchart" id="process-flowchart">
+      <Container className="a3-container product-flowchart__inner">
+        <div className="product-section-heading">
+          <h2 className="type-section">{flowchart.title}</h2>
+          <p className="type-section-lead">{flowchart.text}</p>
+          {flowchart.resource ? (
+            <LinkButton href={flowchart.resource.href} variant="outline">
+              {flowchart.resource.label}
+            </LinkButton>
+          ) : null}
+        </div>
+        <figure className="product-flowchart__media">
+          <Image alt={flowchart.imageAlt} fill sizes="(min-width: 1024px) 62vw, 100vw" src={flowchart.image} />
+        </figure>
+      </Container>
+    </section>
+  );
+}
+
+function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
+  return (
+    <section className="product-detail-section product-origins" id="origins">
+      <Container className="a3-container product-origins__inner">
+        <div className="product-section-heading">
+          <h2 className="type-section">{origins.title}</h2>
+          <p className="type-section-lead">{origins.text}</p>
+        </div>
+        <div className="product-origins__grid">
+          {origins.items.map((item) => (
+            <article key={item.title}>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              <ul>{item.regions.map((region) => <li key={region}>{region}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function ProductServicesSection({ services }: { services: ProductServices }) {
+  return (
+    <section className="product-detail-section product-services" id="services">
+      <Container className="a3-container product-services__inner">
+        <div className="product-section-heading">
+          <h2 className="type-section">{services.title}</h2>
+          <p className="type-section-lead">{services.text}</p>
+        </div>
+        <div className="product-services__grid">
+          {services.items.map((item, index) => (
+            <article key={item.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))}
+        </div>
       </Container>
     </section>
   );
@@ -582,12 +680,11 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
   const [activePortfolioItemId, setActivePortfolioItemId] = useState<string | null>(null);
   const modalTriggerRefs = useRef<Record<string, HTMLElement | null>>({});
   const activePortfolioItem = portfolio.items.find((item) => item.id === activePortfolioItemId) ?? null;
-  const visibleGroups = portfolio.groups?.map((group) => ({
-    ...group,
-    items: group.itemIds
-      .map((id) => portfolio.items.find((item) => item.id === id))
-      .filter((item): item is ProductPortfolioItem => Boolean(item)),
-  })).filter((group) => group.items.length) ?? [];
+  const filterGroups = (portfolio.filters ?? portfolio.groups?.map((group) => ({
+    id: group.id,
+    label: group.title,
+    itemIds: group.itemIds,
+  })) ?? []);
 
   useEffect(() => {
     if (!activePortfolioItem) return;
@@ -623,39 +720,17 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
           <h2 className="type-section">{portfolio.title}</h2>
           <p className="type-section-lead">{portfolio.text}</p>
         </div>
-        {visibleGroups.length ? (
-          <div className="product-portfolio-groups">
-            {visibleGroups.map((group) => (
-              <section aria-labelledby={`product-group-${group.id}`} className="product-portfolio-group" key={group.id}>
-                <header className="product-portfolio-group__header">
-                  <h3 id={`product-group-${group.id}`}>{group.title}</h3>
-                  {group.description ? <p>{group.description}</p> : null}
-                </header>
-                <ProductImageGrid
-                  ariaLabel={`${group.title} products`}
-                  getItemLabel={(item) => `View commercial details for ${item.title}`}
-                  items={group.items}
-                  mode="button"
-                  onItemActivate={(item) => openPortfolioModal(item.id)}
-                  setItemRef={(id, node) => {
-                    modalTriggerRefs.current[id] = node;
-                  }}
-                />
-              </section>
-            ))}
-          </div>
-        ) : (
-          <ProductImageGrid
-            ariaLabel={`${portfolio.title} products`}
-            getItemLabel={(item) => `View commercial details for ${item.title}`}
-            items={portfolio.items}
-            mode="button"
-            onItemActivate={(item) => openPortfolioModal(item.id)}
-            setItemRef={(id, node) => {
-              modalTriggerRefs.current[id] = node;
-            }}
-          />
-        )}
+        <FilteredProductGrid
+          ariaLabel={`${portfolio.title} products`}
+          getItemLabel={(item) => `View commercial details for ${item.title}`}
+          groups={filterGroups}
+          items={portfolio.items}
+          mode="button"
+          onItemActivate={(item) => openPortfolioModal(item.id)}
+          setItemRef={(id, node) => {
+            modalTriggerRefs.current[id] = node;
+          }}
+        />
         {activePortfolioItem ? (
           <ProductPortfolioModal product={activePortfolioItem} onClose={closePortfolioModal} />
         ) : null}
@@ -800,6 +875,8 @@ function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProp
   const groups: ProductTechnicalSpecGroup[] = specs.groups?.length
     ? specs.groups
     : [{ id: "all-products", title: specs.title, selectorLabel: specs.selectorLabel, profiles: specs.profiles ?? [] }];
+  const [activeGroupId, setActiveGroupId] = useState(groups[0]?.id ?? "");
+  const activeGroup = groups.find((group) => group.id === activeGroupId) ?? groups[0];
 
   return (
     <section className="product-detail-section product-technical-specs" id="technical-specifications">
@@ -808,11 +885,29 @@ function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProp
           <h2 className="type-section">{specs.title}</h2>
           {specs.text ? <p className="type-section-lead">{specs.text}</p> : null}
         </div>
-        <div className="product-technical-specs__groups">
-          {groups.map((group) => (
-            <ProductTechnicalSpecMatrix group={group} key={group.id} />
-          ))}
-        </div>
+        {groups.length > 1 ? (
+          <div aria-label="Specification groups" className="product-filter-tabs product-technical-specs__tabs" role="tablist">
+            {groups.map((group) => (
+              <button
+                aria-controls={`technical-panel-${group.id}`}
+                aria-selected={activeGroup?.id === group.id}
+                className="product-filter-tab premium-focus"
+                data-active={activeGroup?.id === group.id}
+                key={group.id}
+                onClick={() => setActiveGroupId(group.id)}
+                role="tab"
+                type="button"
+              >
+                {group.title}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {activeGroup ? (
+          <div className="product-technical-specs__groups" id={`technical-panel-${activeGroup.id}`} role={groups.length > 1 ? "tabpanel" : undefined}>
+            <ProductTechnicalSpecMatrix group={activeGroup} />
+          </div>
+        ) : null}
         {specs.disclaimer || specs.catalogue ? (
           <footer className="product-technical-specs__footer">
             {specs.disclaimer ? <p className="product-technical-specs__disclaimer">{specs.disclaimer}</p> : null}
@@ -894,23 +989,30 @@ function ShipmentOptions({ options }: { options: ProductShipmentOptions }) {
   return (
     <section className="product-detail-section shipment-options-section" id="shipment-options">
       <Container className="a3-container shipment-options-section__inner">
-        <div className="shipment-options-section__copy">
+        <div className="product-section-heading shipment-options-section__copy">
           <h2 className="type-section">{options.title}</h2>
           <p className="type-section-lead">{options.text}</p>
-          <ProcessAccordion
-            ariaLabel={`${options.title} details`}
-            className="shipment-options-section__steps"
-            items={options.items.map((item, index) => ({
-              id: item.title,
-              number: String(index + 1).padStart(2, "0"),
-              title: item.title,
-              description: item.description,
-            }))}
-          />
         </div>
-        <figure className="shipment-options-section__media">
-          <Image src={options.image} alt={options.imageAlt} fill sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
-        </figure>
+        <ProcessAccordion
+          ariaLabel={`${options.title} details`}
+          className="shipment-options-section__steps"
+          presentation="showcase"
+          items={options.items.map((item, index) => ({
+            id: item.title,
+            number: String(index + 1).padStart(2, "0"),
+            title: item.title,
+            description: item.description,
+            media: (
+              <Image
+                alt={options.imageAlt}
+                className="object-cover"
+                fill
+                sizes="(min-width: 1024px) 54vw, 100vw"
+                src={options.image}
+              />
+            ),
+          }))}
+        />
       </Container>
     </section>
   );
@@ -1140,25 +1242,30 @@ function ProductSupport({ support }: { support: ProductSupportSection }) {
 }
 
 function RelatedProducts({ links }: { links: ProductDetailLink[] }) {
+  const items = links.map((link) => ({
+    id: link.href,
+    title: link.label,
+    description: link.description ?? "Explore product options, specifications and commercial sourcing context.",
+    image: link.image ?? homeAssets.media.companyFoodFeastEditorial,
+    imageAlt: link.imageAlt ?? `${link.label} product category`,
+    href: link.href,
+  }));
+
   return (
     <section className="product-detail-related">
       <Container className="a3-container product-detail-related__inner">
-        <h2 className="type-panel-title">Related categories</h2>
-        <div className="product-detail-related__links">
-          {links.map((link) => (
-            <RelatedProductLink link={link} key={link.href} />
-          ))}
+        <div className="product-section-heading">
+          <h2 className="type-section">Related categories</h2>
+          <p className="type-section-lead">Continue exploring product families that may fit the same sourcing programme.</p>
         </div>
+        <FilteredProductGrid
+          ariaLabel="Related product categories"
+          getHref={(item) => item.href}
+          items={items}
+          mode="link"
+        />
       </Container>
     </section>
-  );
-}
-
-function RelatedProductLink({ link }: { link: ProductDetailLink }) {
-  return (
-    <Link className="product-detail-related__link premium-focus" href={link.href}>
-      <span>{link.label}</span>
-    </Link>
   );
 }
 
@@ -1166,26 +1273,8 @@ function ProductFinalCta({ cta }: { cta: ProductDetailProps["finalCta"] }) {
   const image = cta.image ?? homeAssets.media.finalCta;
   const imageAlt = cta.imageAlt ?? "Commercial food market and buyer activity";
 
-  if (cta.compact) {
-    return (
-      <section className="product-detail-contact-band text-surface" id="contact">
-        <Container className="a3-container product-detail-contact-band__inner">
-          <div className="product-detail-contact-band__copy">
-            <h2 className="type-section text-surface">{cta.title}</h2>
-            <p className="type-section-lead text-surface">{cta.text}</p>
-          </div>
-          <div className="product-detail-contact-band__links">
-            <LinkButton className="product-detail-contact-band__action" href={cta.primary.href} variant="darkOutline">
-              {cta.primary.label}
-            </LinkButton>
-          </div>
-        </Container>
-      </section>
-    );
-  }
-
   return (
-    <section className={clsx("final-cta-section product-detail-final-cta text-surface", cta.tone === "ink" ? "bg-ink" : "bg-teal")}>
+    <section className={clsx("final-cta-section product-detail-final-cta text-surface", cta.tone === "ink" ? "bg-ink" : "bg-teal")} id="contact">
       <Container className="a3-container final-cta-shell grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.62fr)]">
         <div className="final-cta-copy">
           <h2 className="type-section max-w-[620px] text-surface">{cta.title}</h2>

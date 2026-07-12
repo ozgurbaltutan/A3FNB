@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/en/products/coffee",
-        destination: "/en/products/green-coffee-beans",
+        source: "/en/products/green-coffee-beans",
+        destination: "/en/products/coffee",
         permanent: true,
       },
       {

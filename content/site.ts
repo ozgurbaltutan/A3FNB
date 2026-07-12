@@ -42,7 +42,7 @@ export const navigation: NavigationItem[] = [
     children: [
       { label: "View All Products", href: "/en/products" },
       { label: "Sugar", href: "/en/products/sugar", featured: true },
-      { label: "Green Coffee Beans", href: "/en/products/green-coffee-beans", featured: true },
+      { label: "Coffee", href: "/en/products/coffee", featured: true },
       { label: "Cocoa Products", href: "/en/products/cocoa-products" },
       { label: "Grains & Seeds", href: "/en/products/grains-seeds" },
       { label: "Dairy & Milk Powders", href: "/en/products/dairy-milk-powders" },
@@ -202,11 +202,11 @@ export const productCategories: ProductCategory[] = [
     ctaLabel: "Request Sugar Quote",
   },
   {
-    title: "Green Coffee Beans",
-    slug: "green-coffee-beans",
-    shortDescription: "Green coffee options by origin, grade, profile and buyer requirement.",
+    title: "Coffee",
+    slug: "coffee",
+    shortDescription: "Brazilian coffee options by origin, grade, cup profile and buyer requirement.",
     longDescription:
-      "A3 supports inquiry-led green coffee sourcing for commercial buyers by origin, grade, profile, packing and documentation availability.",
+      "A3 supports quality-focused coffee sourcing and export coordination by origin, grade, cup profile, packing and documentation availability.",
     iconKey: "greenCoffee",
     imageKey: "featuredCoffee",
     exampleProducts: ["Selected Specialty Lots", "Arabica Santos Fine Cup", "Arabica Santos Good Cup", "Arabica Rio Minas", "Robusta / Conilon"],
@@ -401,13 +401,13 @@ export const homeLanding = {
       featured: true,
     },
     {
-      id: "green-coffee-beans",
-      title: "Green Coffee Beans",
+      id: "coffee",
+      title: "Coffee",
       description:
         "Green coffee beans for commercial buyers, shaped around origin, bean type, grade, cup profile, volume and shipment requirement.",
       cardSummary:
         "Green coffee beans from selected origins, shaped around bean type, grade, cup profile, volume and shipment need.",
-      href: "/en/products/green-coffee-beans",
+      href: "/en/products/coffee",
       icon: homeAssets.icons.coffeeIcon,
       image: homeAssets.media.featuredCoffeeCard,
       imageAlt: "Green coffee beans shown as a featured sourcing category",
@@ -637,17 +637,17 @@ export const pages: Record<string, PageContent> = {
   },
   coffee: {
     locale: "en",
-    slug: "/en/products/green-coffee-beans",
-    title: "Green coffee sourcing for commercial buyers.",
+    slug: "/en/products/coffee",
+    title: "Coffee sourcing and export coordination.",
     description:
       "A3 supports selected green coffee sourcing opportunities, with a current focus on South American origins and Brazilian coffee profiles where available.",
     sections: ["overview", "buyer-fields", "products", "documentation", "cta"],
     seo: {
-      metaTitle: "Green Coffee Sourcing | A3 Food & Beverage",
+      metaTitle: "Coffee Sourcing & Export Coordination | A3 Food & Beverage",
       metaDescription:
         "A3 supports selected green coffee sourcing opportunities for commercial buyers, including South American and Brazilian coffee profiles where available.",
-      canonicalPath: "/en/products/green-coffee-beans",
-      ogTitle: "Green Coffee Sourcing",
+      canonicalPath: "/en/products/coffee",
+      ogTitle: "Coffee Sourcing & Export Coordination",
       ogDescription:
         "Commercial green coffee sourcing support with South American and Brazilian origin focus where available.",
       robots,
@@ -919,7 +919,7 @@ export const productFamilies: ProductFamily[] = productCategories.map((category)
   description: category.longDescription,
   buyerFit: "Commercial buyers, distributors, food manufacturers, foodservice groups and retail teams where relevant.",
   availabilityModel:
-    category.slug === "green-coffee-beans"
+    category.slug === "coffee"
       ? "Regularly sourced and inquiry-led depending on origin, crop, grade and volume."
       : "Available on request depending on product, origin, specification, volume and destination.",
   applications: ["Wholesale", "Food manufacturing", "Foodservice", "Retail / distribution"],
@@ -928,20 +928,20 @@ export const productFamilies: ProductFamily[] = productCategories.map((category)
   supplyModels: ["Source on request", "Spot / seasonal where available", "Contract supply by inquiry"],
   documentationAvailable: ["Specification sheets", "Supplier-held certifications", "Shipment documentation"],
   ctaLabel: category.ctaLabel,
-  featured: ["green-coffee-beans", "sugar"].includes(category.slug),
+  featured: ["coffee", "sugar"].includes(category.slug),
   futureChildren: category.exampleProducts,
   image: { alt: `${category.title} sourcing category for commercial buyers` },
-  seo: category.slug === "green-coffee-beans" ? pages.coffee.seo : category.slug === "sugar" ? pages.sugar.seo : pages.products.seo,
+  seo: category.slug === "coffee" ? pages.coffee.seo : category.slug === "sugar" ? pages.sugar.seo : pages.products.seo,
   relatedPages: ["/en/products", "/en/markets-sourcing", "/en/request-a-quote"],
   relatedResources:
-    category.slug === "green-coffee-beans" ? ["coffee-catalogue"] : category.slug === "sugar" ? ["sugar-catalogue"] : ["product-specifications"],
+    category.slug === "coffee" ? ["coffee-catalogue"] : category.slug === "sugar" ? ["sugar-catalogue"] : ["product-specifications"],
 }));
 
 export const productDetails: ProductDetail[] = [
   {
     id: "brazilian-green-coffee",
     slug: "brazil-green-coffee",
-    family: "green-coffee-beans",
+    family: "coffee",
     title: "Brazilian Green Coffee",
     summary: "Brazilian green coffee profiles reviewed by grade, process, certification and availability.",
     originOptions: ["Brazil", "South America"],
@@ -1012,7 +1012,7 @@ export const regions: MarketRegion[] = [
     title: "Ghana & West Africa Market Experience",
     role: "marketExperience",
     description: "Buyer-side market knowledge and relationship-led commercial experience.",
-    relatedProducts: ["green-coffee-beans", "sugar", "consumer-foods"],
+    relatedProducts: ["coffee", "sugar", "consumer-foods"],
     visibleOnHome: true,
   },
   {
@@ -1020,7 +1020,7 @@ export const regions: MarketRegion[] = [
     title: "South America Sourcing",
     role: "sourceMarket",
     description: "Selected soft commodity sourcing opportunities, especially green coffee and sugar.",
-    relatedProducts: ["green-coffee-beans", "sugar"],
+    relatedProducts: ["coffee", "sugar"],
     visibleOnHome: true,
   },
   {
@@ -1028,7 +1028,7 @@ export const regions: MarketRegion[] = [
     title: "Selected International Markets",
     role: "destinationMarket",
     description: "Buyer relationships and opportunities depending on product, documentation and requirement.",
-    relatedProducts: ["green-coffee-beans", "sugar", "oils-fats"],
+    relatedProducts: ["coffee", "sugar", "oils-fats"],
     visibleOnHome: true,
   },
 ];
@@ -1038,37 +1038,37 @@ export const services: ServiceItem[] = [
     id: "sourcing",
     title: "Sourcing",
     description: "Identify selected producers and product availability based on buyer requirement, origin and market fit.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar"],
+    relatedProductFamilies: ["coffee", "sugar"],
   },
   {
     id: "producer-selection",
     title: "Producer Selection",
     description: "Review producer fit, commercial credibility, specification capability and documentation availability.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar", "oils-fats"],
+    relatedProductFamilies: ["coffee", "sugar", "oils-fats"],
   },
   {
     id: "product-matching",
     title: "Product Matching",
     description: "Match grade, packing, application, shipment model and buyer expectations before moving to quote flow.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar", "starches-sweeteners"],
+    relatedProductFamilies: ["coffee", "sugar", "starches-sweeteners"],
   },
   {
     id: "quality-inspection",
     title: "Quality & Inspection",
     description: "Support product specifications, loading checks and inspection needs where applicable to the shipment.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar"],
+    relatedProductFamilies: ["coffee", "sugar"],
   },
   {
     id: "documentation",
     title: "Documentation & Certifications",
     description: "Coordinate supplier-held certifications, product documents and shipment documentation where available.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar", "dairy-milk-powders"],
+    relatedProductFamilies: ["coffee", "sugar", "dairy-milk-powders"],
   },
   {
     id: "logistics",
     title: "Logistics Coordination",
     description: "Support origin-to-destination shipment coordination with practical attention to trade requirements.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar", "frozen-foods"],
+    relatedProductFamilies: ["coffee", "sugar", "frozen-foods"],
   },
   {
     id: "private-label",
@@ -1080,7 +1080,7 @@ export const services: ServiceItem[] = [
     id: "after-sales",
     title: "After-sales Support",
     description: "Support commercial follow-through and repeat trade through personal buyer and supplier relationships.",
-    relatedProductFamilies: ["green-coffee-beans", "sugar"],
+    relatedProductFamilies: ["coffee", "sugar"],
   },
 ];
 
@@ -1092,7 +1092,7 @@ export const resources: ResourceItem[] = [
     summary: "A future catalogue for selected green coffee sourcing profiles and buyer information fields.",
     filePlaceholder: "coffee-catalogue.pdf",
     gated: true,
-    relatedProducts: ["green-coffee-beans"],
+    relatedProducts: ["coffee"],
   },
   {
     id: "sugar-catalogue",
@@ -1119,7 +1119,7 @@ export const resources: ResourceItem[] = [
     summary: "An overview of product specifications, supplier-held certifications and shipment documentation support.",
     filePlaceholder: "documentation-support.pdf",
     gated: false,
-    relatedProducts: ["green-coffee-beans", "sugar"],
+    relatedProducts: ["coffee", "sugar"],
   },
   {
     id: "product-specifications",
@@ -1128,7 +1128,7 @@ export const resources: ResourceItem[] = [
     summary: "A future resource structure for product specifications and technical data sheets.",
     filePlaceholder: "product-specifications.pdf",
     gated: true,
-    relatedProducts: ["green-coffee-beans", "sugar", "starches-sweeteners", "dried-fruit-nuts"],
+    relatedProducts: ["coffee", "sugar", "starches-sweeteners", "dried-fruit-nuts"],
   },
   {
     id: "market-notes",
@@ -1137,7 +1137,7 @@ export const resources: ResourceItem[] = [
     summary: "Future notes on origin, sourcing conditions and trade documentation topics.",
     filePlaceholder: "market-notes.pdf",
     gated: false,
-    relatedProducts: ["green-coffee-beans", "sugar"],
+    relatedProducts: ["coffee", "sugar"],
   },
 ];
 

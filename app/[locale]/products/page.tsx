@@ -12,7 +12,7 @@ const breadcrumb = [
 
 const categoryGroups: Record<string, ProductLineupItem["group"]> = {
   sugar: "commodities",
-  "green-coffee-beans": "commodities",
+  coffee: "commodities",
   "cocoa-products": "commodities",
   "grains-seeds": "commodities",
   "dairy-milk-powders": "ingredients",
@@ -25,7 +25,7 @@ const categoryGroups: Record<string, ProductLineupItem["group"]> = {
 
 const categoryCardCopy: Record<string, string> = {
   sugar: "Cane and beet sugar grades for food production, beverages and retail packing.",
-  "green-coffee-beans": "Green coffee beans selected for roasters, traders and wholesale programs.",
+  coffee: "Brazilian coffee profiles selected for roasters, traders and wholesale programmes.",
   "cocoa-products": "Cocoa beans, powder, butter and cocoa mass (liquor) for food producers.",
   "grains-seeds": "Milling and durum wheat, maize and sunflower seed for processing and trade.",
   "dairy-milk-powders": "Milk powders, whey ingredients, butter, cheese products and UHT milk.",
