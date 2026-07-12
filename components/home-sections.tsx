@@ -419,36 +419,26 @@ function DirectionArrow() {
 function WorkWithScene({ variant }: { variant: "buyers" | "producers" | "route" }) {
   if (variant === "buyers") {
     return (
-      <svg aria-hidden="true" className="work-with-scene" viewBox="0 0 360 220">
-        <path d="M38 180V80h176v100M28 180h208M58 104h136M58 130h136M58 156h136" />
-        <path d="M72 88h28v16H72zm40 0h34v16h-34zm46 0h24v16h-24zM70 110h42v20H70zm54 0h28v20h-28zm40 0h20v20h-20zM72 136h26v20H72zm38 0h40v20h-40zm52 0h22v20h-22z" />
-        <path d="M244 112h68l20 24v44h-88zM312 112v24h20M260 180v-22h56v22" />
-        <circle cx="268" cy="181" r="10" /><circle cx="314" cy="181" r="10" />
-        <path className="work-with-scene__route" d="M206 58c36-24 74-23 112 2" />
-        <path d="m308 50 12 10-14 7" />
-      </svg>
+      <div aria-hidden="true" className="work-with-visual work-with-visual--buyers">
+        <span className="work-with-icon work-with-icon--container-loading" />
+        <span className="work-with-icon work-with-icon--packaging" />
+        <span className="work-with-icon work-with-icon--warehouse" />
+      </div>
     );
   }
 
   if (variant === "producers") {
     return (
-      <svg aria-hidden="true" className="work-with-scene" viewBox="0 0 360 220">
-        <path d="M34 182h292M54 182v-68h104v68M74 114V86h64v28M84 86l11-31m33 31-10-31" />
-        <path d="M176 182v-92l44 24V88l44 25V76h36v106M200 144h22m18 0h22m18 0h12" />
-        <path d="M75 157c0-15 9-25 22-25s22 10 22 25v25H75zM122 160c0-12 8-21 19-21s19 9 19 21v22h-38z" />
-        <path className="work-with-scene__route" d="M46 44c68-25 135-24 201 2" />
-        <path d="m237 36 12 10-14 7" />
-      </svg>
+      <div aria-hidden="true" className="work-with-visual work-with-visual--producers">
+        <span className="work-with-icon work-with-icon--manufacturing-plant" />
+      </div>
     );
   }
 
   return (
-    <svg aria-hidden="true" className="work-with-scene work-with-scene--route" viewBox="0 0 420 150">
-      <path className="work-with-scene__route" d="M62 75h296" />
-      <path d="m346 64 14 11-14 11" />
-      <circle cx="68" cy="75" r="28" /><circle cx="210" cy="75" r="28" /><circle cx="352" cy="75" r="28" />
-      <path d="M56 84V66m0 8 9-9m-9 6-8-8m19 21H47M195 88V67l15 8V64l15 8v16m-22-1h5m7 0h5M338 68h28l5 12h-38l5-12zm0 12v12m28-12v12m-20-3h12" />
-    </svg>
+    <div aria-hidden="true" className="work-with-visual work-with-visual--route">
+      <span className="work-with-icon work-with-icon--inventory" />
+    </div>
   );
 }
 
@@ -485,14 +475,15 @@ function BuyerPaths() {
               <span className="work-with-tile__link">Introduce your supply <DirectionArrow /></span>
             </Link>
           ) : null}
-          <article className="work-with-tile work-with-tile--route">
+          <Link className="work-with-tile work-with-tile--route premium-focus" href="/en/contact">
             <div className="work-with-tile__route-copy">
               <span className="work-with-tile__eyebrow">A3 coordination</span>
               <h3>Across the route</h3>
               <p>Product fit, commercial structure, documentation and delivery coordination connect both sides.</p>
+              <span className="work-with-tile__link">Discuss your requirements <DirectionArrow /></span>
             </div>
             <WorkWithScene variant="route" />
-          </article>
+          </Link>
         </div>
       </HomeShell>
     </section>

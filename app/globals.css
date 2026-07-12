@@ -12454,7 +12454,7 @@ body .enquiry-success h2 {
 
 .work-with-tile--producers {
   min-height: 17rem;
-  background: color-mix(in srgb, var(--color-sage) 78%, var(--color-paper));
+  background: color-mix(in srgb, var(--color-sage) 70%, var(--color-paper));
   box-shadow: 0 18px 42px rgba(3, 16, 14, 0.09);
   color: var(--color-ink);
   transition: box-shadow 260ms var(--ease-premium), transform 260ms var(--ease-premium);
@@ -12463,8 +12463,10 @@ body .enquiry-success h2 {
 .work-with-tile--route {
   min-height: 17rem;
   justify-content: space-between;
-  background: color-mix(in srgb, var(--color-teal) 8%, var(--color-paper));
+  background: color-mix(in srgb, var(--color-teal) 6%, var(--color-surface));
+  box-shadow: 0 16px 38px rgba(3, 16, 14, 0.065);
   color: var(--color-ink);
+  transition: box-shadow 260ms var(--ease-premium), transform 260ms var(--ease-premium);
 }
 
 .work-with-tile__eyebrow,
@@ -12511,6 +12513,18 @@ body .enquiry-success h2 {
   line-height: 1.45;
 }
 
+.work-with-tile--buyers .work-with-tile__eyebrow {
+  color: color-mix(in srgb, var(--color-sage) 72%, var(--color-surface));
+}
+
+.work-with-tile--buyers p {
+  color: color-mix(in srgb, var(--color-surface) 82%, var(--color-sage));
+}
+
+.work-with-tile--buyers .work-with-tile__context {
+  color: color-mix(in srgb, var(--color-surface) 58%, var(--color-sage));
+}
+
 .work-with-tile__link {
   display: inline-flex;
   z-index: 1;
@@ -12535,50 +12549,117 @@ body .enquiry-success h2 {
   transition: transform 200ms var(--ease-premium);
 }
 
-.work-with-scene {
-  width: min(100%, 34rem);
-  height: auto;
-  margin: auto auto 0;
-  fill: none;
-  opacity: 0.62;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
+.work-with-visual {
+  pointer-events: none;
+  color: currentColor;
 }
 
-.work-with-tile--buyers .work-with-scene {
+.work-with-icon {
+  display: block;
+  flex: none;
+  background: currentColor;
+  mask-image: var(--work-with-icon);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-image: var(--work-with-icon);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
+.work-with-icon--container-loading {
+  --work-with-icon: url("/icons/home/work-with-container-loading.svg");
+}
+
+.work-with-icon--warehouse {
+  --work-with-icon: url("/icons/home/work-with-warehouse.svg");
+}
+
+.work-with-icon--packaging {
+  --work-with-icon: url("/icons/home/work-with-packaging.svg");
+}
+
+.work-with-icon--manufacturing-plant {
+  --work-with-icon: url("/icons/home/work-with-manufacturing-plant.svg");
+}
+
+.work-with-icon--inventory {
+  --work-with-icon: url("/icons/home/work-with-inventory.svg");
+}
+
+.work-with-visual--buyers {
+  display: grid;
   width: min(92%, 38rem);
-  opacity: 0.5;
+  min-height: 16rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+  margin: auto 0 0;
+  color: color-mix(in srgb, var(--color-sage) 70%, var(--color-surface));
+  opacity: 0.58;
 }
 
-.work-with-tile--producers .work-with-scene {
+.work-with-visual--buyers .work-with-icon {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.work-with-visual--buyers .work-with-icon--packaging {
+  transform: scaleX(-1);
+  transform-origin: center;
+}
+
+.work-with-visual--producers {
   position: absolute;
-  right: -1.5rem;
-  bottom: -1.8rem;
-  width: min(58%, 18rem);
-  opacity: 0.26;
+  right: 1.1rem;
+  bottom: 0.85rem;
+  width: min(39%, 12.25rem);
+  color: color-mix(in srgb, var(--color-teal) 82%, var(--color-ink));
+  opacity: 0.4;
+}
+
+.work-with-visual--producers .work-with-icon {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.work-with-tile--producers p,
+.work-with-tile--producers .work-with-tile__context {
+  max-width: 64%;
 }
 
 .work-with-tile--route {
   display: grid;
-  grid-template-columns: minmax(11rem, 0.8fr) minmax(12rem, 1.2fr);
+  grid-template-columns: minmax(12.5rem, 1.08fr) minmax(10rem, 0.92fr);
   gap: 1rem;
   align-items: center;
 }
 
-.work-with-tile--route .work-with-scene {
-  width: 100%;
-  margin: 0;
-  color: color-mix(in srgb, var(--color-teal) 78%, var(--color-ink));
-  opacity: 0.72;
+.work-with-visual--route {
+  display: grid;
+  min-height: 10rem;
+  place-items: center;
+  color: color-mix(in srgb, var(--color-teal) 82%, var(--color-ink));
+  opacity: 0.62;
+}
+
+.work-with-visual--route .work-with-icon {
+  width: min(100%, 10.25rem);
+  aspect-ratio: 1;
+}
+
+.work-with-tile--route .work-with-tile__link {
+  margin-top: 1.25rem;
+  padding-top: 0;
 }
 
 .work-with-tile--buyers:hover,
 .work-with-tile--buyers:focus-visible,
 .work-with-tile--producers:hover,
-.work-with-tile--producers:focus-visible {
+.work-with-tile--producers:focus-visible,
+.work-with-tile--route:hover,
+.work-with-tile--route:focus-visible {
   transform: translateY(-4px);
 }
 
@@ -12592,10 +12673,17 @@ body .enquiry-success h2 {
   box-shadow: 0 24px 52px rgba(3, 16, 14, 0.13);
 }
 
+.work-with-tile--route:hover,
+.work-with-tile--route:focus-visible {
+  box-shadow: 0 22px 48px rgba(3, 16, 14, 0.11);
+}
+
 .work-with-tile--buyers:hover .work-with-arrow,
 .work-with-tile--buyers:focus-visible .work-with-arrow,
 .work-with-tile--producers:hover .work-with-arrow,
-.work-with-tile--producers:focus-visible .work-with-arrow {
+.work-with-tile--producers:focus-visible .work-with-arrow,
+.work-with-tile--route:hover .work-with-arrow,
+.work-with-tile--route:focus-visible .work-with-arrow {
   transform: translateX(0.22rem);
 }
 
@@ -12640,6 +12728,11 @@ body .enquiry-success h2 {
   .work-with-tile--buyers {
     grid-row: auto;
     min-height: 31rem;
+  }
+
+  .work-with-visual--buyers {
+    width: min(92%, 38rem);
+    min-height: 14rem;
   }
 }
 
@@ -12722,12 +12815,41 @@ body .enquiry-success h2 {
     min-height: 28rem;
   }
 
+  .work-with-visual--buyers {
+    width: 100%;
+    min-height: 9.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .work-with-tile--producers {
+    min-height: 0;
+  }
+
+  .work-with-visual--producers {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: min(50%, 10.5rem);
+    margin: 1.15rem 0 0 auto;
+  }
+
+  .work-with-tile--producers p,
+  .work-with-tile--producers .work-with-tile__context {
+    max-width: 100%;
+  }
+
   .work-with-tile--route {
     grid-template-columns: 1fr;
   }
 
-  .work-with-tile--route .work-with-scene {
+  .work-with-visual--route {
+    min-height: 8.5rem;
     margin-top: 1.25rem;
+  }
+
+  .work-with-visual--route .work-with-icon {
+    width: min(46vw, 9.25rem);
   }
 }
 
@@ -12746,6 +12868,7 @@ body .enquiry-success h2 {
   .featured-sourcing-section .product-image-card__media img,
   .work-with-tile--buyers,
   .work-with-tile--producers,
+  .work-with-tile--route,
   .work-with-arrow {
     transition: none;
   }
