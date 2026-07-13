@@ -13,6 +13,7 @@ export type ProductGridGroup = {
 };
 
 type FilteredProductGridBaseProps<TItem extends ProductImageCarouselItem> = {
+  appearance?: "light" | "legacy-dark";
   ariaLabel: string;
   className?: string;
   contentMode?: "default" | "title-only";
@@ -21,6 +22,7 @@ type FilteredProductGridBaseProps<TItem extends ProductImageCarouselItem> = {
   items: TItem[];
   showFilters?: boolean;
   getItemLabel?: (item: TItem) => string;
+  treatment?: "default" | "category-overlay";
 };
 
 type FilteredProductGridLinkProps<TItem extends ProductImageCarouselItem> =
@@ -49,6 +51,7 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
   const generatedId = useId().replaceAll(":", "");
   const {
     ariaLabel,
+    appearance = "light",
     className = "",
     contentMode = "default",
     filterThreshold = 8,
@@ -56,6 +59,7 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
     groups = [],
     items,
     showFilters = items.length > filterThreshold,
+    treatment = "default",
   } = props;
   const availableGroups = useMemo(
     () => groups
@@ -99,15 +103,18 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
       <div aria-live="polite" id={panelId} role={filters.length ? "tabpanel" : undefined}>
         {props.mode === "link" ? (
           <ProductImageGrid
+            appearance={appearance}
             ariaLabel={ariaLabel}
             contentMode={contentMode}
             getHref={props.getHref}
             getItemLabel={getItemLabel}
             items={visibleItems}
             mode="link"
+            treatment={treatment}
           />
         ) : (
           <ProductImageGrid
+            appearance={appearance}
             ariaLabel={ariaLabel}
             contentMode={contentMode}
             getItemLabel={getItemLabel}
@@ -115,6 +122,7 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
             mode="button"
             onItemActivate={props.onItemActivate}
             setItemRef={props.setItemRef}
+            treatment={treatment}
           />
         )}
       </div>

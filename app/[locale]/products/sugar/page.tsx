@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProductDetailLayout } from "@/components/product-detail-layout";
 import { JsonLd } from "@/components/seo/json-ld";
+import { categoryCardItemBySlug } from "@/content/product-card-items";
 import { pages } from "@/content/site";
 import { breadcrumbJsonLd, buildMetadata, productFamilyJsonLd } from "@/lib/seo";
 
@@ -15,6 +16,17 @@ function sugarQuoteHref(product?: string) {
   if (product) params.set("product", product);
   return `/en/request-a-quote?${params.toString()}`;
 }
+
+const sugarRelated = ["starches-sweeteners", "grains-seeds", "consumer-foods"]
+  .map(categoryCardItemBySlug)
+  .filter((item): item is NonNullable<typeof item> => Boolean(item))
+  .map((item) => ({
+    label: item.title,
+    href: item.href,
+    description: item.description,
+    image: item.image,
+    imageAlt: item.imageAlt,
+  }));
 
 const icumsa45Specs = [
   { parameter: "Commercial form", specification: "Refined white cane sugar" },
@@ -77,6 +89,7 @@ export default function SugarPage() {
         })}
       />
       <ProductDetailLayout
+        pageTreatment="polished"
         breadcrumb={breadcrumb}
         hero={{
           title: "Creating a seamless flow in global sugar markets.",
@@ -93,16 +106,17 @@ export default function SugarPage() {
           { label: "Overview", href: "#overview" },
           { label: "Grades", href: "#range" },
           { label: "Key facts", href: "#key-facts" },
-          { label: "Process", href: "#process-flowchart" },
           { label: "Specifications", href: "#technical-specifications" },
-          { label: "Supply", href: "#shipment-options" },
+          { label: "Services", href: "#integrated-value-chain" },
           { label: "Contact", href: "#contact" },
         ]}
         productPortfolio={{
           id: "range",
           title: "Sugar grades",
           text:
-            "A3 Food & Beverage supplies cane sugar from Brazil and beet sugar from Europe directly from mills for food, beverage, retail and industrial buyers.",
+            "A3 supplies cane sugar from Brazil and beet sugar from Europe for food, beverage, retail and industrial buyers.",
+          cardTreatment: "category-overlay",
+          modalTreatment: "decision-summary",
           items: [
             {
               id: "icumsa-45",
@@ -110,33 +124,28 @@ export default function SugarPage() {
               cardTitle: "ICUMSA 45",
               description:
                 "A refined white cane sugar for food production, beverages, retail packing and direct consumption.",
-              image: "/media/products/sugar/icumsa-45.webp",
+              image: "/media/products/sugar/icumsa-45-v3.png",
               imageAlt: "Bright white refined cane sugar crystals with cut sugar cane",
               source: "Brazil",
               fit: "Food, beverage and retail packing",
               overview:
                 "ICUMSA 45 is a refined white cane sugar option for buyers that need a clean, consistent profile for food, beverage or consumer packing use.",
-              keyDetails: [
-                { title: "Source", description: "Brazil" },
-                { title: "Sugar type", description: "Refined white cane sugar" },
-                { title: "ICUMSA grade", description: "ICUMSA 45" },
-                { title: "Typical uses", description: "Food manufacturing, beverages, confectionery, bakery, retail packing and direct consumption" },
-                { title: "Packing", description: "Retail bags, 50 kg bags, big bags or bulk shipment can be reviewed according to buyer requirement." },
+              bestFit: "Choose this low-colour refined grade when the finished product needs a clean visual profile, neutral sweetness and consistent performance in direct food use.",
+              profile: [
+                { title: "Feedstock", description: "Sugar cane" },
+                { title: "Processing", description: "Refined white sugar" },
+                { title: "Origin", description: "Brazil, subject to mill availability" },
+                { title: "Trade designation", description: "ICUMSA 45" },
               ],
               applications: [
-                "Beverage and food production",
-                "Retail packing and direct consumption",
+                "Clear and light-coloured beverages",
                 "Confectionery and bakery programmes",
+                "Retail packing and direct consumption",
+                "General food manufacturing where colour matters",
               ],
+              supplyFormats: ["Retail or private-label formats, subject to programme", "25–50 kg export bags", "Big bags or bulk routes where supplier and destination allow"],
+              documentPackage: "Supplier specification and COA are reviewed with origin, packing, labelling and destination-document requirements before the commercial offer is finalised.",
               specs: icumsa45Specs,
-              packing: [
-                { title: "Common packing", description: "Reviewed for retail bags, 50kg bags, big bags or bulk shipment according to buyer requirement." },
-                { title: "Commercial use", description: "Suitable for ongoing supply programmes where consistent refined sugar quality and documentation are important." },
-              ],
-              origin: [
-                { title: "Source", description: "Brazilian cane sugar supply is reviewed according to grade, volume, route and export-ready availability." },
-                { title: "Route context", description: "Destination market, port and documentation requirements are checked before quotation." },
-              ],
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-45") },
             },
             {
@@ -145,33 +154,28 @@ export default function SugarPage() {
               cardTitle: "ICUMSA 150",
               description:
                 "A crystal cane sugar option for bakery, beverage and general food manufacturing.",
-              image: "/media/products/sugar/icumsa-150.webp",
+              image: "/media/products/sugar/icumsa-150-v3.png",
               imageAlt: "Warm white crystal cane sugar with cut sugar cane",
               source: "Brazil",
               fit: "Bakery, beverages and manufacturing",
               overview:
                 "ICUMSA 150 is a crystal cane sugar option for buyers that need a practical grade for bakery, beverage and food manufacturing use.",
-              keyDetails: [
-                { title: "Source", description: "Brazil" },
-                { title: "Sugar type", description: "Crystal cane sugar" },
-                { title: "ICUMSA grade", description: "ICUMSA 150" },
-                { title: "Typical uses", description: "Bakery, confectionery, beverages and general food manufacturing" },
-                { title: "Packing", description: "Standard export bags, big bags or bulk formats can be reviewed according to volume and availability." },
+              bestFit: "Choose this general-purpose white/crystal cane sugar when application fit, dependable supply and commercial value matter more than the very lowest colour class.",
+              profile: [
+                { title: "Feedstock", description: "Sugar cane" },
+                { title: "Processing", description: "White crystal sugar" },
+                { title: "Origin", description: "Brazil, subject to availability" },
+                { title: "Trade designation", description: "ICUMSA 150" },
               ],
               applications: [
                 "Bakery and confectionery production",
                 "Beverage production",
                 "General food manufacturing",
+                "Foodservice and ingredient distribution",
               ],
+              supplyFormats: ["Standard export bags", "Big bags for industrial handling", "Bulk formats where available and route-compatible"],
+              documentPackage: "Supplier TDS and COA are matched with origin, packing, shipping and destination requirements at offer stage.",
               specs: icumsa150Specs,
-              packing: [
-                { title: "Packing options", description: "Packing is reviewed by route and volume, including standard export bags and bulk formats where available." },
-                { title: "Programme fit", description: "A practical option for buyers balancing grade, price, application and supply availability." },
-              ],
-              origin: [
-                { title: "Source", description: "Brazilian cane sugar availability is reviewed by ICUMSA level, supplier capability and shipment window." },
-                { title: "Documentation", description: "Specification and quality documents are checked by request before moving toward quotation." },
-              ],
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-150") },
             },
             {
@@ -180,33 +184,28 @@ export default function SugarPage() {
               cardTitle: "ICUMSA 600-1200",
               description:
                 "A brown raw cane sugar option for industrial use, food production and further refining.",
-              image: "/media/products/sugar/icumsa-600-1200.webp",
+              image: "/media/products/sugar/icumsa-600-1200-v3.png",
               imageAlt: "Golden raw cane sugar crystals with cut sugar cane",
               source: "Brazil",
               fit: "Industrial use and refining",
               overview:
                 "ICUMSA 600-1200 is a brown raw cane sugar option for buyers that need raw or less-refined sugar for industrial use, food production or further refining.",
-              keyDetails: [
-                { title: "Source", description: "Brazil" },
-                { title: "Sugar type", description: "Brown raw cane sugar" },
-                { title: "ICUMSA range", description: "ICUMSA 600-1200" },
-                { title: "Typical uses", description: "Industrial food production, raw sugar programmes, refining and large-volume use" },
-                { title: "Packing", description: "Bulk-oriented export packing can be reviewed according to volume and handling requirement." },
+              bestFit: "Choose this raw/VHP range for refining, bulk industrial programmes or applications where a darker cane profile is acceptable and refined-white appearance is not the primary requirement.",
+              profile: [
+                { title: "Feedstock", description: "Sugar cane" },
+                { title: "Processing", description: "Raw or VHP cane sugar" },
+                { title: "Origin", description: "Brazil, subject to crop and mill availability" },
+                { title: "Trade designation", description: "ICUMSA 600–1200" },
               ],
               applications: [
-                "Industrial food production",
                 "Further refining",
+                "Bulk industrial food production",
                 "Raw sugar programmes",
+                "Applications accepting a stronger cane colour profile",
               ],
+              supplyFormats: ["Bulk-oriented export programmes", "Large bags where available", "Packing and loading model confirmed against handling and route"],
+              documentPackage: "The offered mill TDS and lot COA govern polarisation, moisture and ash values; origin, phytosanitary or destination documents are confirmed by route.",
               specs: icumsa600Specs,
-              packing: [
-                { title: "Bulk-oriented route", description: "Reviewed for export packing and shipment models that fit raw sugar volume and handling requirements." },
-                { title: "Commercial fit", description: "Final packing and loading model depends on destination, supplier capability and agreed volume." },
-              ],
-              origin: [
-                { title: "Source", description: "Brazilian raw cane sugar options are reviewed according to ICUMSA range, route and shipment conditions." },
-                { title: "Market fit", description: "Best suited to buyers where application and refining needs matter more than a sparkling white colour profile." },
-              ],
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-600-1200") },
             },
             {
@@ -215,33 +214,28 @@ export default function SugarPage() {
               cardTitle: "ICUMSA 60-100",
               description:
                 "A white beet sugar option for food production, beverages, bakery, confectionery and industrial applications.",
-              image: "/media/products/sugar/icumsa-60-100.webp",
+              image: "/media/products/sugar/icumsa-60-100-v3.png",
               imageAlt: "White beet sugar crystals with whole and sliced sugar beet",
-              source: "Ukraine",
+              source: "European options, subject to availability",
               fit: "Food, beverage and industrial use",
               overview:
                 "ICUMSA 60-100 is a white beet sugar option for buyers reviewing beet-origin supply for food, beverage, bakery or industrial use.",
-              keyDetails: [
-                { title: "Source", description: "Ukraine" },
-                { title: "Sugar type", description: "White beet sugar" },
-                { title: "ICUMSA range", description: "ICUMSA 60-100" },
-                { title: "Typical uses", description: "Food manufacturing, beverages, bakery, confectionery and industrial applications" },
-                { title: "Packing", description: "Export packing can be reviewed according to volume, availability and buyer requirement." },
+              bestFit: "Choose this option when beet feedstock or a European supply route is commercially relevant and a white sugar profile is required.",
+              profile: [
+                { title: "Feedstock", description: "Sugar beet" },
+                { title: "Processing", description: "White beet sugar" },
+                { title: "Origin", description: "European options, subject to availability" },
+                { title: "Trade designation", description: "ICUMSA 60–100" },
               ],
               applications: [
                 "Food production and beverages",
                 "Bakery and confectionery",
                 "Industrial applications",
+                "Retail and foodservice packing programmes",
               ],
+              supplyFormats: ["Standard export bags", "Big bags where available", "Retail or private-label formats subject to supplier capability"],
+              documentPackage: "Supplier specification and COA are reviewed alongside origin, labelling, packing and destination documentation before offer confirmation.",
               specs: icumsa60Specs,
-              packing: [
-                { title: "Export-ready packing", description: "Packing options are reviewed according to volume, route and buyer documentation needs." },
-                { title: "Supply format", description: "Suitable for programmes where white beet sugar, destination fit and document readiness are key selection points." },
-              ],
-              origin: [
-                { title: "Source", description: "Ukrainian beet sugar options are reviewed according to availability, shipment route and market requirements." },
-                { title: "Document review", description: "Specification, origin and supporting shipment documents are checked when needed for the buyer or destination." },
-              ],
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-60-100") },
             },
           ],
@@ -253,26 +247,22 @@ export default function SugarPage() {
             {
               title: "A global food commodity",
               description: "USDA forecasts world sugar production at more than 189 million metric tons for 2025/26, reflecting the scale of supply required across food, beverage and industrial markets.",
+              slot: "primary",
+              tone: "dark",
             },
             {
               title: "Brazil leads world exports",
               description: "Brazil was the world’s largest sugar exporter in calendar year 2025, accounting for approximately 59% of global sugar exports according to USDA FAS.",
+              slot: "secondary-top",
+              tone: "sage",
             },
             {
-              title: "An early role for ethanol",
-              description: "The 1908 Ford Model T was designed to run on a gasoline-and-alcohol fuel mixture—an early chapter in ethanol’s history as a transport fuel.",
+              title: "Sugar and early fuel research",
+              description: "The Model T was introduced in 1908 and could run on different fuels, including alcohol. In the 1910s, Ford also investigated fuels made from sugar and other agricultural products.",
+              slot: "secondary-bottom",
+              tone: "warm",
             },
           ],
-        }}
-        flowchart={{
-          title: "Cane sugar production process",
-          text: "From cultivation and harvest through milling, purification, crystallisation and drying, the production route prepares cane sugar for export-ready supply.",
-          image: "/media/products/sugar/cane-production-flowchart.png",
-          imageAlt: "Nine-step cane sugar production process from cultivation to drying",
-          resource: {
-            label: "Download the sugar catalogue",
-            href: "/assets/a3/resources/a3-sugar-catalogue.pdf",
-          },
         }}
         technicalSpecs={{
           title: "Technical specifications",
@@ -280,7 +270,7 @@ export default function SugarPage() {
             "Compare the indicative values used to organise an initial grade discussion.",
           selectorLabel: "Select a sugar grade",
           disclaimer:
-            "Indicative specifications only. Final specification, certificate of analysis and document set are confirmed with the commercial offer.",
+            "All values are indicative selection references. The supplier specification, certificate of analysis, origin and document set are confirmed with the commercial offer.",
           catalogue: {
             label: "Download sugar catalogue",
             href: "/assets/a3/resources/a3-sugar-catalogue.pdf",
@@ -293,79 +283,58 @@ export default function SugarPage() {
           ],
         }}
         shipmentOptions={{
-          title: "From requirement to supply",
-          text:
-            "A3 coordinates the product, documentation, packing and route details needed to review and progress a workable sugar programme.",
-          image: "/media/products/sugar/supply-v2.webp",
-          imageAlt: "Plain sugar sacks and bulk bag with white and raw sugar samples",
-          items: [
-            {
-              title: "Product and origin review",
-              description: "Share the required sugar type, ICUMSA level, application and preferred origin so suitable producer options can be reviewed.",
-            },
-            {
-              title: "Quality and documents",
-              description: "Specification, COA, origin and destination document needs are checked before an offer is progressed.",
-            },
-            {
-              title: "Packing and logistics",
-              description: "Share packing, volume, destination market and port so loading format, availability and shipment routing can be reviewed together.",
-            },
-            {
-              title: "Commercial coordination",
-              description: "A3 aligns the selected grade, shipment window and commercial terms with the producer and follows the agreed route through delivery.",
-            },
-          ],
-        }}
-        services={{
+          id: "integrated-value-chain",
           title: "Integrated Value Chain Services",
-          text: "Beyond sourcing, A3 provides the professional support needed to move vital supply chains.",
+          text:
+            "A3 aligns the right sugar grade and producer with commercial terms, market requirements and delivery from origin to destination.",
+          image: "/media/home/process-define-requirement-v3.webp",
+          imageAlt: "Food commodity lots and packing formats arranged in a working warehouse",
           items: [
             {
-              title: "Market Intelligence",
-              description: "Sourcing insight and grade-specific information to support better decisions.",
+              title: "Define the requirement",
+              description: "Intended use, ICUMSA grade, origin preference, packing, volume and destination are converted into a clear sugar sourcing brief.",
+              image: "/media/home/process-define-requirement-v3.webp",
+              imageAlt: "Food commodity lots, sacks and packing formats arranged in a working warehouse",
             },
             {
-              title: "Commercial De-risking",
-              description: "Flexible financing and payment solutions designed to optimise procurement and manage costs.",
+              title: "Source & match",
+              description: "Available sugar grades, origins and producer routes are compared against the brief and destination market.",
+              image: "/media/home/process-source-match-v3.webp",
+              imageAlt: "Rows of stacked commodity sacks in an export warehouse",
             },
             {
-              title: "Integrated Logistics",
-              description: "End-to-end coordination of global trade flows, managing documentation and shipping follow-up from origin to destination.",
+              title: "Qualify & structure",
+              description: "Capacity, product fit, price basis, Incoterms, payment structure and timing are assessed together.",
+              image: "/media/home/process-qualify-structure-v3.webp",
+              imageAlt: "Palletised food commodity cargo prepared for international shipment",
+            },
+            {
+              title: "Prepare & document",
+              description: "Samples, specifications, certificates, labels and import–export documents are matched to destination requirements.",
+              image: "/media/home/process-prepare-document-v3.webp",
+              imageAlt: "Commodity samples, document sleeves, inspection labels and a cargo seal",
+            },
+            {
+              title: "Pack & load",
+              description: "Packing format, palletisation, container requirements and loading readiness are coordinated before dispatch.",
+              image: "/media/home/process-pack-load-v3.webp",
+              imageAlt: "Palletised food commodity sacks being loaded into a shipping container",
+            },
+            {
+              title: "Move & follow through",
+              description: "Booking, shipment milestones, logistics and agreed delivery conditions are followed through to destination.",
+              image: "/media/home/process-move-follow-v3.webp",
+              imageAlt: "International container ship moving through a working commercial port",
             },
           ],
         }}
-        related={[
-          {
-            label: "Starches & Sweeteners",
-            href: "/en/products/starches-sweeteners",
-            description: "Functional starches, carbohydrate ingredients, polyols and specialty sweeteners.",
-            image: "/media/home/product-starches-sweeteners.webp",
-            imageAlt: "Starches and sweetener ingredients",
-          },
-          {
-            label: "Grains & Seeds",
-            href: "/en/products/grains-seeds",
-            description: "Wheat, maize and sunflower seed for processing and trade.",
-            image: "/media/home/products/grains-seeds.webp",
-            imageAlt: "Commercial grains and seeds",
-          },
-          {
-            label: "Consumer Foods",
-            href: "/en/products/consumer-foods",
-            description: "Packaged food options for retail, wholesale and foodservice.",
-            image: "/media/home/product-consumer-foods.webp",
-            imageAlt: "Consumer food products",
-          },
-        ]}
+        related={sugarRelated}
         finalCta={{
           title: "For sugar enquiries",
           text:
             "Contact A3 to discuss product grade, packing, volume and destination requirements.",
           primary: { label: "Discuss a sugar requirement", href: sugarQuoteHref() },
-          image: "/media/products/sugar/sugar-cane-hero.webp",
-          imageAlt: "Sugar cane field and commercial sugar supply",
-          tone: "ink",
+          variant: "compact-reminder",
         }}
       />
     </>

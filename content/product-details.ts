@@ -1,3 +1,5 @@
+import { PRODUCT_CARD_IMAGE_OVERRIDES } from "@/content/product-card-assets";
+
 export type ProductSelectionCriterion = {
   parameter: string;
   specification: string;
@@ -81,48 +83,6 @@ function product(
 }
 
 const productCategoryDetailSources: Record<string, ProductCategoryDetailSource> = {
-  "coffee": {
-    slug: "coffee",
-    heroText: [
-      "Connecting the farm gate to the global market.",
-      "A3 Food & Beverage acts as a strategic link in the coffee value chain, supporting international buyers with quality-focused sourcing, technical lot review and structured export coordination.",
-    ],
-    image: "/media/products/coffee/brazil-coffee-landscape.webp",
-    imageAlt: "Brazilian coffee landscape with planted hills",
-    portfolioTitle: "Coffee portfolio",
-    portfolioText: "Selected Brazilian coffee profiles tailored to quality, application and budget, from industrial blends to distinctive specialty lots.",
-    groups: [
-      { id: "arabica", title: "Brazilian Arabica", description: "Specialty and commercial Arabica profiles reviewed by cup, grade, process and lot." },
-      { id: "robusta", title: "Brazilian Robusta / Conilon", description: "Conilon options for blends, soluble coffee and commercial roasting programmes." },
-    ],
-    products: [
-      product("arabica", "selected-specialty-lots", "Specialty Coffee", "Selected lots recognised for distinctive attributes, transparent lot information and higher-value market positioning.", "Brazil; region and producer by lot", "Specialty roasting and differentiated programmes", "Descriptive cup attributes, process, crop, screen, defects and lot traceability", "Natural, pulped natural or washed, subject to lot", "60 kg export bags or lot-specific formats", { image: "/media/products/coffee/coffee-cherries-leaf.webp" }),
-      product("arabica", "arabica-santos-fine-cup", "Arabica Santos Fine Cup", "A clean, balanced Brazilian Arabica route for consistent roasting and wholesale requirements.", "Brazil", "Roasting, wholesale and distribution", "Cup profile, screen, defect count, crop and process", "Green Arabica coffee", "60 kg bags; GrainPro or supplier-specific liner by enquiry", { image: "/media/products/coffee/green-beans-close.webp" }),
-      product("arabica", "arabica-santos-good-cup", "Arabica Santos Good Cup", "A practical commercial Arabica profile for blends and volume-led roasting programmes.", "Brazil", "Commercial roasting and blends", "Cup profile, screen distribution, defects, crop and moisture", "Green Arabica coffee", "60 kg export bags or agreed bulk format", { image: "/media/products/coffee/coffee-drying-beds.webp" }),
-      product("arabica", "arabica-rio-minas", "Arabica Rio Minas", "A traditional stronger-cup Brazilian profile for buyers with a defined blend application.", "Brazil", "Blend use requiring a stronger traditional cup", "Cup character, screen, defects, crop and intended blend", "Green Arabica coffee", "60 kg export bags or agreed format", { image: "/media/products/coffee/coffee-cherries-hands.webp" }),
-      product("robusta", "robusta-conilon", "Robusta Conilon", "Brazilian Conilon reviewed by offer-specific type, screen, defects and the performance required in the final blend; supplier programmes may include types 7, 7/8 and 8 where confirmed.", "Brazil", "Blends, soluble coffee and commercial programmes", "Supplier-confirmed type, screen, defects, crop, moisture and cup requirement", "Green Coffea canephora / Conilon", "60 kg bags or supplier-specific export format", { image: "/media/products/coffee/coffee-plant-green-cherries.webp" }),
-    ],
-    context: {
-      title: "Coffee market context",
-      edition: "USDA FAS 2025/26 forecast · published December 2025",
-      items: [
-        { value: "178.8", label: "million 60 kg bags", description: "Forecast world coffee production in marketing year 2025/26." },
-        { value: "63.0", label: "million bags", description: "Forecast Brazilian production, the largest national crop in the USDA balance." },
-        { value: "30.8", label: "million bags", description: "Forecast Vietnamese production, led by Robusta supply." },
-      ],
-      sources: [
-        { label: "USDA FAS Coffee: World Markets and Trade", href: "https://apps.fas.usda.gov/psdonline/circulars/coffee.pdf" },
-        { label: "ICO quality standards", href: "https://dev.ico.org/documents/iccres420e.pdf" },
-      ],
-    },
-    shipment: { title: "From sample to shipment", text: "Coffee supply is reviewed lot by lot across cup profile, physical grade, packing, shipment window and export documents.", image: "/media/products/coffee/green-beans-hands.webp", imageAlt: "Brazilian green coffee beans reviewed by hand", items: [
-      { title: "Cup and lot brief", description: "Define species, cup target, process, crop, screen, volume and intended roast or blend." },
-      { title: "Sample and grade review", description: "Available lots are checked through cupping, physical grade and supplier quality documents." },
-      { title: "Bag and loading plan", description: "Bag type, liner, container preparation, destination and shipment window are aligned." },
-      { title: "Lot approval and export", description: "Approved lot, final specification, COA and export documents are tied to the commercial offer." },
-    ] },
-  },
-
   "cocoa-products": {
     slug: "cocoa-products",
     heroText: [
@@ -503,7 +463,9 @@ export const productCategoryDetails: Record<string, ProductCategoryDetail> = Obj
       imageAlt: detail.imageAlt ?? `${detail.portfolioTitle} products arranged as commercial ingredients`,
       products: detail.products.map((item) => ({
         ...item,
-        image: item.image ?? `/media/products/${slug}/${item.id}.webp`,
+        image: PRODUCT_CARD_IMAGE_OVERRIDES[`${slug}/${item.id}`]
+          ?? item.image
+          ?? `/media/products/${slug}/${item.id}.webp`,
         imageAlt: item.imageAlt ?? `${item.title} shown in its commercial product form`,
       })),
       shipment: {
@@ -516,26 +478,6 @@ export const productCategoryDetails: Record<string, ProductCategoryDetail> = Obj
 );
 
 const criteriaByProduct: Record<string, ProductSelectionCriterion[]> = {
-  "selected-specialty-lots": [
-    { parameter: "Species", specification: "Arabica" }, { parameter: "Cup basis", specification: "SCA score 80+; score and notes by lot" },
-    { parameter: "Process", specification: "Natural, pulped natural or washed" }, { parameter: "Physical grade", specification: "Screen, defects and moisture by lot" },
-  ],
-  "arabica-santos-fine-cup": [
-    { parameter: "Species", specification: "Arabica" }, { parameter: "Cup basis", specification: "Fine Cup profile; supplier and lot confirmed" },
-    { parameter: "ICO baseline", specification: "≤86 defects/300 g; 8–12.5% moisture" }, { parameter: "Physical grade", specification: "Screen and crop confirmed with offer" },
-  ],
-  "arabica-santos-good-cup": [
-    { parameter: "Species", specification: "Arabica" }, { parameter: "Cup basis", specification: "Good Cup profile; supplier and lot confirmed" },
-    { parameter: "ICO baseline", specification: "≤86 defects/300 g; 8–12.5% moisture" }, { parameter: "Physical grade", specification: "Screen distribution and crop by offer" },
-  ],
-  "arabica-rio-minas": [
-    { parameter: "Species", specification: "Arabica" }, { parameter: "Cup basis", specification: "Rio character and blend target by lot" },
-    { parameter: "ICO baseline", specification: "≤86 defects/300 g; 8–12.5% moisture" }, { parameter: "Physical grade", specification: "Screen, defects and crop by offer" },
-  ],
-  "robusta-conilon": [
-    { parameter: "Species", specification: "Coffea canephora / Conilon" }, { parameter: "Cup basis", specification: "Blend or soluble-coffee target" },
-    { parameter: "ICO baseline", specification: "≤150 defects/300 g; 8–12.5% moisture" }, { parameter: "Physical grade", specification: "Grade, screen and crop by offer" },
-  ],
   "cocoa-beans": [
     { parameter: "Product basis", specification: "Fermented and dried whole beans" }, { parameter: "Storage moisture", specification: "About 7.5% after drying; lot value confirmed" },
     { parameter: "Quality review", specification: "Bean count, cut test, defects and origin" }, { parameter: "Food safety", specification: "Residues, contaminants and microbiology by market" },

@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductDetailLayout } from "@/components/product-detail-layout";
+import { categoryCardItem } from "@/content/product-card-items";
 import { getProductCategoryDetail, productCriteria } from "@/content/product-details";
-import { getProductCategory, homeAssets, homeLanding, productCategories, productCategoryHref } from "@/content/site";
+import { getProductCategory, productCategories, productCategoryHref } from "@/content/site";
 import type { PageSeo, ProductCategory } from "@/lib/types";
 import { breadcrumbJsonLd, buildMetadata, productFamilyJsonLd } from "@/lib/seo";
 
@@ -52,15 +53,13 @@ function relatedCategories(category: ProductCategory) {
     .map((slug) => productCategories.find((item) => item.slug === slug))
     .filter((item): item is ProductCategory => Boolean(item))
     .map((item) => {
-      const featured = homeLanding.featuredProducts.find((product) => product.id === item.slug);
-      const imageKey = item.imageKey as keyof typeof homeAssets.media | undefined;
-
+      const card = categoryCardItem(item);
       return {
-        label: item.title,
-        href: productCategoryHref(item),
-        description: item.shortDescription,
-        image: featured?.image ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial),
-        imageAlt: featured?.imageAlt ?? `${item.title} product category`,
+        label: card.title,
+        href: card.href,
+        description: card.description,
+        image: card.image,
+        imageAlt: card.imageAlt,
       };
     });
 }
@@ -70,8 +69,6 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
   const detail = getProductCategoryDetail(slug);
 
   if (!category || !detail) notFound();
-
-  const isCoffee = slug === "coffee";
 
   const breadcrumb = [
     { label: "Home", href: "/en" },
@@ -127,22 +124,14 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
       <ProductDetailLayout
         breadcrumb={breadcrumb}
         hero={{
-          title: isCoffee ? "Coffee: Precision Sourcing and Export Coordination" : category.title,
+          title: category.title,
           text: detail.heroText,
           image: detail.image,
           imageAlt: detail.imageAlt,
           hideBreadcrumb: true,
           variant: "compact",
         }}
-        sectionNavigation={isCoffee ? [
-          { label: "Overview", href: "#overview" },
-          { label: "Origins", href: "#origins" },
-          { label: "Market context", href: "#market-context" },
-          { label: "Portfolio", href: "#range" },
-          { label: "Services", href: "#services" },
-          { label: "Supply", href: "#shipment-options" },
-          { label: "Contact", href: "#contact" },
-        ] : [
+        sectionNavigation={[
           { label: "Overview", href: "#overview" },
           { label: "Portfolio", href: "#range" },
           { label: "Category context", href: "#market-context" },
@@ -150,43 +139,7 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
           { label: "Supply", href: "#shipment-options" },
           { label: "Contact", href: "#contact" },
         ]}
-        origins={isCoffee ? {
-          title: "Our Brazilian origins",
-          text: "Brazil’s coffee landscape spans 35 recognised production regions. A3’s sourcing focus follows six core producing states, active producer relationships, regional supply knowledge and export-ready logistics.",
-          items: [
-            {
-              title: "Minas Gerais",
-              description: "Brazil’s leading Arabica-producing state, with broad commercial availability and established specialty supply networks.",
-              regions: ["Sul / Sudoeste de Minas", "Cerrado Mineiro", "Chapada de Minas", "Matas de Minas"],
-            },
-            {
-              title: "Bahia",
-              description: "Technology-led Arabica and Canephora production across contrasting highland and irrigated growing areas.",
-              regions: ["Oeste da Bahia", "Chapada Diamantina", "Planalto da Conquista"],
-            },
-            {
-              title: "Espírito Santo",
-              description: "Brazil’s principal Conilon origin alongside established mountain-grown Arabica production.",
-              regions: ["Montanhas do Espírito Santo", "Espírito Santo Conilon"],
-            },
-            {
-              title: "Paraná",
-              description: "A traditional producing state with selected Arabica opportunities and recognised regional identity.",
-              regions: ["Norte Pioneiro do Paraná"],
-            },
-            {
-              title: "São Paulo",
-              description: "Established Arabica origins connected to Brazil’s leading coffee warehousing and export corridor through Santos.",
-              regions: ["Alta Mogiana", "Região de Pinhal", "Garça", "Port of Santos — logistics hub"],
-            },
-            {
-              title: "Rondônia",
-              description: "A leading Canephora origin and the home of Robustas Amazônicos, developed from Conilon and Robusta genetic material.",
-              regions: ["Matas de Rondônia", "Robustas Amazônicos"],
-            },
-          ],
-        } : undefined}
-        keyFactsPosition={isCoffee ? "before-portfolio" : "after-portfolio"}
+        keyFactsPosition="after-portfolio"
         productPortfolio={{
           id: "range",
           title: detail.portfolioTitle,
@@ -219,29 +172,6 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
         shipmentOptions={{
           ...detail.shipment,
         }}
-        services={isCoffee ? {
-          title: "Structured Sourcing & Export Excellence",
-          text: "A3 helps coffee buyers review options with greater clarity and commercial confidence through a structured operating flow.",
-          items: [
-            {
-              title: "Vetted Sourcing",
-              description: "Lot selection, quality review and availability checks across producer and supplier relationships at origin.",
-            },
-            {
-              title: "Quality & Lot Information",
-              description: "Physical analysis covering screen size, moisture, defect count and descriptive cupping information against the buyer brief.",
-            },
-            {
-              title: "Complete Export Coordination",
-              description: "Origin handling, warehousing checks, export documentation and port logistics coordinated around the approved lot.",
-            },
-            {
-              title: "Commercial De-risking",
-              description: "Price, payment structure and shipment windows aligned to create a secure and workable supply route.",
-            },
-          ],
-        } : undefined}
-        servicesPosition={isCoffee ? "before-shipment" : "after-shipment"}
         related={relatedCategories(category)}
         finalCta={{
           title: `For ${category.title.toLowerCase()} enquiries`,

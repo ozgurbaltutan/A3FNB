@@ -10,6 +10,7 @@ import { FilteredProductGrid } from "@/components/filtered-product-grid";
 import { InnerPageHero } from "@/components/inner-page-hero";
 import { MetricBand } from "@/components/metric-band";
 import { ProcessAccordion } from "@/components/process-accordion";
+import { TradeProcessShowcase } from "@/components/trade-process-showcase";
 import { Container, LinkButton } from "@/components/ui";
 import { homeAssets } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
@@ -84,11 +85,17 @@ type ProductPortfolioItem = {
   source: string;
   fit: string;
   overview: string;
+  bestFit?: string;
+  profile?: ProductDetailItem[];
+  supplyFormats?: string[];
+  documentPackage?: string;
+  technicalHighlights?: ProductDetailItem[];
+  specSections?: Array<{ title: string; items: ProductSpecRow[] }>;
   keyDetails?: ProductDetailItem[];
   applications: string[];
   specs?: ProductSpecRow[];
-  packing: ProductDetailItem[];
-  origin: ProductDetailItem[];
+  packing?: ProductDetailItem[];
+  origin?: ProductDetailItem[];
   cta?: ProductDetailLink;
 };
 
@@ -96,6 +103,8 @@ type ProductPortfolio = {
   id?: string;
   title: string;
   text: string;
+  cardTreatment?: "default" | "category-overlay";
+  modalTreatment?: "legacy" | "decision-summary";
   groups?: {
     id: string;
     title: string;
@@ -150,11 +159,12 @@ type ProductSupportSection = {
 };
 
 type ProductShipmentOptions = {
+  id?: string;
   title: string;
   text: string;
   image: string;
   imageAlt: string;
-  items: ProductDetailItem[];
+  items: Array<ProductDetailItem & { image?: string; imageAlt?: string }>;
 };
 
 type ProductStorySection = {
@@ -179,7 +189,11 @@ type ProductKeyFacts = {
 type ProductEditorialFacts = {
   title: string;
   text?: string;
-  items: ProductDetailItem[];
+  items: Array<ProductDetailItem & {
+    value?: string;
+    slot?: "primary" | "secondary-top" | "secondary-bottom";
+    tone?: "dark" | "sage" | "warm";
+  }>;
 };
 
 type ProductFlowchart = {
@@ -203,6 +217,8 @@ type ProductServices = {
 };
 
 type ProductDetailProps = {
+  pageTreatment?: "polished";
+  cardAppearance?: "light" | "legacy-dark";
   breadcrumb: NavigationItem[];
   hero?: ProductDetailHero;
   intro?: {
@@ -261,10 +277,13 @@ type ProductDetailProps = {
     imageAlt?: string;
     tone?: "teal" | "ink";
     compact?: boolean;
+    variant?: "default" | "compact-reminder";
   };
 };
 
 export function ProductDetailLayout({
+  pageTreatment,
+  cardAppearance = "light",
   breadcrumb,
   hero,
   intro,
@@ -295,7 +314,7 @@ export function ProductDetailLayout({
   const leadingStorySections = productPortfolio ? [] : (storyHero ? (storySections?.slice(1) ?? []) : (storySections ?? []));
   const portfolioStorySections = productPortfolio ? (storySections ?? []) : [];
 
-  return (
+  const content = (
     <>
       {hero ? <ProductDetailHero hero={hero} breadcrumb={breadcrumb} /> : null}
       {sectionNavigation?.length ? <ProductSectionNavigation items={sectionNavigation} /> : null}
@@ -319,7 +338,7 @@ export function ProductDetailLayout({
       ) : profiles ? (
         <ProductProfiles profiles={profiles} />
       ) : null}
-      {productPortfolio ? <ProductPortfolioSection portfolio={productPortfolio} /> : null}
+      {productPortfolio ? <ProductPortfolioSection appearance={cardAppearance} portfolio={productPortfolio} /> : null}
       {keyFacts && keyFactsPosition === "after-portfolio" ? <ProductKeyFactsSection facts={keyFacts} /> : null}
       {editorialFacts ? <ProductEditorialFactsSection facts={editorialFacts} /> : null}
       {flowchart ? <ProductFlowchartSection flowchart={flowchart} /> : null}
@@ -345,10 +364,14 @@ export function ProductDetailLayout({
       {afterSupportStorySections?.map((section) => (
         <ProductStory key={section.title} section={section} />
       ))}
-      {related?.length ? <RelatedProducts links={related} /> : null}
+      {related?.length ? <RelatedProducts appearance={cardAppearance} links={related} /> : null}
       <ProductFinalCta cta={finalCta} />
     </>
   );
+
+  return pageTreatment === "polished"
+    ? <div className="product-detail-layout product-detail-layout--polished">{content}</div>
+    : content;
 }
 
 function ProductKeyFactsSection({ facts }: { facts: ProductKeyFacts }) {
@@ -363,12 +386,14 @@ function ProductEditorialFactsSection({ facts }: { facts: ProductEditorialFacts 
           <h2 className="type-section">{facts.title}</h2>
           {facts.text ? <p className="type-section-lead">{facts.text}</p> : null}
         </div>
-        <div className="product-editorial-facts__grid">
-          {facts.items.map((item, index) => (
-            <article key={item.title}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
+        <div className="product-editorial-facts__bento">
+          {facts.items.map((item) => (
+            <article className={`product-editorial-facts__card product-editorial-facts__card--${item.slot ?? "primary"}`} data-tone={item.tone ?? "warm"} key={item.title}>
+              <div className="product-editorial-facts__content">
+                {item.value ? <strong>{item.value}</strong> : null}
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
             </article>
           ))}
         </div>
@@ -443,12 +468,52 @@ function ProductServicesSection({ services }: { services: ProductServices }) {
 }
 
 function ProductSectionNavigation({ items }: { items: ProductSectionNavigationItem[] }) {
+  const [activeHref, setActiveHref] = useState(items[0]?.href ?? "");
+
+  useEffect(() => {
+    const sections = items
+      .map((item) => document.getElementById(item.href.replace(/^#/, "")))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (!sections.length) return;
+
+    let frame = 0;
+    const updateActiveSection = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const activationLine = window.innerHeight * 0.35;
+        const activeSection = sections.find((section) => {
+          const bounds = section.getBoundingClientRect();
+          return bounds.top <= activationLine && bounds.bottom > activationLine;
+        });
+
+        if (activeSection) setActiveHref(`#${activeSection.id}`);
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, [items]);
+
   return (
     <nav aria-label="On this product page" className="product-section-nav">
       <Container className="a3-container product-section-nav__inner">
         <div className="product-section-nav__links">
           {items.map((item) => (
-            <a className="premium-focus type-nav" href={item.href} key={item.href}>
+            <a
+              aria-current={activeHref === item.href ? "location" : undefined}
+              className={clsx("premium-focus type-nav", activeHref === item.href && "is-active")}
+              href={item.href}
+              key={item.href}
+              onClick={() => setActiveHref(item.href)}
+            >
               {item.label}
             </a>
           ))}
@@ -676,7 +741,13 @@ function ProductRangeSimple({ profiles }: { profiles: NonNullable<ProductDetailP
   );
 }
 
-function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio }) {
+function ProductPortfolioSection({
+  appearance,
+  portfolio,
+}: {
+  appearance: "light" | "legacy-dark";
+  portfolio: ProductPortfolio;
+}) {
   const [activePortfolioItemId, setActivePortfolioItemId] = useState<string | null>(null);
   const modalTriggerRefs = useRef<Record<string, HTMLElement | null>>({});
   const activePortfolioItem = portfolio.items.find((item) => item.id === activePortfolioItemId) ?? null;
@@ -714,25 +785,37 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
   }
 
   return (
-    <section className="product-detail-section product-portfolio-section" id={portfolio.id ?? "range"}>
+    <section
+      className={clsx(
+        "product-detail-section product-portfolio-section",
+        portfolio.cardTreatment === "category-overlay" && "product-portfolio-section--category-overlay",
+      )}
+      id={portfolio.id ?? "range"}
+    >
       <Container className="a3-container product-portfolio-section__inner">
         <div className="product-portfolio-section__header">
           <h2 className="type-section">{portfolio.title}</h2>
           <p className="type-section-lead">{portfolio.text}</p>
         </div>
         <FilteredProductGrid
+          appearance={appearance}
           ariaLabel={`${portfolio.title} products`}
           getItemLabel={(item) => `View commercial details for ${item.title}`}
           groups={filterGroups}
           items={portfolio.items}
           mode="button"
+          treatment={portfolio.cardTreatment ?? "default"}
           onItemActivate={(item) => openPortfolioModal(item.id)}
           setItemRef={(id, node) => {
             modalTriggerRefs.current[id] = node;
           }}
         />
         {activePortfolioItem ? (
-          <ProductPortfolioModal product={activePortfolioItem} onClose={closePortfolioModal} />
+          <ProductPortfolioModal
+            product={activePortfolioItem}
+            onClose={closePortfolioModal}
+            treatment={portfolio.modalTreatment ?? "legacy"}
+          />
         ) : null}
       </Container>
     </section>
@@ -742,9 +825,11 @@ function ProductPortfolioSection({ portfolio }: { portfolio: ProductPortfolio })
 function ProductPortfolioModal({
   product,
   onClose,
+  treatment,
 }: {
   product: ProductPortfolioItem;
   onClose: () => void;
+  treatment: "legacy" | "decision-summary";
 }) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
@@ -817,6 +902,55 @@ function ProductPortfolioModal({
             <p id={descriptionId}>{product.overview || product.fit}</p>
           </header>
 
+          {treatment === "decision-summary" ? (
+            <>
+              {product.profile?.length ? (
+                <dl className="product-info-modal__decision-attributes">
+                  {product.profile.map((detail) => (
+                    <div key={detail.title}>
+                      <dt>{detail.title}</dt>
+                      <dd>{detail.description}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+
+              {product.bestFit ? <p className="product-info-modal__decision-fit">{product.bestFit}</p> : null}
+
+              <div className="product-info-modal__decision-columns">
+                {product.applications.length ? (
+                  <section>
+                    <h3>Applications</h3>
+                    <ul>{product.applications.map((application) => <li key={application}>{application}</li>)}</ul>
+                  </section>
+                ) : null}
+                {product.supplyFormats?.length || product.documentPackage ? (
+                  <section>
+                    <h3>Supply &amp; confirmation</h3>
+                    {product.supplyFormats?.length ? <ul>{product.supplyFormats.map((format) => <li key={format}>{format}</li>)}</ul> : null}
+                    {product.documentPackage ? <p>{product.documentPackage}</p> : null}
+                  </section>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            <>
+          {product.bestFit ? (
+            <section className="product-info-modal__best-fit">
+              <h3>Best fit / when to choose</h3>
+              <p>{product.bestFit}</p>
+            </section>
+          ) : null}
+
+          {product.profile?.length ? (
+            <section className="product-info-modal__technical-section">
+              <h3>Product profile</h3>
+              <dl className="product-info-modal__facts product-info-modal__facts--technical">
+                {product.profile.map((detail) => <div key={detail.title}><dt>{detail.title}</dt><dd>{detail.description}</dd></div>)}
+              </dl>
+            </section>
+          ) : null}
+
           {details.length ? (
             <section className="product-info-modal__technical-section">
               <h3>Commercial details</h3>
@@ -830,6 +964,45 @@ function ProductPortfolioModal({
               </dl>
             </section>
           ) : null}
+
+          {product.applications.length ? (
+            <section className="product-info-modal__technical-section product-info-modal__list-section">
+              <h3>Typical applications</h3>
+              <ul>{product.applications.map((application) => <li key={application}>{application}</li>)}</ul>
+            </section>
+          ) : null}
+
+          {product.supplyFormats?.length ? (
+            <section className="product-info-modal__technical-section product-info-modal__list-section">
+              <h3>Packing &amp; supply formats</h3>
+              <ul>{product.supplyFormats.map((format) => <li key={format}>{format}</li>)}</ul>
+            </section>
+          ) : null}
+
+          {product.documentPackage ? (
+            <section className="product-info-modal__technical-section">
+              <h3>Documents &amp; confirmation</h3>
+              <p>{product.documentPackage}</p>
+            </section>
+          ) : null}
+
+          {product.technicalHighlights?.length ? (
+            <section className="product-info-modal__technical-section">
+              <h3>Technical selection notes</h3>
+              <dl className="product-info-modal__facts product-info-modal__facts--technical">
+                {product.technicalHighlights.map((detail) => <div key={detail.title}><dt>{detail.title}</dt><dd>{detail.description}</dd></div>)}
+              </dl>
+            </section>
+          ) : null}
+
+          {product.specSections?.map((section) => (
+            <section className="product-info-modal__technical-section" key={section.title}>
+              <h3>{section.title}</h3>
+              <ProductSpecTable rows={section.items} />
+            </section>
+          ))}
+            </>
+          )}
 
           {product.cta ? (
             <footer className="product-info-modal__technical-actions">
@@ -850,7 +1023,7 @@ function getPortfolioModalDetails(product: ProductPortfolioItem) {
     : [
         { title: "Source", description: product.source },
         { title: "Typical uses", description: product.fit },
-        ...product.packing.slice(0, 1),
+        ...(product.packing?.slice(0, 1) ?? []),
       ];
 }
 
@@ -932,11 +1105,8 @@ function ProductTechnicalSpecMatrix({ group }: { group: ProductTechnicalSpecGrou
   if (!group.profiles.length) return null;
 
   return (
-    <section aria-labelledby={`technical-group-${group.id}`} className="product-technical-specs__group">
-      <header className="product-technical-specs__group-header">
-        <h3 id={`technical-group-${group.id}`}>{group.title}</h3>
-        {group.text ? <p>{group.text}</p> : null}
-      </header>
+    <section aria-label={group.title} className="product-technical-specs__group">
+      {group.text ? <p className="product-technical-specs__group-note" id={`technical-group-${group.id}`}>{group.text}</p> : null}
       <div className="product-technical-specs__matrix">
         <table>
           <caption>{group.title}</caption>
@@ -987,34 +1157,20 @@ function ProductTechnicalSpecMatrix({ group }: { group: ProductTechnicalSpecGrou
 
 function ShipmentOptions({ options }: { options: ProductShipmentOptions }) {
   return (
-    <section className="product-detail-section shipment-options-section" id="shipment-options">
-      <Container className="a3-container shipment-options-section__inner">
-        <div className="product-section-heading shipment-options-section__copy">
-          <h2 className="type-section">{options.title}</h2>
-          <p className="type-section-lead">{options.text}</p>
-        </div>
-        <ProcessAccordion
-          ariaLabel={`${options.title} details`}
-          className="shipment-options-section__steps"
-          presentation="showcase"
-          items={options.items.map((item, index) => ({
-            id: item.title,
-            number: String(index + 1).padStart(2, "0"),
-            title: item.title,
-            description: item.description,
-            media: (
-              <Image
-                alt={options.imageAlt}
-                className="object-cover"
-                fill
-                sizes="(min-width: 1024px) 54vw, 100vw"
-                src={options.image}
-              />
-            ),
-          }))}
-        />
-      </Container>
-    </section>
+    <TradeProcessShowcase
+      className="shipment-options-section"
+      id={options.id ?? "shipment-options"}
+      title={options.title}
+      text={options.text}
+      items={options.items.map((item, index) => ({
+        id: item.title,
+        number: String(index + 1).padStart(2, "0"),
+        title: item.title,
+        description: item.description,
+        image: item.image ?? options.image,
+        imageAlt: item.imageAlt ?? options.imageAlt,
+      }))}
+    />
   );
 }
 
@@ -1241,16 +1397,12 @@ function ProductSupport({ support }: { support: ProductSupportSection }) {
   );
 }
 
-function RelatedProducts({ links }: { links: ProductDetailLink[] }) {
-  const items = links.map((link) => ({
-    id: link.href,
-    title: link.label,
-    description: link.description ?? "Explore product options, specifications and commercial sourcing context.",
-    image: link.image ?? homeAssets.media.companyFoodFeastEditorial,
-    imageAlt: link.imageAlt ?? `${link.label} product category`,
-    href: link.href,
-  }));
-
+function RelatedProducts({
+  links,
+}: {
+  appearance: "light" | "legacy-dark";
+  links: ProductDetailLink[];
+}) {
   return (
     <section className="product-detail-related">
       <Container className="a3-container product-detail-related__inner">
@@ -1258,18 +1410,45 @@ function RelatedProducts({ links }: { links: ProductDetailLink[] }) {
           <h2 className="type-section">Related categories</h2>
           <p className="type-section-lead">Continue exploring product families that may fit the same sourcing programme.</p>
         </div>
-        <FilteredProductGrid
-          ariaLabel="Related product categories"
-          getHref={(item) => item.href}
-          items={items}
-          mode="link"
-        />
+        <div className="product-detail-related__compact-grid">
+          {links.map((link) => (
+            <Link className="product-detail-related__compact-card premium-focus" href={link.href} key={link.href}>
+              <figure>
+                <Image
+                  alt={link.imageAlt ?? `${link.label} product category`}
+                  fill
+                  sizes="(min-width: 1024px) 180px, (min-width: 640px) 140px, 112px"
+                  src={link.image ?? homeAssets.media.companyFoodFeastEditorial}
+                />
+              </figure>
+              <div>
+                <h3>{link.label}</h3>
+                <p>{link.description ?? "Explore this product category."}</p>
+              </div>
+              <span aria-hidden="true">→</span>
+            </Link>
+          ))}
+        </div>
       </Container>
     </section>
   );
 }
 
 function ProductFinalCta({ cta }: { cta: ProductDetailProps["finalCta"] }) {
+  if (cta.variant === "compact-reminder") {
+    return (
+      <section className="product-detail-final-cta product-detail-final-cta--compact" id="contact">
+        <Container className="a3-container product-detail-final-cta__compact-inner">
+          <div>
+            <h2>{cta.title}</h2>
+            <p>{cta.text}</p>
+          </div>
+          <LinkButton href={cta.primary.href} variant="light">{cta.primary.label}</LinkButton>
+        </Container>
+      </section>
+    );
+  }
+
   const image = cta.image ?? homeAssets.media.finalCta;
   const imageAlt = cta.imageAlt ?? "Commercial food market and buyer activity";
 

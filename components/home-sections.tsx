@@ -7,12 +7,13 @@ import { geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
 import countriesAtlas from "world-atlas/countries-110m.json";
-import { homeAssets, homeLanding, marketLocations, productCategories, productCategoryHref, type MarketLocation } from "@/content/site";
+import { homeAssets, homeLanding, marketLocations, productCategories, type MarketLocation } from "@/content/site";
+import { categoryCardItem } from "@/content/product-card-items";
 import { EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { ProductImageCarousel } from "@/components/product-image-carousel";
-import { ProcessAccordion } from "@/components/process-accordion";
 import { LinkButton } from "@/components/ui";
 import { CountUpMetric } from "@/components/count-up-metric";
+import { TradeProcessShowcase } from "@/components/trade-process-showcase";
 
 type FeaturedProduct = {
   id: string;
@@ -103,36 +104,15 @@ function spreadProjectedMarkets(markets: ProjectedMarket[], minimumDistance = 23
   });
 }
 
-const HOME_PRODUCT_IMAGES: Record<string, string> = {
-  "sugar": homeAssets.media.homeProductSugar,
-  coffee: homeAssets.media.homeProductCoffee,
-  "cocoa-products": homeAssets.media.homeProductCocoa,
-  "grains-seeds": homeAssets.media.homeProductGrains,
-  "dairy-milk-powders": homeAssets.media.homeProductDairy,
-  "oils-fats": homeAssets.media.homeProductOils,
-  "starches-sweeteners": homeAssets.media.homeProductStarches,
-  "dried-fruit-nuts": homeAssets.media.homeProductDriedFruit,
-  "frozen-foods": homeAssets.media.homeProductFrozen,
-  "consumer-foods": homeAssets.media.homeProductConsumer,
-};
-
 function productRailItem(category: (typeof productCategories)[number]): ProductRailItem {
+  const sharedCard = categoryCardItem(category);
   const featuredProduct = homeLanding.featuredProducts.find((product) => product.id === category.slug);
-  const imageKey = category.imageKey as keyof typeof homeAssets.media | undefined;
-  const image = HOME_PRODUCT_IMAGES[category.slug]
-    ?? featuredProduct?.image
-    ?? (imageKey ? homeAssets.media[imageKey] : homeAssets.media.companyFoodFeastEditorial);
   const icon = featuredProduct?.icon ?? homeAssets.icons[category.iconKey as keyof typeof homeAssets.icons];
 
   return {
-    id: category.slug,
-    title: category.title,
-    description: category.shortDescription,
+    ...sharedCard,
     cardSummary: category.shortDescription,
-    href: productCategoryHref(category),
     icon,
-    image,
-    imageAlt: featuredProduct?.imageAlt ?? `${category.title} sourcing category for commercial buyers`,
     ctaLabel: "View category",
   };
 }
@@ -285,6 +265,7 @@ function FeaturedSourcingCategories() {
           )}
           items={products}
           mode="link"
+          treatment="category-overlay"
         />
       </HomeShell>
     </section>
@@ -379,32 +360,18 @@ function MarketsPreview() {
 
 function HowA3Works() {
   return (
-    <section className="home-section home-section--process">
-      <HomeShell>
-        <SectionIntro title={homeLanding.process.title} text={homeLanding.process.text} />
-        <ProcessAccordion
-          ariaLabel={`${homeLanding.process.title} steps`}
-          className="reveal reveal--up reveal-delay-2"
-          presentation="showcase"
-          items={homeLanding.process.steps.map((step, index) => ({
-            id: step.number,
-            number: step.number,
-            title: step.title,
-            description: step.description,
-            media: (
-              <Image
-                alt={step.imageAlt}
-                className="object-cover"
-                fill
-                priority={index === 0}
-                sizes="(min-width: 1024px) 54vw, 100vw"
-                src={step.image}
-              />
-            ),
-          }))}
-        />
-      </HomeShell>
-    </section>
+    <TradeProcessShowcase
+      title={homeLanding.process.title}
+      text={homeLanding.process.text}
+      items={homeLanding.process.steps.map((step) => ({
+        id: step.number,
+        number: step.number,
+        title: step.title,
+        description: step.description,
+        image: step.image,
+        imageAlt: step.imageAlt,
+      }))}
+    />
   );
 }
 

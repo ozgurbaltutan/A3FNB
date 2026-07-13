@@ -15,12 +15,14 @@ export type ProductImageCarouselItem = {
 };
 
 type ProductImageCarouselBaseProps<TItem extends ProductImageCarouselItem> = {
+  appearance?: "light" | "legacy-dark";
   ariaLabel: string;
   className?: string;
   contentMode?: "default" | "title-only";
   getItemLabel?: (item: TItem) => string;
   header?: ReactNode;
   items: TItem[];
+  treatment?: "default" | "category-overlay";
 };
 
 type ProductImageCarouselLinkProps<TItem extends ProductImageCarouselItem> =
@@ -44,6 +46,7 @@ export type ProductImageCarouselProps<TItem extends ProductImageCarouselItem> =
   | ProductImageCarouselButtonProps<TItem>;
 
 type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
+  appearance?: "light" | "legacy-dark";
   getItemLabel?: (item: TItem) => string;
   href?: string;
   imageSizes?: string;
@@ -53,6 +56,7 @@ type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
   onActivate?: (item: TItem) => void;
   priority?: boolean;
   setItemRef?: (id: string, node: HTMLElement | null) => void;
+  treatment?: "default" | "category-overlay";
 };
 
 function ProductImageCard<TItem extends ProductImageCarouselItem>({
@@ -62,13 +66,15 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   item,
   mode,
   contentMode = "default",
+  appearance = "light",
   onActivate,
   priority = false,
   setItemRef,
+  treatment = "default",
 }: ProductImageCardProps<TItem>) {
   const label = getItemLabel?.(item) ?? item.title;
   const cardTitle = item.cardTitle ?? item.title;
-  const cardClassName = `product-image-card${contentMode === "title-only" ? " product-image-card--title-only" : ""}`;
+  const cardClassName = `product-image-card product-image-card--${appearance}${contentMode === "title-only" ? " product-image-card--title-only" : ""}`;
   const content = (
     <>
       <div className="product-image-card__media">
@@ -78,7 +84,18 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
         <div className="product-image-card__copy">
           <div className="product-image-card__title-row">
             <strong>{cardTitle}</strong>
-            <svg aria-hidden="true" className="product-image-card__chevron" viewBox="0 0 20 20">
+            <svg
+              aria-hidden="true"
+              className="product-image-card__chevron"
+              fill="none"
+              height="20"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.6"
+              viewBox="0 0 20 20"
+              width="20"
+            >
               <path d="M4 10h11M11 6l4 4-4 4" />
             </svg>
           </div>
@@ -89,13 +106,15 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   );
 
   if (mode === "link") {
-    return <Link aria-label={label} className={cardClassName} href={href ?? "#"}>{content}</Link>;
+    return <Link aria-label={label} className={cardClassName} data-appearance={appearance} data-treatment={treatment} href={href ?? "#"}>{content}</Link>;
   }
 
   return (
     <button
       aria-label={label}
       className={cardClassName}
+      data-appearance={appearance}
+      data-treatment={treatment}
       onClick={() => onActivate?.(item)}
       ref={(node) => setItemRef?.(item.id, node)}
       type="button"
@@ -139,7 +158,7 @@ function CarouselControls({
 }
 
 export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(props: ProductImageCarouselProps<TItem>) {
-  const { ariaLabel, className = "", contentMode = "default", getItemLabel, header, items } = props;
+  const { appearance = "light", ariaLabel, className = "", contentMode = "default", getItemLabel, header, items, treatment = "default" } = props;
   const rail = useCarouselRail({ itemCount: items.length });
   const hasControls = items.length > 1;
 
@@ -171,16 +190,19 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
         {items.map((item, index) => props.mode === "link" ? (
           <ProductImageCard
             contentMode={contentMode}
+            appearance={appearance}
             getItemLabel={getItemLabel}
             href={props.getHref(item)}
             item={item}
             key={item.id}
             mode="link"
             priority={index < 2}
+            treatment={treatment}
           />
         ) : (
           <ProductImageCard
             contentMode={contentMode}
+            appearance={appearance}
             getItemLabel={getItemLabel}
             item={item}
             key={item.id}
@@ -188,6 +210,7 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
             onActivate={props.onItemActivate}
             priority={index < 2}
             setItemRef={props.setItemRef}
+            treatment={treatment}
           />
         ))}
       </CarouselRail>
@@ -198,7 +221,7 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
 export type ProductImageGridProps<TItem extends ProductImageCarouselItem> = ProductImageCarouselProps<TItem>;
 
 export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: ProductImageGridProps<TItem>) {
-  const { ariaLabel, className = "", contentMode = "default", getItemLabel, items } = props;
+  const { appearance = "light", ariaLabel, className = "", contentMode = "default", getItemLabel, items, treatment = "default" } = props;
 
   return (
     <ul aria-label={ariaLabel} className={`product-card-grid product-image-grid ${className}`.trim()}>
@@ -207,16 +230,19 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
           {props.mode === "link" ? (
             <ProductImageCard
               contentMode={contentMode}
+              appearance={appearance}
               getItemLabel={getItemLabel}
               href={props.getHref(item)}
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="link"
               priority={index < 4}
+              treatment={treatment}
             />
           ) : (
             <ProductImageCard
               contentMode={contentMode}
+              appearance={appearance}
               getItemLabel={getItemLabel}
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
@@ -224,6 +250,7 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
               onActivate={props.onItemActivate}
               priority={index < 4}
               setItemRef={props.setItemRef}
+              treatment={treatment}
             />
           )}
         </li>

@@ -88,6 +88,7 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
             items={products}
             mode="link"
             showFilters
+            treatment="category-overlay"
           />
         </Container>
       </section>

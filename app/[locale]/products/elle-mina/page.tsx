@@ -34,6 +34,7 @@ export default function ElleMinaPage() {
         )}
       />
       <ProductDetailLayout
+        cardAppearance="legacy-dark"
         breadcrumb={breadcrumb}
         hero={{
           title: "Elle Mina",
