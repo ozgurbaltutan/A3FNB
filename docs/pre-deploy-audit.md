@@ -244,6 +244,38 @@ Desktop (1440×900) and mobile (390×844) captures were recorded outside the rep
 
 Full-page capture stitching repeats fixed/sticky visual regions in this browser surface, so acceptance comparisons use viewport captures and targeted section captures rather than stitched full-page pixels.
 
+## Post-cleanup verification
+
+Completed changes:
+
+- Removed 21 confirmed unreferenced, untracked media iterations. The 119 tracked legacy candidates were retained because static absence alone does not prove that an old public URL is safe to remove.
+- Reduced `app/globals.css` from 14,366 lines / 348,443 B to 10,735 lines / 262,924 B by removing exact duplicate rules and selectors proven absent from the source tree. Generated production CSS fell from approximately 346 kB to 266,372 B. Route JavaScript sizes remained unchanged.
+- Removed placeholder social controls, added a branded application icon set, a 1200x630 Open Graph card and a branded 404 page.
+- Added conservative response headers for content sniffing, referrer policy, framing and unused browser permissions.
+- Added the `SITE_INDEXABLE` gate. The final pre-launch build emits `noindex, nofollow`, `Disallow: /`, an empty sitemap and canonical/Open Graph URLs rooted at `https://a3fnb.vercel.app`.
+- Confirmed that a Vercel build with no `NEXT_PUBLIC_SITE_URL` fails with an explicit configuration error instead of publishing localhost URLs.
+- Corrected Product JSON-LD image values to use absolute asset URLs and removed a nested `main` landmark from legal pages.
+- Added Playwright coverage for 23 public routes, redirects, desktop/mobile navigation, Coffee origin keyboard interaction, Coffee/Sugar accordions, native form validation, duplicate-submit protection, PDF catalogues and branded 404 behaviour.
+
+Final local verification:
+
+- `npm ci` completed successfully.
+- `npm run lint` completed successfully.
+- `npm run typecheck` completed successfully.
+- Playwright smoke tests passed 6/6 against both the development server and the final local production server.
+- The pre-launch production build completed successfully with 33 generated routes/assets, including the two new icon routes.
+- The final production browser crawl found no uncaught console errors or missing assets.
+- Home, Products, Coffee, Sugar, About, Contact, Resources and Buyer Quote were checked at 360, 390, 768, 1024, 1280, 1440 and 1920 px. All 56 page/width checks had a main heading, a main landmark and no document-level horizontal overflow.
+
+Dependency audit result: zero high or critical advisories and two moderate advisories. Both resolve to the PostCSS version bundled inside the installed Next.js release. npm offers only an inappropriate breaking Next.js downgrade, so this is recorded for a controlled post-launch framework update rather than changed during the visual-preservation release.
+
+Remaining deployment checks:
+
+- Configure `NEXT_PUBLIC_SITE_URL=https://a3fnb.vercel.app` and `SITE_INDEXABLE=false` in Vercel before the Preview/pre-launch build.
+- Verify `RESEND_API_KEY`, the Resend-verified `ENQUIRY_FROM_EMAIL` domain and `ENQUIRY_TO_EMAIL=info@a3fnb.com` in Vercel. One controlled real-message test remains a manual release check.
+- Review the Vercel Preview before merging into `main`. The final `www.a3fnb.com` switch and `SITE_INDEXABLE=true` remain a separate release step.
+- The per-instance in-memory form rate limit and the 119 retained legacy assets remain documented post-launch work.
+
 ## Cleanup gate
 
 Production-code cleanup may begin after this report. Any deletion that cannot be proven safe through source references, build output and runtime route/media checks will be retained and listed as a remaining risk rather than guessed away.
