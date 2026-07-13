@@ -97,8 +97,8 @@ export default function SugarPage() {
             "A3 acts as a strategic partner in the international sugar trade, connecting supply and demand effectively across cane and beet sugar markets.",
             "We manage the entire value chain—from sourcing at origin and technical specification matching to logistics, finance and final delivery.",
           ],
-          image: "/media/products/sugar/hero-v2.webp",
-          imageAlt: "White and raw sugar crystals with sugar cane and sugar beet",
+          image: "/media/products/sugar/sugarcane-field-barbados.webp",
+          imageAlt: "Sugarcane field beneath misty green mountains in Saint George, Barbados",
           hideBreadcrumb: true,
           variant: "compact",
         }}
@@ -114,7 +114,7 @@ export default function SugarPage() {
           id: "range",
           title: "Sugar grades",
           text:
-            "A3 supplies cane sugar from Brazil and beet sugar from Europe for food, beverage, retail and industrial buyers.",
+            "We source high-quality Brazilian cane sugar and European beet sugar by origin and specific ICUMSA grade. Each supply option is rigorously assessed against the technical requirements of food manufacturers, primary processors and industrial consumers worldwide.",
           cardTreatment: "category-overlay",
           modalTreatment: "decision-summary",
           items: [
@@ -267,7 +267,7 @@ export default function SugarPage() {
         technicalSpecs={{
           title: "Technical specifications",
           text:
-            "Compare the indicative values used to organise an initial grade discussion.",
+            "Compare the main indicative sugar grade values before requesting a quotation.",
           selectorLabel: "Select a sugar grade",
           disclaimer:
             "All values are indicative selection references. The supplier specification, certificate of analysis, origin and document set are confirmed with the commercial offer.",
@@ -286,45 +286,33 @@ export default function SugarPage() {
           id: "integrated-value-chain",
           title: "Integrated Value Chain Services",
           text:
-            "A3 aligns the right sugar grade and producer with commercial terms, market requirements and delivery from origin to destination.",
-          image: "/media/home/process-define-requirement-v3.webp",
-          imageAlt: "Food commodity lots and packing formats arranged in a working warehouse",
+            "Beyond sourcing, A3 provides the commercial and operational support needed to move sugar supply chains from origin to destination. We support our clients with:",
+          image: "/media/products/sugar/sugar-service-market-intelligence.webp",
+          imageAlt: "Harvested sugarcane bundled for movement at origin",
           items: [
             {
-              title: "Define the requirement",
-              description: "Intended use, ICUMSA grade, origin preference, packing, volume and destination are converted into a clear sugar sourcing brief.",
-              image: "/media/home/process-define-requirement-v3.webp",
-              imageAlt: "Food commodity lots, sacks and packing formats arranged in a working warehouse",
+              title: "Market Intelligence",
+              description: "Origin availability, grade-specific sourcing insight and relevant market information support informed procurement decisions across cane and beet sugar markets.",
+              image: "/media/products/sugar/sugar-service-market-intelligence.webp",
+              imageAlt: "Harvested sugarcane bundled for movement at origin",
             },
             {
-              title: "Source & match",
-              description: "Available sugar grades, origins and producer routes are compared against the brief and destination market.",
-              image: "/media/home/process-source-match-v3.webp",
-              imageAlt: "Rows of stacked commodity sacks in an export warehouse",
+              title: "Specification & Quality Assurance",
+              description: "ICUMSA grade, supplier specifications, certificates of analysis, packing details and destination requirements are reviewed together before an offer is confirmed.",
+              image: "/media/products/sugar/sugar-service-quality-assurance.webp",
+              imageAlt: "Laboratory technician preparing a sample for technical analysis",
             },
             {
-              title: "Qualify & structure",
-              description: "Capacity, product fit, price basis, Incoterms, payment structure and timing are assessed together.",
-              image: "/media/home/process-qualify-structure-v3.webp",
-              imageAlt: "Palletised food commodity cargo prepared for international shipment",
+              title: "Commercial De-risking",
+              description: "Price basis, payment structure and, where appropriate, partner-supported trade finance options are assessed to improve procurement flexibility and manage commercial exposure.",
+              image: "/media/products/sugar/sugar-service-commercial-derisking.webp",
+              imageAlt: "Working sugar production facility reviewed as part of supplier capability assessment",
             },
             {
-              title: "Prepare & document",
-              description: "Samples, specifications, certificates, labels and import–export documents are matched to destination requirements.",
-              image: "/media/home/process-prepare-document-v3.webp",
-              imageAlt: "Commodity samples, document sleeves, inspection labels and a cargo seal",
-            },
-            {
-              title: "Pack & load",
-              description: "Packing format, palletisation, container requirements and loading readiness are coordinated before dispatch.",
-              image: "/media/home/process-pack-load-v3.webp",
-              imageAlt: "Palletised food commodity sacks being loaded into a shipping container",
-            },
-            {
-              title: "Move & follow through",
-              description: "Booking, shipment milestones, logistics and agreed delivery conditions are followed through to destination.",
-              image: "/media/home/process-move-follow-v3.webp",
-              imageAlt: "International container ship moving through a working commercial port",
+              title: "Integrated Logistics",
+              description: "Packing, documentation, booking, loading and shipment milestones are coordinated from origin through destination follow-through.",
+              image: "/media/products/sugar/sugar-service-integrated-logistics.webp",
+              imageAlt: "Sugarcane being transported from the field as part of the origin logistics flow",
             },
           ],
         }}

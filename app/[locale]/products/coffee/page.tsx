@@ -28,61 +28,6 @@ const coffeeRelated = ["cocoa-products", "dried-fruit-nuts", "consumer-foods"]
     imageAlt: item.imageAlt,
   }));
 
-const specialtySpecs = [
-  { parameter: "Species", specification: "Arabica" },
-  { parameter: "Cup / profile basis", specification: "Distinctive attributes and lot evaluation" },
-  { parameter: "Process", specification: "Natural, pulped natural or washed; lot confirmed" },
-  { parameter: "Physical grade", specification: "Screen, defects and moisture by lot" },
-  { parameter: "ICO reference", specification: "Arabica baseline: <=86 defects/300 g; 8-12.5% moisture" },
-  { parameter: "Crop / lot", specification: "Crop, producer, region and traceability by offer" },
-  { parameter: "Commercial form", specification: "Green coffee" },
-  { parameter: "Packing", specification: "60 kg export bags or lot-specific format" },
-];
-
-const fineCupSpecs = [
-  { parameter: "Species", specification: "Arabica" },
-  { parameter: "Cup / profile basis", specification: "Fine Cup trade profile; supplier and lot confirmed" },
-  { parameter: "Process", specification: "Natural or other offer-specific process" },
-  { parameter: "Physical grade", specification: "Screen distribution and defect count by offer" },
-  { parameter: "ICO reference", specification: "Arabica baseline: <=86 defects/300 g; 8-12.5% moisture" },
-  { parameter: "Crop / lot", specification: "Current crop and lot information confirmed with offer" },
-  { parameter: "Commercial form", specification: "Green Arabica coffee" },
-  { parameter: "Packing", specification: "60 kg bags; liner option by programme" },
-];
-
-const goodCupSpecs = [
-  { parameter: "Species", specification: "Arabica" },
-  { parameter: "Cup / profile basis", specification: "Good Cup trade profile; supplier and lot confirmed" },
-  { parameter: "Process", specification: "Offer-specific, commonly natural" },
-  { parameter: "Physical grade", specification: "Screen distribution and defects by offer" },
-  { parameter: "ICO reference", specification: "Arabica baseline: <=86 defects/300 g; 8-12.5% moisture" },
-  { parameter: "Crop / lot", specification: "Crop, availability and lot information confirmed" },
-  { parameter: "Commercial form", specification: "Green Arabica coffee" },
-  { parameter: "Packing", specification: "60 kg export bags or agreed format" },
-];
-
-const rioMinasSpecs = [
-  { parameter: "Species", specification: "Arabica" },
-  { parameter: "Cup / profile basis", specification: "Rio Minas trade profile; blend target confirmed" },
-  { parameter: "Process", specification: "Supplier and lot specific" },
-  { parameter: "Physical grade", specification: "Screen, defects and moisture by offer" },
-  { parameter: "ICO reference", specification: "Arabica baseline: <=86 defects/300 g; 8-12.5% moisture" },
-  { parameter: "Crop / lot", specification: "Crop and lot details confirmed before approval" },
-  { parameter: "Commercial form", specification: "Green Arabica coffee" },
-  { parameter: "Packing", specification: "60 kg export bags or agreed format" },
-];
-
-const conilonSpecs = [
-  { parameter: "Species", specification: "Coffea canephora / Conilon" },
-  { parameter: "Cup / profile basis", specification: "Blend or soluble-coffee target" },
-  { parameter: "Process", specification: "Supplier and lot specific" },
-  { parameter: "Physical grade", specification: "Type, screen and defects by offer" },
-  { parameter: "ICO reference", specification: "Robusta baseline: <=150 defects/300 g; 8-12.5% moisture" },
-  { parameter: "Crop / lot", specification: "Crop, origin and lot information confirmed" },
-  { parameter: "Commercial form", specification: "Green Coffea canephora coffee" },
-  { parameter: "Packing", specification: "60 kg bags or supplier-specific export format" },
-];
-
 export function generateMetadata(): Metadata {
   return buildMetadata(pages.coffee.seo);
 }
@@ -105,8 +50,8 @@ export default function CoffeePage() {
         hero={{
           title: "Connecting the farm gate to the global coffee market.",
           text: [
-            "A3 supports international coffee buyers with quality-focused sourcing across selected Brazilian Arabica, Conilon and specialty coffee opportunities.",
-            "We align the buyer brief with origin availability, lot review, commercial terms, packing, export documentation and shipment coordination.",
+            "A3 Food & Beverage acts as a strategic link in the coffee value chain, supporting international buyers with quality-focused sourcing and structured export coordination.",
+            "We connect suitable origin opportunities with the buyer's quality, commercial and delivery requirements.",
           ],
           image: "/media/products/coffee/brazil-coffee-landscape.webp",
           imageAlt: "Coffee fields across a Brazilian mountain landscape",
@@ -114,17 +59,90 @@ export default function CoffeePage() {
           variant: "compact",
         }}
         sectionNavigation={[
-          { label: "Overview", href: "#overview" },
           { label: "Coffee profiles", href: "#range" },
-          { label: "Key facts", href: "#key-facts" },
-          { label: "Specifications", href: "#technical-specifications" },
+          { label: "Origins", href: "#origins" },
+          { label: "Market context", href: "#key-facts" },
           { label: "Services", href: "#integrated-value-chain" },
           { label: "Contact", href: "#contact" },
         ]}
+        origins={{
+          title: "Our Brazilian Origins",
+          text: "Brazil offers a broad range of Arabica and Coffea canephora profiles across established producing states. A3 reviews selected origin routes according to crop, producer, lot, quality requirement and commercial availability.",
+          note: "Map points indicate selected sourcing states, not individual farms or production-area boundaries.",
+          items: [
+            {
+              id: "minas-gerais",
+              title: "Minas Gerais",
+              species: "Arabica",
+              tradeContext: "Broad commercial and differentiated availability",
+              description: "Brazil's principal Arabica-producing state, with established supply networks across multiple recognised origins.",
+              regions: ["Sul de Minas", "Cerrado Mineiro", "Matas de Minas", "Mantiqueira de Minas"],
+              image: "/media/products/coffee/origin-minas-gerais.webp",
+              imageAlt: "Hilly Arabica coffee fields and farm landscape in Minas Gerais, Brazil",
+              point: { x: 373.9, y: 314.7, labelX: 337, labelY: 292, labelAnchor: "end" },
+            },
+            {
+              id: "bahia",
+              title: "Bahia",
+              species: "Arabica & Canephora",
+              tradeContext: "Highland, western and lower-altitude supply routes",
+              description: "A diverse producing state spanning contrasting climates, elevations and coffee production systems.",
+              regions: ["Chapada Diamantina", "Oeste da Bahia", "Atlântico Baiano"],
+              image: "/media/products/coffee/origin-bahia.webp",
+              imageAlt: "Broad irrigated Arabica coffee fields in western Bahia, Brazil",
+              point: { x: 433.4, y: 235.4, labelX: 405, labelY: 211, labelAnchor: "end" },
+            },
+            {
+              id: "espirito-santo",
+              title: "Espírito Santo",
+              species: "Conilon & Arabica",
+              tradeContext: "Leading Conilon scale with mountain Arabica",
+              description: "A major Brazilian coffee state with strong Canephora capability and established mountain origins.",
+              regions: ["Conilon Capixaba", "Montanhas do Espírito Santo", "Caparaó"],
+              image: "/media/products/coffee/origin-espirito-santo.webp",
+              imageAlt: "Conilon coffee plantation below rocky mountains in Espírito Santo, Brazil",
+              point: { x: 413.3, y: 319.4, labelX: 454, labelY: 308, labelAnchor: "start" },
+            },
+            {
+              id: "parana",
+              title: "Paraná",
+              species: "Arabica",
+              tradeContext: "Selected traditional-origin opportunities",
+              description: "A traditional Brazilian coffee state with selected regional sourcing opportunities.",
+              regions: ["Norte Pioneiro do Paraná"],
+              image: "/media/products/coffee/origin-parana.webp",
+              imageAlt: "Arabica coffee rows on red soil in Norte Pioneiro do Paraná, Brazil",
+              point: { x: 315.6, y: 380, labelX: 278, labelY: 405, labelAnchor: "end" },
+            },
+            {
+              id: "sao-paulo",
+              title: "São Paulo",
+              species: "Arabica",
+              tradeContext: "Production routes with Santos export access",
+              description: "An established producing state connected to Brazil's principal coffee export gateway through Santos.",
+              regions: ["Alta Mogiana", "Mogiana", "Centro-Oeste Paulista"],
+              image: "/media/products/coffee/origin-sao-paulo.webp",
+              imageAlt: "Expansive Arabica coffee farm in the Alta Mogiana region of São Paulo, Brazil",
+              point: { x: 344.5, y: 357.4, labelX: 293, labelY: 348, labelAnchor: "end" },
+            },
+            {
+              id: "rondonia",
+              title: "Rondônia",
+              species: "Coffea canephora",
+              tradeContext: "Amazon-adapted Robustas Amazônicos",
+              description: "A leading origin for Robustas Amazônicos, developed for the conditions of the Amazon region.",
+              regions: ["Matas de Rondônia", "Vale do Guaporé"],
+              image: "/media/products/coffee/origin-rondonia.webp",
+              imageAlt: "Small-scale Robusta Amazônico coffee farm in the humid landscape of Rondônia, Brazil",
+              point: { x: 155.7, y: 188.6, labelX: 116, labelY: 166, labelAnchor: "end" },
+            },
+          ],
+        }}
+        originsPosition="after-portfolio"
         productPortfolio={{
           id: "range",
-          title: "Brazilian coffee profiles",
-          text: "A3 reviews selected Brazilian green coffee profiles against cup target, physical grade, process, crop, packing, volume and destination requirements.",
+          title: "Brazilian Green Coffee Portfolio",
+          text: "Selected Brazilian green coffee routes ranging from differentiated Arabica lots to established commercial Arabica and Conilon profiles.",
           cardTreatment: "category-overlay",
           modalTreatment: "decision-summary",
           items: [
@@ -137,8 +155,8 @@ export default function CoffeePage() {
               imageAlt: "Selected unroasted specialty Arabica beans on dark coffee wood with ripe cherries and leaves",
               source: "Brazil; region and producer by lot",
               fit: "Specialty roasting and differentiated programmes",
-              overview: "Selected specialty coffee is organised lot by lot for buyers seeking distinctive attributes, clearer origin information and differentiated market positioning.",
-              bestFit: "Choose a selected specialty lot when the buying decision depends on distinctive cup attributes, process, traceability and lot-specific approval rather than a broad commercial profile.",
+              overview: "Selected specialty coffee is organised lot by lot for programmes in which cup character, process and traceability shape the buying decision.",
+              bestFit: "Approval should be tied to the offered sample, cupping information and lot documentation rather than a broad trade-name expectation.",
               profile: [
                 { title: "Species", description: "Arabica" },
                 { title: "Process", description: "Natural, pulped natural or washed, subject to lot" },
@@ -148,7 +166,6 @@ export default function CoffeePage() {
               applications: ["Specialty roasting", "Single-origin or traceable programmes", "Differentiated wholesale ranges", "Lot-led seasonal offers"],
               supplyFormats: ["60 kg export bags", "Liner options subject to supplier", "Lot-specific formats where available"],
               documentPackage: "Cup notes, physical analysis, crop, process, lot identity, supplier specification and supporting documents are confirmed against the offered lot.",
-              specs: specialtySpecs,
               cta: { label: "Request availability for this profile", href: coffeeQuoteHref("selected-specialty-lots") },
             },
             {
@@ -160,8 +177,8 @@ export default function CoffeePage() {
               imageAlt: "Unroasted Arabica Santos Fine Cup beans in a commercial metal sampling scoop",
               source: "Brazil; supplier and lot confirmed",
               fit: "Roasting, wholesale and distribution",
-              overview: "Arabica Santos Fine Cup is a clean, balanced Brazilian trade profile reviewed against the buyer's cup target, physical grade and roasting programme.",
-              bestFit: "Choose this profile for a balanced commercial Arabica route where clean cup character, consistency and repeatable roasting performance are important.",
+              overview: "Arabica Santos Fine Cup is considered when a commercial roasting programme calls for a clean, balanced Brazilian Arabica profile.",
+              bestFit: "The offered sample and physical analysis should confirm that the lot matches the buyer's approved cup reference and roasting programme.",
               profile: [
                 { title: "Species", description: "Arabica" },
                 { title: "Process", description: "Offer-specific; commonly natural" },
@@ -171,7 +188,6 @@ export default function CoffeePage() {
               applications: ["Consistent roasting programmes", "Wholesale coffee", "Balanced blends", "Foodservice and distribution"],
               supplyFormats: ["60 kg export bags", "GrainPro or supplier liner by enquiry", "Container plan aligned to route and volume"],
               documentPackage: "Cup profile, screen, defect count, crop, moisture, supplier specification, COA and export documents are tied to the offered lot.",
-              specs: fineCupSpecs,
               cta: { label: "Request availability for this profile", href: coffeeQuoteHref("arabica-santos-fine-cup") },
             },
             {
@@ -183,8 +199,8 @@ export default function CoffeePage() {
               imageAlt: "Unroasted Arabica Santos Good Cup beans spilling from a natural jute export sack",
               source: "Brazil; supplier and lot confirmed",
               fit: "Commercial roasting and blends",
-              overview: "Arabica Santos Good Cup provides a practical commercial Arabica route for buyers balancing cup requirement, dependable availability and programme economics.",
-              bestFit: "Choose this profile for volume-led commercial roasting or blend use where a defined, workable Arabica specification matters more than differentiated lot attributes.",
+              overview: "Arabica Santos Good Cup supports volume-led commercial roasting and blend programmes where supply practicality and programme economics matter.",
+              bestFit: "Use an agreed cup reference and physical specification to approve the lot; the trade name alone does not define the final quality.",
               profile: [
                 { title: "Species", description: "Arabica" },
                 { title: "Process", description: "Offer-specific; commonly natural" },
@@ -194,7 +210,6 @@ export default function CoffeePage() {
               applications: ["Commercial roasting", "Volume-led blends", "Wholesale and distribution", "Private-label coffee programmes"],
               supplyFormats: ["60 kg export bags", "Supplier-specific liner options", "Agreed container or programme format"],
               documentPackage: "Screen distribution, defects, moisture, crop, lot details, supplier specification, COA and route documents are confirmed with the offer.",
-              specs: goodCupSpecs,
               cta: { label: "Request availability for this profile", href: coffeeQuoteHref("arabica-santos-good-cup") },
             },
             {
@@ -206,8 +221,8 @@ export default function CoffeePage() {
               imageAlt: "Unroasted Arabica Rio Minas beans in a worn hand-carved wooden coffee scoop",
               source: "Brazil; supplier and lot confirmed",
               fit: "Defined traditional blend applications",
-              overview: "Arabica Rio Minas is reviewed as a traditional commercial trade profile for buyers that have a clearly defined cup target and blend application.",
-              bestFit: "Choose this route only where the intended blend calls for the supplier-confirmed Rio Minas cup profile; final sensory and physical approval remains lot specific.",
+              overview: "Arabica Rio Minas is a traditional commercial route for blends built around a clearly defined, stronger cup profile.",
+              bestFit: "Select this route only against an approved sensory reference; final cup and physical acceptance remain specific to the offered lot.",
               profile: [
                 { title: "Species", description: "Arabica" },
                 { title: "Process", description: "Supplier and lot specific" },
@@ -217,7 +232,6 @@ export default function CoffeePage() {
               applications: ["Traditional commercial blends", "Defined stronger-cup targets", "Roasting programmes with an approved reference", "Wholesale supply"],
               supplyFormats: ["60 kg export bags", "Liner subject to supplier", "Loading plan confirmed against destination"],
               documentPackage: "Descriptive cup information, screen, defects, crop, moisture, supplier specification and lot documents are reviewed before approval.",
-              specs: rioMinasSpecs,
               cta: { label: "Request availability for this profile", href: coffeeQuoteHref("arabica-rio-minas") },
             },
             {
@@ -229,8 +243,8 @@ export default function CoffeePage() {
               imageAlt: "Brazilian unroasted Conilon beans with Coffea canephora leaves and ripe cherries",
               source: "Brazil; origin and supplier confirmed",
               fit: "Blends, soluble coffee and commercial programmes",
-              overview: "Brazilian Conilon is reviewed by supplier-confirmed type, physical grade, crop, cup requirement and the performance needed in the final blend or soluble-coffee programme.",
-              bestFit: "Choose Conilon when the programme needs Coffea canephora body, intensity, blend structure or soluble-coffee suitability against a defined commercial specification.",
+              overview: "Brazilian Conilon is considered for programmes that need Coffea canephora body, intensity, blend structure or soluble-coffee suitability.",
+              bestFit: "Supplier-confirmed type, physical grade and cup requirement must be approved for the intended blend or soluble-coffee programme.",
               profile: [
                 { title: "Species", description: "Coffea canephora / Conilon" },
                 { title: "Process", description: "Supplier and lot specific" },
@@ -240,14 +254,27 @@ export default function CoffeePage() {
               applications: ["Espresso and commercial blends", "Soluble coffee", "Volume-led roasting", "Programmes requiring Canephora structure"],
               supplyFormats: ["60 kg export bags", "Supplier-specific export formats", "Container and liner plan confirmed by route"],
               documentPackage: "Type, screen, defects, crop, moisture, cup requirement, specification, COA and origin/export documents are confirmed with the offered lot.",
-              specs: conilonSpecs,
               cta: { label: "Request availability for this profile", href: coffeeQuoteHref("robusta-conilon") },
             },
           ],
         }}
         editorialFacts={{
-          title: "Coffee key facts",
-          text: "Current market context and the production diversity behind Brazilian coffee supply.",
+          title: "Coffee Market Context",
+          text: "The global scale of green coffee trade and the two complementary supply bases behind Brazilian availability.",
+          catalogue: {
+            label: "Download coffee catalogue",
+            href: "/assets/a3/resources/a3-coffee-catalogue.pdf",
+          },
+          sources: [
+            {
+              label: "USDA FAS — Coffee: World Markets and Trade",
+              href: "https://apps.fas.usda.gov/psdonline/circulars/coffee.pdf",
+            },
+            {
+              label: "Brazil Ministry of Agriculture — Coffee in Brazil",
+              href: "https://www.gov.br/agricultura/pt-br/assuntos/politica-agricola/cafe/cafeicultura-brasileira",
+            },
+          ],
           items: [
             {
               title: "A global agricultural market",
@@ -262,72 +289,43 @@ export default function CoffeePage() {
               tone: "sage",
             },
             {
-              title: "Arabica and Conilon diversity",
-              description: "Brazil produces both Arabica and Coffea canephora / Conilon across multiple states. A3 reviews opportunities in Minas Gerais, Bahia, Espírito Santo, Paraná, São Paulo and Rondônia subject to crop, producer and lot availability.",
+              title: "Two complementary supply bases",
+              description: "Brazil's Arabica and Coffea canephora / Conilon supply serves different sensory, blending and processing requirements. Species, cup target and physical grade are assessed at lot level.",
               slot: "secondary-bottom",
               tone: "warm",
             },
           ],
         }}
-        technicalSpecs={{
-          title: "Technical specifications",
-          text: "Compare the selection references used to organise an initial Brazilian green coffee discussion.",
-          selectorLabel: "Select a coffee profile",
-          disclaimer: "Trade names and ICO values are selection references, not guaranteed lot specifications. Final cup profile, physical analysis, crop, origin, supplier specification, certificate of analysis, packing and document set are confirmed with the commercial offer.",
-          catalogue: {
-            label: "Download UK coffee catalogue",
-            href: "/assets/a3/resources/a3-coffee-catalogue.pdf",
-          },
-          profiles: [
-            { title: "Specialty Coffee", subtitle: "Selected Arabica lots", rows: specialtySpecs },
-            { title: "Santos Fine Cup", subtitle: "Commercial Arabica", rows: fineCupSpecs },
-            { title: "Santos Good Cup", subtitle: "Commercial Arabica", rows: goodCupSpecs },
-            { title: "Rio Minas", subtitle: "Traditional trade profile", rows: rioMinasSpecs },
-            { title: "Robusta Conilon", subtitle: "Coffea canephora", rows: conilonSpecs },
-          ],
-        }}
         shipmentOptions={{
           id: "integrated-value-chain",
-          title: "Integrated Value Chain Services",
-          text: "A3 connects the coffee brief, available origin lots, commercial structure and export route from first requirement through shipment follow-through.",
-          image: "/media/home/process-define-requirement-v3.webp",
-          imageAlt: "Commercial food commodity samples and packing formats arranged for review",
+          title: "Structured Sourcing & Export Excellence",
+          text: "A3 helps coffee buyers evaluate available lots with technical clarity and commercial confidence, then coordinates the route from origin approval through shipment follow-through.",
+          image: "/media/products/coffee/coffee-cherry-picking.webp",
+          imageAlt: "Coffee cherries being selected during harvest at origin",
           items: [
             {
-              title: "Define the requirement",
-              description: "Species, cup target, process, crop, screen, defects, volume, packing, destination and shipment window are converted into a clear coffee sourcing brief.",
-              image: "/media/home/process-define-requirement-v3.webp",
-              imageAlt: "Commodity samples and formats arranged to define a commercial requirement",
+              title: "Origin & Lot Sourcing",
+              description: "Available producer and supplier lots are matched against species, cup target, process, crop, volume, packing and destination requirements.",
+              image: "/media/products/coffee/coffee-cherry-picking.webp",
+              imageAlt: "Coffee cherries being selected during harvest at origin",
             },
             {
-              title: "Source & match",
-              description: "Available producer, supplier and origin opportunities are compared against the required cup, physical grade, volume and route.",
-              image: "/media/products/coffee/brazil-coffee-field.webp",
-              imageAlt: "Rows of coffee plants at a Brazilian producing origin",
-            },
-            {
-              title: "Sample, cup & grade review",
-              description: "Representative samples, descriptive cupping information, screen, moisture, defect count and supplier quality documents are reviewed before commitment.",
+              title: "Quality & Lot Information",
+              description: "Representative samples, descriptive cupping information, screen distribution, moisture, defect count, process, crop, supplier specifications and supporting quality documents are reviewed before commercial commitment.",
               image: "/media/products/coffee/green-beans-hands.webp",
-              imageAlt: "Green coffee beans being reviewed by hand",
+              imageAlt: "Green coffee beans being physically reviewed by hand",
             },
             {
-              title: "Qualify & structure",
-              description: "Lot fit, availability, price basis, payment structure, Incoterms and shipment timing are assessed as one workable trade.",
-              image: "/media/home/process-qualify-structure-v3.webp",
-              imageAlt: "Palletised commodity cargo prepared for international shipment",
+              title: "Commercial Structuring & De-risking",
+              description: "Lot availability, price basis, payment structure, Incoterms, shipment window and, where appropriate, partner-supported trade-finance options are assessed as one workable trade.",
+              image: "/media/products/coffee/coffee-drying-beds.webp",
+              imageAlt: "Working coffee processing facility with beans drying on raised beds",
             },
             {
-              title: "Prepare, pack & document",
-              description: "Approved lot details, bag and liner format, container preparation, certificates, COA and export documents are aligned to destination requirements.",
-              image: "/media/home/process-prepare-document-v3.webp",
-              imageAlt: "Commodity samples, document sleeves, labels and cargo seal",
-            },
-            {
-              title: "Move & follow through",
-              description: "Origin handling, booking, loading, port movement, shipment milestones and agreed delivery conditions are coordinated through the route.",
-              image: "/media/home/process-move-follow-v3.webp",
-              imageAlt: "Container ship moving through a working commercial port",
+              title: "Export Coordination",
+              description: "Origin handling, warehousing checks where applicable, packing, certificates, export documentation, booking, loading and shipment milestones are coordinated through the agreed route.",
+              image: "/media/products/coffee/coffee-export-varginha.webp",
+              imageAlt: "Green coffee export bags being loaded into a shipping container at a Brazilian warehouse",
             },
           ],
         }}

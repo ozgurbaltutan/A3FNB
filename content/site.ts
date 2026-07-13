@@ -469,7 +469,7 @@ export const homeLanding = {
     text:
       "A workable trade connects the right product and producer with commercial terms, market requirements and a delivery plan that holds together from origin to destination.",
     image: homeAssets.media.processDefineRequirementV3,
-    imageAlt: "Food commodity lots and packing formats prepared in a working warehouse",
+    imageAlt: "Commodity specialist inspecting a grain sample at a quality station",
     cta: { label: "Request a Quote", href: "/en/request-a-quote" },
     steps: [
       {
@@ -479,7 +479,7 @@ export const homeLanding = {
           "Intended use, specification, origin preference, packing, volume and destination are converted into a clear sourcing brief.",
         icon: homeAssets.icons.processSource,
         image: homeAssets.media.processDefineRequirementV3,
-        imageAlt: "Food commodity lots, sacks and packing formats arranged in a working warehouse",
+        imageAlt: "Commodity specialist inspecting a grain sample at a quality station",
       },
       {
         number: "02",
@@ -488,7 +488,7 @@ export const homeLanding = {
           "Available product, origin and producer routes are compared against the brief and the destination market.",
         icon: homeAssets.icons.processSource,
         image: homeAssets.media.processSourceMatchV3,
-        imageAlt: "Rows of stacked commodity sacks in an export warehouse",
+        imageAlt: "Bulk grain being transferred into a trailer at origin",
       },
       {
         number: "03",
@@ -497,7 +497,7 @@ export const homeLanding = {
           "Capacity, product fit, price basis, Incoterms, payment structure and timing are assessed together.",
         icon: homeAssets.icons.processVerify,
         image: homeAssets.media.processQualifyStructureV3,
-        imageAlt: "Palletised food commodity cargo prepared for international shipment",
+        imageAlt: "Workers operating a food processing line in an active production facility",
       },
       {
         number: "04",
@@ -506,7 +506,7 @@ export const homeLanding = {
           "Samples, specifications, certificates, labels and import–export documents are matched to destination requirements.",
         icon: homeAssets.icons.processMatch,
         image: homeAssets.media.processPrepareDocumentV3,
-        imageAlt: "Commodity samples, document sleeves, inspection labels and a cargo seal",
+        imageAlt: "Warehouse operator reviewing an inventory and shipment checklist",
       },
       {
         number: "05",
@@ -515,7 +515,7 @@ export const homeLanding = {
           "Packing format, palletisation, container requirements and loading readiness are coordinated before dispatch.",
         icon: homeAssets.icons.processCoordinate,
         image: homeAssets.media.processPackLoadV3,
-        imageAlt: "Palletised food commodity sacks being loaded into a shipping container",
+        imageAlt: "Forklift and operations staff working at a container transshipment terminal",
       },
       {
         number: "06",
@@ -524,7 +524,7 @@ export const homeLanding = {
           "Booking, shipment milestones, logistics and agreed delivery conditions are followed through to destination.",
         icon: homeAssets.icons.processCoordinate,
         image: homeAssets.media.processMoveFollowV3,
-        imageAlt: "International container ship moving through a working commercial port",
+        imageAlt: "Cargo vessel escorted by tugboats while leaving a working port",
       },
     ],
   },
@@ -643,7 +643,7 @@ export const pages: Record<string, PageContent> = {
       "A3 supports selected green coffee sourcing opportunities, with a current focus on South American origins and Brazilian coffee profiles where available.",
     sections: ["overview", "buyer-fields", "products", "documentation", "cta"],
     seo: {
-      metaTitle: "Coffee Sourcing & Export Coordination | A3 Food & Beverage",
+      metaTitle: "Green Coffee Sourcing & Export Coordination | A3 Food & Beverage",
       metaDescription:
         "A3 supports selected green coffee sourcing opportunities for commercial buyers, including South American and Brazilian coffee profiles where available.",
       canonicalPath: "/en/products/coffee",

@@ -189,6 +189,8 @@ type ProductKeyFacts = {
 type ProductEditorialFacts = {
   title: string;
   text?: string;
+  sources?: ProductDetailLink[];
+  catalogue?: ProductDetailLink;
   items: Array<ProductDetailItem & {
     value?: string;
     slot?: "primary" | "secondary-top" | "secondary-bottom";
@@ -207,7 +209,22 @@ type ProductFlowchart = {
 type ProductOrigins = {
   title: string;
   text: string;
-  items: Array<ProductDetailItem & { regions: string[] }>;
+  note?: string;
+  items: Array<ProductDetailItem & {
+    id: string;
+    species: string;
+    tradeContext: string;
+    regions: string[];
+    image: string;
+    imageAlt: string;
+    point: {
+      x: number;
+      y: number;
+      labelX: number;
+      labelY: number;
+      labelAnchor?: "start" | "middle" | "end";
+    };
+  }>;
 };
 
 type ProductServices = {
@@ -233,6 +250,7 @@ type ProductDetailProps = {
   editorialFacts?: ProductEditorialFacts;
   flowchart?: ProductFlowchart;
   origins?: ProductOrigins;
+  originsPosition?: "before-portfolio" | "after-portfolio";
   services?: ProductServices;
   servicesPosition?: "before-shipment" | "after-shipment";
   sectionNavigation?: ProductSectionNavigationItem[];
@@ -294,6 +312,7 @@ export function ProductDetailLayout({
   editorialFacts,
   flowchart,
   origins,
+  originsPosition = "before-portfolio",
   services,
   servicesPosition = "after-shipment",
   sectionNavigation,
@@ -331,7 +350,7 @@ export function ProductDetailLayout({
         <ProductStory key={section.title} priority={index === 0} section={section} />
       ))}
       {intro ? <ProductIntro intro={intro} /> : null}
-      {origins ? <ProductOriginsSection origins={origins} /> : null}
+      {origins && originsPosition === "before-portfolio" ? <ProductOriginsSection origins={origins} /> : null}
       {keyFacts && keyFactsPosition === "before-portfolio" ? <ProductKeyFactsSection facts={keyFacts} /> : null}
       {productRange ? (
         <ProductRange profiles={productRange} />
@@ -339,6 +358,7 @@ export function ProductDetailLayout({
         <ProductProfiles profiles={profiles} />
       ) : null}
       {productPortfolio ? <ProductPortfolioSection appearance={cardAppearance} portfolio={productPortfolio} /> : null}
+      {origins && originsPosition === "after-portfolio" ? <ProductOriginsSection origins={origins} /> : null}
       {keyFacts && keyFactsPosition === "after-portfolio" ? <ProductKeyFactsSection facts={keyFacts} /> : null}
       {editorialFacts ? <ProductEditorialFactsSection facts={editorialFacts} /> : null}
       {flowchart ? <ProductFlowchartSection flowchart={flowchart} /> : null}
@@ -397,6 +417,23 @@ function ProductEditorialFactsSection({ facts }: { facts: ProductEditorialFacts 
             </article>
           ))}
         </div>
+        {facts.sources?.length || facts.catalogue ? (
+          <div className="product-editorial-facts__sources" aria-label="Coffee market context sources">
+            <div className="product-editorial-facts__source-list">
+              {facts.sources?.length ? <span>Sources:</span> : null}
+              {facts.sources?.map((source) => (
+                <Link href={source.href} key={source.href} rel="noreferrer" target="_blank">
+                  {source.label}
+                </Link>
+              ))}
+            </div>
+            {facts.catalogue ? (
+              <Link className="product-editorial-facts__catalogue premium-focus" href={facts.catalogue.href} target="_blank">
+                {facts.catalogue.label}
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
       </Container>
     </section>
   );
@@ -424,6 +461,17 @@ function ProductFlowchartSection({ flowchart }: { flowchart: ProductFlowchart })
 }
 
 function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
+  const [activeOriginId, setActiveOriginId] = useState(origins.items[0]?.id ?? "");
+  const activeOrigin = origins.items.find((item) => item.id === activeOriginId) ?? origins.items[0];
+
+  if (!activeOrigin) return null;
+
+  function handleMapKeyDown(event: ReactKeyboardEvent<SVGGElement>, originId: string) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setActiveOriginId(originId);
+  }
+
   return (
     <section className="product-detail-section product-origins" id="origins">
       <Container className="a3-container product-origins__inner">
@@ -431,13 +479,81 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
           <h2 className="type-section">{origins.title}</h2>
           <p className="type-section-lead">{origins.text}</p>
         </div>
-        <div className="product-origins__grid">
+        <div className="product-origins__showcase">
+          <div className="product-origins__map-panel">
+            <svg
+              aria-label="Brazil map with selected coffee sourcing states"
+              className="product-origins__map"
+              role="img"
+              viewBox="0 0 520 520"
+            >
+              <path
+                className="product-origins__land"
+                d="M270.784,485L267.753,477.59L272.555,471.415L266.258,462.606L257.678,455.489L246.422,447.293L242.368,447.681L231.388,437.867L224.304,439.215L238.866,422.073L251.224,410.024L258.544,404.988L267.753,398.206L267.989,388.445L262.519,381.435L257.088,383.775L259.213,376.787L260.708,369.649L260.708,363.051L256.773,360.885L252.68,362.828L248.626,362.302L247.327,357.692L246.304,346.808L244.258,343.263L236.898,340.065L232.411,342.383L220.88,340.125L221.588,324.184L218.361,317.687L221.785,315.284L220.723,308.661L223.753,303.587L225.681,294.51L223.084,287.376L217.141,284.157L215.96,279.646L217.574,273.044L196.597,272.581L192.386,259.359L195.574,259.167L195.456,254.285L193.291,250.998L192.819,244.474L186.483,241.142L179.595,241.257L175.069,237.986L167.67,235.763L163.381,231.588L151.141,229.731L139.255,219.723L140.16,212.253L138.822,207.978L139.964,199.651L125.677,201.529L119.892,205.702L110.328,210.199L107.888,213.572L102.26,213.817L94.153,212.874L87.974,214.797L83.015,213.515L83.724,196.629L74.75,203.164L65.108,202.882L60.976,196.967L53.734,196.329L56.056,191.567L49.956,184.847L45.43,174.907L48.303,172.892L48.303,168.23L54.915,165.043L53.813,159.104L56.607,155.272L57.394,150.16L69.91,142.694L78.843,140.578L80.3,138.927L90.178,139.446L95.098,109.429L95.334,104.691L93.641,98.417L88.801,94.439L88.84,86.482L94.98,84.687L97.183,85.816L97.538,81.634L91.162,80.505L91.005,73.657L112.296,73.898L115.917,70.139L118.947,73.601L121.112,80.061L123.159,78.71L129.18,84.484L137.681,83.781L139.806,80.431L147.914,77.877L152.44,76.082L153.699,71.454L161.491,68.343L160.901,66.047L151.652,65.102L150.118,58.211L150.59,50.87L145.67,48.032L147.717,47.012L155.824,48.422L164.522,51.167L167.67,48.57L175.542,46.864L187.742,42.763L191.756,38.585L190.3,35.483L196.007,35L198.526,37.527L197.109,42.336L200.887,44.006L203.366,49.09L200.336,52.965L198.604,62.268L201.399,67.806L202.186,72.879L208.916,78.007L214.307,78.543L215.488,76.396L218.951,75.934L223.91,74.009L227.452,71.102L233.513,72.028L236.15,71.639L242.093,72.528L243.077,70.306L241.266,68.121L242.368,64.954L246.776,65.936L251.932,64.806L258.19,67.121L262.952,69.38L266.336,66.417L268.776,66.88L270.272,69.954L275.506,69.177L279.717,65.028L283.063,56.951L289.517,46.938L293.256,46.418L295.972,52.483L302.072,71.62L307.936,73.416L308.211,80.968L300.025,89.98L303.41,93.273L322.734,94.975L323.127,105.949L331.431,98.769L345.167,102.692L363.349,109.373L368.662,115.779L366.891,121.835L379.603,118.464L400.856,124.261L417.189,123.835L433.364,132.898L447.335,145.182L455.758,148.339L465.085,148.785L469.06,152.242L472.76,166.236L474.57,172.91L470.241,191.174L464.652,198.393L449.264,213.855L442.298,226.473L434.19,236.2L431.475,236.409L428.405,244.684L429.192,265.864L426.162,283.42L424.981,290.988L421.518,295.523L419.589,310.977L408.491,326.184L406.641,338.308L397.786,343.423L395.228,350.542L383.342,350.501L366.144,355.07L358.469,360.379L346.229,363.882L333.36,373.438L324.111,385.44L322.498,394.538L324.308,401.302L322.301,413.776L319.821,419.857L312.147,426.73L300.025,448.975L290.422,459.118L282.984,465.163L277.986,477.524Z"
+              />
+              {origins.items.map((item) => {
+                const selected = item.id === activeOrigin.id;
+                return (
+                  <g
+                    aria-label={`Show ${item.title} coffee origin information`}
+                    aria-pressed={selected}
+                    className={`product-origins__pin${selected ? " is-selected" : ""}`}
+                    key={item.id}
+                    onClick={() => setActiveOriginId(item.id)}
+                    onKeyDown={(event) => handleMapKeyDown(event, item.id)}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <line x1={item.point.x} x2={item.point.labelX} y1={item.point.y} y2={item.point.labelY - 6} />
+                    <circle className="product-origins__pin-halo" cx={item.point.x} cy={item.point.y} r="11.5" />
+                    <circle className="product-origins__pin-dot" cx={item.point.x} cy={item.point.y} r="6.2" />
+                    <text textAnchor={item.point.labelAnchor ?? "start"} x={item.point.labelX} y={item.point.labelY}>{item.title}</text>
+                  </g>
+                );
+              })}
+            </svg>
+            {origins.note ? <p className="product-origins__note">{origins.note}</p> : null}
+          </div>
+
+          <article aria-live="polite" className="product-origins__detail" key={activeOrigin.id}>
+            <figure className="product-origins__detail-media">
+              <Image
+                alt={activeOrigin.imageAlt}
+                fill
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                src={activeOrigin.image}
+              />
+            </figure>
+            <div className="product-origins__detail-content">
+              <h3>{activeOrigin.title}</h3>
+              <p>{activeOrigin.description}</p>
+              <dl className="product-origins__facts">
+                <div>
+                  <dt>Coffee focus</dt>
+                  <dd>{activeOrigin.species}</dd>
+                </div>
+                <div>
+                  <dt>Trade context</dt>
+                  <dd>{activeOrigin.tradeContext}</dd>
+                </div>
+              </dl>
+              <div className="product-origins__selected-label">Selected origins</div>
+              <ul>{activeOrigin.regions.map((region) => <li key={region}>{region}</li>)}</ul>
+            </div>
+          </article>
+        </div>
+        <div aria-label="Select a Brazilian coffee origin" className="product-origins__tabs">
           {origins.items.map((item) => (
-            <article key={item.title}>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-              <ul>{item.regions.map((region) => <li key={region}>{region}</li>)}</ul>
-            </article>
+            <button
+              aria-pressed={item.id === activeOrigin.id}
+              className="premium-focus"
+              data-active={item.id === activeOrigin.id}
+              key={item.id}
+              onClick={() => setActiveOriginId(item.id)}
+              type="button"
+            >
+              {item.title}
+            </button>
           ))}
         </div>
       </Container>
