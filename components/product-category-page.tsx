@@ -118,7 +118,7 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
           title: category.title,
           summary: category.shortDescription,
           href: productCategoryHref(category),
-          imageAlt: detail.imageAlt,
+          image: detail.image,
         })}
       />
       <ProductDetailLayout

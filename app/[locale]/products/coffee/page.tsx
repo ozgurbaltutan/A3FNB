@@ -41,7 +41,7 @@ export default function CoffeePage() {
           title: "Coffee",
           summary: pages.coffee.description,
           href: "/en/products/coffee",
-          imageAlt: "Brazilian green coffee sourcing for commercial buyers",
+          image: "/media/products/coffee/brazil-coffee-landscape.webp",
         })}
       />
       <ProductDetailLayout

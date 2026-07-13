@@ -85,7 +85,7 @@ export default function SugarPage() {
           title: "Sugar",
           summary: pages.sugar.description,
           href: "/en/products/sugar",
-          imageAlt: "Sugar sourcing category for commercial buyers",
+          image: "/media/products/sugar/sugarcane-field-barbados.webp",
         })}
       />
       <ProductDetailLayout

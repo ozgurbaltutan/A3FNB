@@ -62,12 +62,6 @@ const footerLegalLinks = [
   { label: "Modern Slavery Act", href: "/en/modern-slavery-act" },
 ];
 
-const footerSocialLinks = [
-  { label: "LinkedIn", href: "#", icon: "linkedin" },
-  { label: "X / Twitter", href: "#", icon: "twitter" },
-  { label: "Instagram", href: "#", icon: "instagram" },
-];
-
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
@@ -376,19 +370,6 @@ export function Footer() {
               />
             </Link>
             <p className="site-footer__description type-p3">{company.positioning}</p>
-            <div className="site-footer__social" aria-label="Social channels">
-              {footerSocialLinks.map((item) => (
-                <span
-                  aria-label={`${item.label} profile coming soon`}
-                  className="footer-social-link footer-social-link--placeholder"
-                  key={item.label}
-                  role="img"
-                  title={`${item.label} profile coming soon`}
-                >
-                  <FooterSocialIcon icon={item.icon} />
-                </span>
-              ))}
-            </div>
           </div>
           <div className="site-footer__columns">
             {sectionOrder.map((sectionId) => {
@@ -424,30 +405,6 @@ export function Footer() {
         </div>
       </Container>
     </footer>
-  );
-}
-
-function FooterSocialIcon({ icon }: { icon: string }) {
-  if (icon === "linkedin") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M6.9 9.4H3.7v10.4h3.2V9.4Zm.2-3.2c0-1-.8-1.8-1.9-1.8s-1.9.8-1.9 1.8S4.1 8 5.2 8s1.9-.8 1.9-1.8Zm13.6 7.6c0-3.1-1.7-4.7-4-4.7-1.8 0-2.7 1-3.1 1.7V9.4h-3.1v10.4h3.2v-5.2c0-1.4.3-2.7 2-2.7s1.7 1.5 1.7 2.8v5.1h3.2v-6Z" />
-      </svg>
-    );
-  }
-
-  if (icon === "instagram") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M8 3.8h8A4.2 4.2 0 0 1 20.2 8v8a4.2 4.2 0 0 1-4.2 4.2H8A4.2 4.2 0 0 1 3.8 16V8A4.2 4.2 0 0 1 8 3.8Zm0 1.9A2.3 2.3 0 0 0 5.7 8v8A2.3 2.3 0 0 0 8 18.3h8a2.3 2.3 0 0 0 2.3-2.3V8A2.3 2.3 0 0 0 16 5.7H8Zm4 3.2a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2Zm0 1.9a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm4.1-2.2a.8.8 0 1 1 1.6 0 .8.8 0 0 1-1.6 0Z" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M17.7 4.2h3.1l-6.7 7.7 7.9 10h-6.2l-4.9-6.4-5.5 6.4H2.3l7.2-8.3L2 4.2h6.4l4.4 5.8 4.9-5.8Zm-1.1 16h1.7L7.5 5.8H5.7l10.9 14.4Z" />
-    </svg>
   );
 }
 

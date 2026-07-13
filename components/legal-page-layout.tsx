@@ -23,7 +23,7 @@ export function LegalPageLayout({
   sections: LegalPageSection[];
 }) {
   return (
-    <main className="legal-page">
+    <div className="legal-page">
       <InnerPageHero
         title={title}
         text={description}
@@ -75,6 +75,6 @@ export function LegalPageLayout({
           </div>
         </Container>
       </section>
-    </main>
+    </div>
   );
 }

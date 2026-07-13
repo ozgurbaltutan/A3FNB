@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
 import { pages, productCategories, productCategoryHref } from "@/content/site";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, isSiteIndexable } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!isSiteIndexable()) return [];
+
   const pageEntries: MetadataRoute.Sitemap = Object.values(pages)
     .filter((page) => page.seo.sitemapInclude && page.seo.robots.index)
     .map((page) => ({

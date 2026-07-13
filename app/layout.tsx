@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/app/globals.css";
+import { getSiteUrl } from "@/lib/seo";
 
 const gilroy = localFont({
   src: [
@@ -25,10 +26,14 @@ const gilroy = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "A3 Food & Beverage",
     template: "%s",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.png",
   },
 };
 

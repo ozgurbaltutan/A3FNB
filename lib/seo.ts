@@ -3,7 +3,21 @@ import type { NavigationItem, PageSeo } from "@/lib/types";
 import { company } from "@/content/site";
 
 export function getSiteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredUrl) return configuredUrl.replace(/\/$/, "");
+
+  if (process.env.VERCEL === "1") {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL must be configured for Vercel deployments. Use the preview or production public URL.",
+    );
+  }
+
+  return "http://localhost:3000";
+}
+
+export function isSiteIndexable() {
+  return process.env.SITE_INDEXABLE === "true";
 }
 
 export function absoluteUrl(path: string) {
@@ -12,6 +26,10 @@ export function absoluteUrl(path: string) {
 }
 
 export function buildMetadata(seo: PageSeo): Metadata {
+  const indexable = isSiteIndexable();
+  const socialImage = seo.ogImage?.src ?? "/brand/a3-social-card.png";
+  const socialImageAlt = seo.ogImage?.alt ?? "A3 Food & Beverage";
+
   return {
     title: seo.metaTitle,
     description: seo.metaDescription,
@@ -26,18 +44,24 @@ export function buildMetadata(seo: PageSeo): Metadata {
       siteName: company.name,
       locale: "en_GB",
       type: "website",
-      images: seo.ogImage?.src
-        ? [
-            {
-              url: absoluteUrl(seo.ogImage.src),
-              alt: seo.ogImage.alt,
-            },
-          ]
-        : undefined,
+      images: [
+        {
+          url: absoluteUrl(socialImage),
+          alt: socialImageAlt,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+      images: [absoluteUrl(socialImage)],
     },
     robots: {
-      index: seo.robots.index,
-      follow: seo.robots.follow,
+      index: indexable && seo.robots.index,
+      follow: indexable && seo.robots.follow,
     },
   };
 }
@@ -122,7 +146,7 @@ export function productFamilyJsonLd(product: {
   title: string;
   summary: string;
   href: string;
-  imageAlt: string;
+  image: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -134,6 +158,6 @@ export function productFamilyJsonLd(product: {
       "@type": "Brand",
       name: company.name,
     },
-    image: product.imageAlt,
+    image: absoluteUrl(product.image),
   };
 }
