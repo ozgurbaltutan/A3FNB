@@ -123,29 +123,22 @@ export default function SugarPage() {
               title: "ICUMSA 45 / White Refined Sugar",
               cardTitle: "ICUMSA 45",
               description:
-                "A refined white cane sugar for food production, beverages, retail packing and direct consumption.",
+                "Refined white cane sugar for food, beverages and retail packing.",
               image: "/media/products/sugar/icumsa-45-v3.png",
               imageAlt: "Bright white refined cane sugar crystals with cut sugar cane",
-              source: "Brazil",
-              fit: "Food, beverage and retail packing",
-              overview:
-                "ICUMSA 45 is a refined white cane sugar option for buyers that need a clean, consistent profile for food, beverage or consumer packing use.",
-              bestFit: "Choose this low-colour refined grade when the finished product needs a clean visual profile, neutral sweetness and consistent performance in direct food use.",
-              profile: [
-                { title: "Feedstock", description: "Sugar cane" },
-                { title: "Processing", description: "Refined white sugar" },
-                { title: "Origin", description: "Brazil, subject to mill availability" },
-                { title: "Trade designation", description: "ICUMSA 45" },
-              ],
-              applications: [
-                "Clear and light-coloured beverages",
-                "Confectionery and bakery programmes",
-                "Retail packing and direct consumption",
-                "General food manufacturing where colour matters",
-              ],
-              supplyFormats: ["Retail or private-label formats, subject to programme", "25–50 kg export bags", "Big bags or bulk routes where supplier and destination allow"],
-              documentPackage: "Supplier specification and COA are reviewed with origin, packing, labelling and destination-document requirements before the commercial offer is finalised.",
-              specs: icumsa45Specs,
+              decisionSummary: {
+                lead: "Low-colour refined cane sugar for programmes where a clean finished appearance matters.",
+                facts: [
+                  { title: "Feedstock", description: "Sugar cane" },
+                  { title: "Origin", description: "Brazil" },
+                ],
+                points: [
+                  "Clear and light-coloured beverages",
+                  "Confectionery and bakery programmes",
+                  "Retail packing and direct consumption",
+                ],
+                supply: "25–50 kg export bags, retail formats, big bags or bulk by programme.",
+              },
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-45") },
             },
             {
@@ -153,29 +146,22 @@ export default function SugarPage() {
               title: "ICUMSA 150 / Crystal Sugar",
               cardTitle: "ICUMSA 150",
               description:
-                "A crystal cane sugar option for bakery, beverage and general food manufacturing.",
+                "White crystal cane sugar for bakery, beverages and food manufacturing.",
               image: "/media/products/sugar/icumsa-150-v3.png",
               imageAlt: "Warm white crystal cane sugar with cut sugar cane",
-              source: "Brazil",
-              fit: "Bakery, beverages and manufacturing",
-              overview:
-                "ICUMSA 150 is a crystal cane sugar option for buyers that need a practical grade for bakery, beverage and food manufacturing use.",
-              bestFit: "Choose this general-purpose white/crystal cane sugar when application fit, dependable supply and commercial value matter more than the very lowest colour class.",
-              profile: [
-                { title: "Feedstock", description: "Sugar cane" },
-                { title: "Processing", description: "White crystal sugar" },
-                { title: "Origin", description: "Brazil, subject to availability" },
-                { title: "Trade designation", description: "ICUMSA 150" },
-              ],
-              applications: [
-                "Bakery and confectionery production",
-                "Beverage production",
-                "General food manufacturing",
-                "Foodservice and ingredient distribution",
-              ],
-              supplyFormats: ["Standard export bags", "Big bags for industrial handling", "Bulk formats where available and route-compatible"],
-              documentPackage: "Supplier TDS and COA are matched with origin, packing, shipping and destination requirements at offer stage.",
-              specs: icumsa150Specs,
+              decisionSummary: {
+                lead: "A general-purpose crystal route balancing food-manufacturing performance and commercial value.",
+                facts: [
+                  { title: "Feedstock", description: "Sugar cane" },
+                  { title: "Origin", description: "Brazil" },
+                ],
+                points: [
+                  "Bakery and confectionery production",
+                  "Beverage production",
+                  "General food manufacturing",
+                ],
+                supply: "Standard export bags, big bags or bulk formats where available.",
+              },
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-150") },
             },
             {
@@ -183,29 +169,23 @@ export default function SugarPage() {
               title: "ICUMSA 600-1200 / Brown Raw Sugar",
               cardTitle: "ICUMSA 600-1200",
               description:
-                "A brown raw cane sugar option for industrial use, food production and further refining.",
+                "Raw brown cane sugar for refining and industrial processing.",
               image: "/media/products/sugar/icumsa-600-1200-v3.png",
-              imageAlt: "Golden raw cane sugar crystals with cut sugar cane",
-              source: "Brazil",
-              fit: "Industrial use and refining",
-              overview:
-                "ICUMSA 600-1200 is a brown raw cane sugar option for buyers that need raw or less-refined sugar for industrial use, food production or further refining.",
-              bestFit: "Choose this raw/VHP range for refining, bulk industrial programmes or applications where a darker cane profile is acceptable and refined-white appearance is not the primary requirement.",
-              profile: [
-                { title: "Feedstock", description: "Sugar cane" },
-                { title: "Processing", description: "Raw or VHP cane sugar" },
-                { title: "Origin", description: "Brazil, subject to crop and mill availability" },
-                { title: "Trade designation", description: "ICUMSA 600–1200" },
-              ],
-              applications: [
-                "Further refining",
-                "Bulk industrial food production",
-                "Raw sugar programmes",
-                "Applications accepting a stronger cane colour profile",
-              ],
-              supplyFormats: ["Bulk-oriented export programmes", "Large bags where available", "Packing and loading model confirmed against handling and route"],
-              documentPackage: "The offered mill TDS and lot COA govern polarisation, moisture and ash values; origin, phytosanitary or destination documents are confirmed by route.",
-              specs: icumsa600Specs,
+              imageAlt: "Dark amber VHP raw cane sugar crystals with cut sugar cane",
+              decisionSummary: {
+                lead: "Choose this route where refined-white appearance is not the primary requirement.",
+                facts: [
+                  { title: "Feedstock", description: "Sugar cane" },
+                  { title: "Form", description: "Raw / VHP" },
+                  { title: "Origin", description: "Brazil" },
+                ],
+                points: [
+                  "Further refining",
+                  "Bulk industrial processing",
+                  "Applications accepting a stronger cane colour",
+                ],
+                supply: "Bulk-oriented programmes or large bags, subject to the route.",
+              },
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-600-1200") },
             },
             {
@@ -213,29 +193,22 @@ export default function SugarPage() {
               title: "ICUMSA 60-100 / White Beet Sugar",
               cardTitle: "ICUMSA 60-100",
               description:
-                "A white beet sugar option for food production, beverages, bakery, confectionery and industrial applications.",
+                "White beet sugar for food, beverage and industrial use.",
               image: "/media/products/sugar/icumsa-60-100-v3.png",
               imageAlt: "White beet sugar crystals with whole and sliced sugar beet",
-              source: "European options, subject to availability",
-              fit: "Food, beverage and industrial use",
-              overview:
-                "ICUMSA 60-100 is a white beet sugar option for buyers reviewing beet-origin supply for food, beverage, bakery or industrial use.",
-              bestFit: "Choose this option when beet feedstock or a European supply route is commercially relevant and a white sugar profile is required.",
-              profile: [
-                { title: "Feedstock", description: "Sugar beet" },
-                { title: "Processing", description: "White beet sugar" },
-                { title: "Origin", description: "European options, subject to availability" },
-                { title: "Trade designation", description: "ICUMSA 60–100" },
-              ],
-              applications: [
-                "Food production and beverages",
-                "Bakery and confectionery",
-                "Industrial applications",
-                "Retail and foodservice packing programmes",
-              ],
-              supplyFormats: ["Standard export bags", "Big bags where available", "Retail or private-label formats subject to supplier capability"],
-              documentPackage: "Supplier specification and COA are reviewed alongside origin, labelling, packing and destination documentation before offer confirmation.",
-              specs: icumsa60Specs,
+              decisionSummary: {
+                lead: "A European beet-origin option where feedstock or regional supply route matters.",
+                facts: [
+                  { title: "Feedstock", description: "Sugar beet" },
+                  { title: "Origin", description: "European options" },
+                ],
+                points: [
+                  "Food production and beverages",
+                  "Bakery and confectionery",
+                  "Industrial applications",
+                ],
+                supply: "Standard export bags, big bags or retail formats by programme.",
+              },
               cta: { label: "Request quote for this product", href: sugarQuoteHref("icumsa-60-100") },
             },
           ],
@@ -245,22 +218,19 @@ export default function SugarPage() {
           text: "A few milestones that show the scale and wider role of sugar in global trade and industry.",
           items: [
             {
+              metric: "189m+",
               title: "A global food commodity",
-              description: "USDA forecasts world sugar production at more than 189 million metric tons for 2025/26, reflecting the scale of supply required across food, beverage and industrial markets.",
-              slot: "primary",
-              tone: "dark",
+              description: "USDA forecasts global sugar production above 189 million metric tons in 2025/26, reflecting the scale of supply required across food, beverage and industrial markets.",
             },
             {
+              metric: "59%",
               title: "Brazil leads world exports",
-              description: "Brazil was the world’s largest sugar exporter in calendar year 2025, accounting for approximately 59% of global sugar exports according to USDA FAS.",
-              slot: "secondary-top",
-              tone: "sage",
+              description: "Brazil accounted for 59% of global sugar exports in calendar year 2025, confirming its leading position in international trade, according to USDA FAS.",
             },
             {
-              title: "Sugar and early fuel research",
-              description: "The Model T was introduced in 1908 and could run on different fuels, including alcohol. In the 1910s, Ford also investigated fuels made from sugar and other agricultural products.",
-              slot: "secondary-bottom",
-              tone: "warm",
+              metric: "1908",
+              title: "Ford Model T and early fuel research",
+              description: "Introduced in 1908, the Ford Model T could run on different fuels, including alcohol. In the 1910s, Ford also investigated fuels made from sugar and other agricultural products.",
             },
           ],
         }}

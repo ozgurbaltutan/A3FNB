@@ -681,6 +681,29 @@ export const pages: Record<string, PageContent> = {
       secondaryKeywords: ["ICUMSA 45 sugar", "bulk sugar supplier", "sugar sourcing"],
     },
   },
+  cocoa: {
+    locale: "en",
+    slug: "/en/products/cocoa-products",
+    title: "Certified cocoa products for modern food production.",
+    description:
+      "A3 connects cocoa origins and processors with manufacturers requiring cocoa beans, powder, butter and cocoa mass or liquor, supported by technical matching, certification and delivery coordination.",
+    sections: ["overview", "products", "origins", "key-facts", "services", "cta"],
+    seo: {
+      metaTitle: "Cocoa Powder, Butter & Mass Supplier | A3 Food & Beverage",
+      metaDescription:
+        "Source certified cocoa products with A3, including cocoa powder, cocoa butter, cocoa beans and cocoa mass or liquor matched to technical and delivery requirements.",
+      canonicalPath: "/en/products/cocoa-products",
+      ogTitle: "Certified Cocoa Products for Modern Production",
+      ogDescription:
+        "Cocoa powder supply, cocoa butter sourcing and cocoa mass or liquor coordinated from origin to delivery for food manufacturers.",
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "Product",
+      targetKeyword: "cocoa products supplier",
+      secondaryKeywords: ["cocoa powder supplier", "cocoa butter sourcing", "cocoa mass liquor", "certified cocoa products"],
+    },
+  },
   elleMina: {
     locale: "en",
     slug: "/en/products/elle-mina",

@@ -107,17 +107,25 @@ export function Container({
 export function Section({
   children,
   className,
+  tone = "paper",
   muted = false,
 }: {
   children: ReactNode;
   className?: string;
+  tone?: "paper" | "surface" | "ink" | "teal";
+  /** @deprecated Prefer the explicit tone prop. */
   muted?: boolean;
 }) {
+  const resolvedTone = muted && tone === "paper" ? "surface" : tone;
+
   return (
     <section
       className={clsx(
         "py-[var(--section-pad)]",
-        muted ? "bg-surface" : "bg-paper",
+        resolvedTone === "paper" && "bg-paper text-ink",
+        resolvedTone === "surface" && "bg-surface text-ink",
+        resolvedTone === "ink" && "surface-ink bg-ink text-surface",
+        resolvedTone === "teal" && "bg-teal text-surface",
         className,
       )}
     >
@@ -165,7 +173,7 @@ export function Card({
     <article
       id={id}
       className={clsx(
-        "a3-card rounded-[var(--radius-card)] border border-border bg-surface p-7 shadow-[var(--shadow-soft)]",
+        "a3-card surface-card p-7",
         className,
       )}
     >

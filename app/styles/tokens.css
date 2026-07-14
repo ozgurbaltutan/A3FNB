@@ -1,0 +1,103 @@
+@theme {
+  --color-ink: #03100e;
+  --color-paper: #f7f2ea;
+  --color-surface: #fffdf8;
+  --color-border: color-mix(in srgb, var(--color-ink) 15%, var(--color-surface));
+  --color-danger: var(--color-ink);
+  --color-danger-hover: var(--color-teal-hover);
+  --color-danger-active: var(--color-ink);
+  --color-teal: #0f7569;
+  --color-teal-hover: #0a5f55;
+  --color-sage: #6fa59b;
+  --color-sage-tint: color-mix(in srgb, var(--color-sage) 18%, var(--color-surface));
+  --color-media-glass: rgb(var(--surface-rgb) / 8%);
+  --font-sans: var(--font-gilroy), Arial, Helvetica, sans-serif;
+  --spacing-gutter: clamp(1.25rem, 4vw, 4rem);
+  --spacing-section: clamp(4.5rem, 8vw, 7rem);
+  --radius-small: 0.5rem;
+  --radius-control: 0.75rem;
+  --radius-card: 0.875rem;
+  --radius-media: 1rem;
+}
+
+:root {
+  --ink-rgb: 3 16 14;
+  --surface-rgb: 255 253 248;
+  --teal-rgb: 15 117 105;
+  --sage-rgb: 111 165 155;
+  --color-ink: #03100e;
+  --color-paper: #f7f2ea;
+  --color-surface: #fffdf8;
+  --color-border: color-mix(in srgb, var(--color-ink) 15%, var(--color-surface));
+  --color-danger: var(--color-ink);
+  --color-danger-hover: var(--color-teal-hover);
+  --color-danger-active: var(--color-ink);
+  --color-teal: #0f7569;
+  --color-teal-hover: #0a5f55;
+  --color-sage: #6fa59b;
+  --color-sage-tint: color-mix(in srgb, var(--color-sage) 18%, var(--color-surface));
+  --color-media-glass: rgb(var(--surface-rgb) / 8%);
+
+  --text-primary: var(--color-ink);
+  --text-muted: rgb(var(--ink-rgb) / 72%);
+  --text-subtle: rgb(var(--ink-rgb) / 56%);
+  --text-on-dark: var(--color-surface);
+  --text-on-dark-muted: rgb(var(--surface-rgb) / 72%);
+
+  --surface-border: color-mix(in srgb, var(--color-border) 78%, var(--color-surface));
+  --surface-border-strong: color-mix(in srgb, var(--color-border) 88%, var(--color-ink));
+  --surface-border-interactive: color-mix(in srgb, var(--color-teal) 56%, var(--color-border));
+  --surface-border-dark: rgb(var(--surface-rgb) / 16%);
+  --surface-border-dark-strong: rgb(var(--surface-rgb) / 28%);
+
+  --shadow-soft: 0 3px 10px rgb(var(--ink-rgb) / 6%), 0 12px 30px rgb(var(--ink-rgb) / 8%);
+  --shadow-editorial: 0 3px 10px rgb(var(--ink-rgb) / 6.5%), 0 24px 58px rgb(var(--ink-rgb) / 10.5%);
+  --shadow-elevated: 0 28px 72px rgb(var(--ink-rgb) / 13%);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-teal) 42%, transparent);
+  --media-edge-light: inset 0 0 0 1px rgb(var(--ink-rgb) / 10%);
+  --media-edge-dark: inset 0 0 0 1px rgb(var(--surface-rgb) / 12%);
+
+  --a3-container-max: 1440px;
+  --a3-page-gutter: clamp(1.25rem, 4vw, 4rem);
+  --page-max: 1440px;
+  --content-max: 820px;
+  --header-height: 76px;
+  --section-pad: clamp(4.5rem, 8vw, 7rem);
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --radius-small: 0.5rem;
+  --radius-control: 0.75rem;
+  --radius-card: 0.875rem;
+  --radius-media: 1rem;
+  --a3-media-radius: clamp(1rem, 1.4vw, 1.25rem);
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --a3-section-pad: clamp(5.5rem, 8vw, 7.5rem);
+
+  --motion-fast: 170ms;
+  --motion-base: 220ms;
+  --motion-slow: 340ms;
+  --motion-reveal: 720ms;
+  --ease-premium: cubic-bezier(0.19, 1, 0.22, 1);
+  --reveal-duration: var(--motion-reveal);
+  --reveal-distance: 1.1rem;
+  --reveal-stagger: 92ms;
+
+  --nav-shell-radius: 0.875rem;
+  --nav-surface-duration: 220ms;
+  --nav-panel-open-duration: 360ms;
+  --nav-panel-close-duration: 260ms;
+  --nav-item-duration: 180ms;
+  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nav-close-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --nav-stroke: color-mix(in srgb, var(--color-border) 48%, transparent);
+  --nav-divider: color-mix(in srgb, var(--color-border) 42%, transparent);
+  --nav-glass-closed: color-mix(in srgb, var(--color-surface) 76%, transparent);
+  --nav-glass-mega: color-mix(in srgb, var(--color-paper) 82%, transparent);
+  --nav-glass-mobile: color-mix(in srgb, var(--color-paper) 84%, transparent);
+  --catalog-card-height: clamp(24.25rem, 29vw, 28rem);
+  --catalog-card-motion: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -47,6 +47,7 @@ test("root redirects to the English homepage", async ({ page }) => {
 });
 
 test("all public routes render without runtime or missing-asset errors", async ({ page }) => {
+  test.setTimeout(90_000);
   const errors = collectRuntimeErrors(page);
 
   for (const route of publicRoutes) {
@@ -76,10 +77,10 @@ test("desktop header and mobile navigation remain usable", async ({ page }) => {
 
 test("Coffee origins and Coffee and Sugar service accordions respond", async ({ page }) => {
   await page.goto("/en/products/coffee");
-  const rondoniaPin = page.getByRole("button", { name: "Show Rondônia coffee origin information" });
+  const rondoniaPin = page.getByRole("button", { name: /Show Rond.*nia origin information/ });
   await rondoniaPin.focus();
   await rondoniaPin.press("Enter");
-  await expect(page.locator(".product-origins__detail h3")).toHaveText("Rondônia");
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Rond\u00f4nia");
 
   const exportCoordination = page.getByRole("button", { name: /Export Coordination/ });
   await exportCoordination.click();
@@ -89,6 +90,264 @@ test("Coffee origins and Coffee and Sugar service accordions respond", async ({ 
   const logistics = page.getByRole("button", { name: /Integrated Logistics/ });
   await logistics.click();
   await expect(logistics).toHaveAttribute("aria-expanded", "true");
+});
+
+test("product cards and decision-summary modals stay compact across breakpoints", async ({ page }) => {
+  test.setTimeout(120_000);
+
+  const productPages = [
+    { count: 4, route: "/en/products/sugar" },
+    { count: 5, route: "/en/products/coffee" },
+    { count: 4, route: "/en/products/cocoa-products" },
+  ];
+
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 1024, height: 768 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+
+    for (const productPage of productPages) {
+      await page.goto(productPage.route);
+      const cards = page.locator("#range .product-image-card");
+      await expect(cards).toHaveCount(productPage.count);
+
+      const cardTypography = await cards.evaluateAll((items) => items.map((card) => {
+        const title = card.querySelector<HTMLElement>(".product-image-card__title-row > strong");
+        const description = card.querySelector<HTMLElement>(".product-image-card__copy p");
+        const descriptionStyle = description ? getComputedStyle(description) : null;
+        return {
+          descriptionDisplay: descriptionStyle?.display ?? "",
+          descriptionHeight: description?.scrollHeight ?? 0,
+          descriptionLineHeight: descriptionStyle ? Number.parseFloat(descriptionStyle.lineHeight) : 0,
+          descriptionOverflow: descriptionStyle?.overflow ?? "",
+          descriptionText: description?.textContent ?? "",
+          descriptionWidth: description?.clientWidth ?? 0,
+          descriptionWithinTwoLines: description && descriptionStyle
+            ? description.scrollHeight <= Number.parseFloat(descriptionStyle.lineHeight) * 2 + 2
+            : false,
+          titleFits: title ? title.scrollWidth <= title.clientWidth + 1 : false,
+          titleWhiteSpace: title ? getComputedStyle(title).whiteSpace : "",
+        };
+      }));
+
+      for (const [cardIndex, typography] of cardTypography.entries()) {
+        const cardContext = `${productPage.route} card ${cardIndex + 1} at ${viewport.width}x${viewport.height}`;
+        expect(typography.descriptionDisplay).not.toBe("-webkit-box");
+        expect(typography.descriptionOverflow).toBe("visible");
+        expect(
+          typography.descriptionWithinTwoLines,
+          `${cardContext}: description exceeds two lines (${JSON.stringify(typography)})`,
+        ).toBeTruthy();
+        expect(typography.titleFits, `${cardContext}: title overflows`).toBeTruthy();
+        expect(typography.titleWhiteSpace).toBe("nowrap");
+      }
+
+      for (let index = 0; index < productPage.count; index += 1) {
+        const card = cards.nth(index);
+        await card.click();
+        const dialog = page.getByRole("dialog");
+        await expect(dialog).toBeVisible();
+        const cta = dialog.getByRole("link", { name: /Request/ });
+        await expect(cta).toBeVisible();
+
+        const modalGeometry = await dialog.evaluate((panel) => {
+          const scroller = panel.querySelector<HTMLElement>(".product-info-modal__technical");
+          const action = panel.querySelector<HTMLElement>(".product-info-modal__technical-actions");
+          const actionRect = action?.getBoundingClientRect();
+          const panelRect = panel.getBoundingClientRect();
+          return {
+            actionBottom: actionRect?.bottom ?? Number.POSITIVE_INFINITY,
+            clientHeight: scroller?.clientHeight ?? 0,
+            panelBottom: panelRect.bottom,
+            scrollHeight: scroller?.scrollHeight ?? Number.POSITIVE_INFINITY,
+            scrollTop: scroller?.scrollTop ?? -1,
+          };
+        });
+
+        expect(modalGeometry.scrollTop).toBe(0);
+        expect(modalGeometry.scrollHeight).toBeLessThanOrEqual(modalGeometry.clientHeight + 1);
+        expect(modalGeometry.actionBottom).toBeLessThanOrEqual(Math.min(modalGeometry.panelBottom, viewport.height) + 1);
+
+        if (productPage.route === "/en/products/sugar") {
+          await expect(dialog).not.toContainText(/Moisture|Ash content|Polarisation|Solubility/);
+        }
+
+        await page.keyboard.press("Escape");
+        await expect(dialog).toBeHidden();
+        await expect(card).toBeFocused();
+      }
+    }
+  }
+});
+
+test("Conilon modal exposes catalogue grades and modal focus remains trapped", async ({ page }) => {
+  await page.goto("/en/products/coffee");
+  const conilonCard = page.locator("#range .product-image-card").last();
+  await conilonCard.click();
+
+  const dialog = page.getByRole("dialog");
+  const close = dialog.getByRole("button", { name: "Close product details" });
+  const cta = dialog.getByRole("link", { name: "Request availability for this profile" });
+  await expect(dialog).toContainText("7, 7/8 and 8");
+  await expect(close).toBeFocused();
+
+  await page.keyboard.press("Shift+Tab");
+  await expect(cta).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(close).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(conilonCard).toBeFocused();
+
+  await conilonCard.click();
+  await page.locator(".product-info-modal--portfolio").click({ position: { x: 4, y: 4 } });
+  await expect(dialog).toBeHidden();
+  await expect(conilonCard).toBeFocused();
+});
+
+test("Cocoa origin pins support pointer, Enter and Space selection", async ({ page }) => {
+  await page.goto("/en/products/cocoa-products");
+
+  const ghana = page.getByRole("button", { name: "Show Ghana cocoa origin information" });
+  await ghana.locator(".product-origins__pin-dot").click();
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Ghana");
+
+  const nigeria = page.getByRole("button", { name: "Show Nigeria cocoa origin information" });
+  await nigeria.focus();
+  await nigeria.press("Enter");
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Nigeria");
+
+  const cameroon = page.getByRole("button", { name: "Show Cameroon cocoa origin information" });
+  await cameroon.focus();
+  await cameroon.press("Space");
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Cameroon");
+
+  const togo = page.getByRole("button", { name: "Show Togo cocoa origin information" });
+  await togo.locator(".product-origins__pin-dot").click();
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Togo");
+
+  const sierraLeone = page.getByRole("button", { name: "Show Sierra Leone cocoa origin information" });
+  await sierraLeone.focus();
+  await sierraLeone.press("Enter");
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Sierra Leone");
+
+  const liberia = page.getByRole("button", { name: "Show Liberia cocoa origin information" });
+  await liberia.focus();
+  await liberia.press("Space");
+  await expect(page.locator(".product-origins__detail-content.is-active h3")).toHaveText("Liberia");
+});
+
+test("origin sections keep a stable height across every pin and breakpoint", async ({ page }) => {
+  test.setTimeout(90_000);
+
+  for (const viewport of [
+    { width: 1440, height: 1000 },
+    { width: 900, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+
+    for (const route of ["/en/products/coffee", "/en/products/cocoa-products"]) {
+      await page.goto(route);
+      const showcase = page.locator("#origins .product-origins__showcase");
+      await showcase.scrollIntoViewIfNeeded();
+      const initialHeight = await showcase.evaluate((element) => element.getBoundingClientRect().height);
+      const pins = page.locator("#origins .product-origins__pin");
+      const pinCount = await pins.count();
+
+      for (let index = 0; index < pinCount; index += 1) {
+        await pins.nth(index).focus();
+        await pins.nth(index).press("Enter");
+        await expect(page.locator(".product-origins__detail-content.is-active")).toBeVisible();
+        const selectedHeight = await showcase.evaluate((element) => element.getBoundingClientRect().height);
+        expect(Math.abs(selectedHeight - initialHeight)).toBeLessThan(1);
+      }
+    }
+  }
+});
+
+test("fact cards use one metric, one title and one paragraph with count-up motion", async ({ page }) => {
+  const pageMetrics = [
+    { initial: "0.0m / 0.0m", route: "/en/products/coffee", values: ["178.8m / 173.9m", "71.9m", "47.5m / 24.4m"] },
+    { initial: "0m+", route: "/en/products/sugar", values: ["189m+", "59%", "1908"] },
+    { initial: "0–0", route: "/en/products/cocoa-products", values: ["30–40", "≈400", "5–7 days"] },
+  ];
+
+  for (const pageMetric of pageMetrics) {
+    await page.goto(pageMetric.route);
+    const cards = page.locator("#key-facts .product-editorial-facts__card");
+    await expect(cards).toHaveCount(3);
+    await expect(page.locator("#key-facts .product-editorial-facts__metric-label")).toHaveCount(0);
+
+    for (let index = 0; index < pageMetric.values.length; index += 1) {
+      const card = cards.nth(index);
+      await expect(card.locator(".product-editorial-facts__metric")).toHaveCount(1);
+      await expect(card.locator("h3")).toHaveCount(1);
+      await expect(card.locator(".type-body")).toHaveCount(1);
+    }
+
+    const firstMetric = page.locator(`[data-final-metric="${pageMetric.values[0]}"]`);
+    await expect(firstMetric).toHaveText(pageMetric.initial);
+    await firstMetric.scrollIntoViewIfNeeded();
+
+    for (const value of pageMetric.values) {
+      await expect(page.locator(`[data-final-metric="${value}"]`)).toHaveText(value, { timeout: 3_000 });
+    }
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/en/products/sugar");
+  await expect(page.locator('[data-final-metric="1908"]')).toHaveText("1908");
+  await expect(page.getByRole("heading", { name: "Ford Model T and early fuel research" })).toBeVisible();
+});
+
+test("fact card metrics and paragraphs align across product pages", async ({ page }) => {
+  test.setTimeout(60_000);
+  const routes = ["/en/products/coffee", "/en/products/sugar", "/en/products/cocoa-products"];
+
+  for (const route of routes) {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(route);
+    const desktopCards = page.locator("#key-facts .product-editorial-facts__card");
+    const desktopGeometry = await desktopCards.evaluateAll((cards) => cards.map((card) => ({
+      bodyTop: card.querySelector(".type-body")?.getBoundingClientRect().top ?? 0,
+      cardHeight: card.getBoundingClientRect().height,
+      metricTop: card.querySelector(".product-editorial-facts__metric")?.getBoundingClientRect().top ?? 0,
+      titleSize: Number.parseFloat(getComputedStyle(card.querySelector("h3") as HTMLElement).fontSize),
+    })));
+
+    expect(Math.max(...desktopGeometry.map((item) => item.metricTop)) - Math.min(...desktopGeometry.map((item) => item.metricTop))).toBeLessThanOrEqual(1);
+    expect(Math.max(...desktopGeometry.map((item) => item.bodyTop)) - Math.min(...desktopGeometry.map((item) => item.bodyTop))).toBeLessThanOrEqual(1);
+    expect(Math.max(...desktopGeometry.map((item) => item.cardHeight)) - Math.min(...desktopGeometry.map((item) => item.cardHeight))).toBeLessThanOrEqual(1);
+    expect(Math.max(...desktopGeometry.map((item) => item.titleSize))).toBeLessThanOrEqual(20);
+
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.goto(route);
+    const tabletCards = page.locator("#key-facts .product-editorial-facts__card");
+    const tabletGeometry = await tabletCards.evaluateAll((cards) => cards.map((card) => ({
+      bodyTop: card.querySelector(".type-body")?.getBoundingClientRect().top ?? 0,
+      metricTop: card.querySelector(".product-editorial-facts__metric")?.getBoundingClientRect().top ?? 0,
+      titleMinHeight: getComputedStyle(card.querySelector("h3") as HTMLElement).minHeight,
+    })));
+
+    expect(Math.abs(tabletGeometry[0].metricTop - tabletGeometry[1].metricTop)).toBeLessThanOrEqual(1);
+    expect(Math.abs(tabletGeometry[0].bodyTop - tabletGeometry[1].bodyTop)).toBeLessThanOrEqual(1);
+    expect(tabletGeometry[2].titleMinHeight).toBe("0px");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route);
+    const mobileAudit = await page.locator("#key-facts").evaluate((section) => ({
+      documentWidth: document.documentElement.scrollWidth,
+      titleMinHeights: [...section.querySelectorAll(".product-editorial-facts__content h3")]
+        .map((title) => getComputedStyle(title).minHeight),
+      viewportWidth: document.documentElement.clientWidth,
+    }));
+
+    expect(mobileAudit.documentWidth).toBe(mobileAudit.viewportWidth);
+    expect(mobileAudit.titleMinHeights).toEqual(["0px", "0px", "0px"]);
+  }
 });
 
 test("quote form uses native validation and prevents duplicate submissions", async ({ page }) => {

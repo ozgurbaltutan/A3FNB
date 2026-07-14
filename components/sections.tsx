@@ -24,7 +24,7 @@ export function FullHeightHero({
 }) {
   if (backgroundVideo) {
     return (
-      <section className="relative min-h-[calc(100svh-var(--header-height))] overflow-hidden bg-deep-dark text-surface">
+      <section className="relative min-h-[calc(100svh-var(--header-height))] overflow-hidden bg-ink text-surface">
         <video
           className="absolute inset-0 h-full w-full object-cover"
           autoPlay
@@ -35,7 +35,7 @@ export function FullHeightHero({
         >
           <source src={backgroundVideo.src} type="video/webm" />
         </video>
-        <div className="absolute inset-0 bg-deep-dark opacity-80" aria-hidden="true" />
+        <div className="absolute inset-0 bg-ink opacity-80" aria-hidden="true" />
         <Container className="relative z-10 flex min-h-[calc(100svh-var(--header-height))] items-center py-20 sm:py-24">
           <div className="max-w-4xl">
             <Heading level={1} className="text-surface">
@@ -127,7 +127,7 @@ export function PageHero({
 
 export function ProofStrip({ items }: { items: string[] }) {
   return (
-    <section className="relative border-y border-border bg-deep-dark text-surface">
+    <section className="relative border-y border-border bg-ink text-surface">
       <div className="absolute inset-x-0 top-0 h-1 bg-brand-blue" aria-hidden="true" />
       <Container className="grid gap-0 sm:grid-cols-2 lg:grid-cols-5">
         {items.map((item) => (
@@ -362,7 +362,7 @@ export function MapMetricsSection({
   dark?: boolean;
 }) {
   return (
-    <Section muted={muted} className={dark ? "bg-deep-dark text-surface" : undefined}>
+    <Section muted={muted} className={dark ? "bg-ink text-surface" : undefined}>
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
@@ -382,7 +382,7 @@ export function MapMetricsSection({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {regions.map((region) => (
-              <Card key={region.id} className={dark ? "border-sage bg-deep-dark" : undefined}>
+              <Card key={region.id} className={dark ? "border-sage bg-ink" : undefined}>
                 <p className={clsx("type-p3 mb-3 font-medium capitalize", dark ? "text-brand-blue" : "text-teal")}>
                   {region.role.replace(/([A-Z])/g, " $1")}
                 </p>
@@ -444,7 +444,7 @@ function NetworkVisual({ label }: { label: string }) {
     <div
       role="img"
       aria-label={label}
-      className="relative min-h-[360px] overflow-hidden rounded-[var(--radius-card)] border border-sage bg-deep-dark p-6"
+      className="relative min-h-[360px] overflow-hidden rounded-[var(--radius-card)] border border-sage bg-ink p-6"
     >
       <div className="absolute left-[12%] top-[24%] h-3 w-3 rounded-full bg-brand-blue" />
       <div className="absolute left-[42%] top-[38%] h-3 w-3 rounded-full bg-teal" />
@@ -564,7 +564,7 @@ export function CTASection({
   secondary?: { label: string; href: string };
 }) {
   return (
-    <section className="bg-deep-dark text-surface">
+    <section className="bg-ink text-surface">
       <Container className="grid gap-8 py-16 lg:grid-cols-[1fr_auto] lg:items-center">
         <div className="max-w-3xl">
           <Heading level={2} className="text-surface">

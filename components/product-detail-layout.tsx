@@ -5,6 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { clsx } from "clsx";
+import { geoCentroid, geoNaturalEarth1, geoPath, type GeoPermissibleObjects } from "d3-geo";
+import { feature } from "topojson-client";
+import type { GeometryObject, Topology } from "topojson-specification";
+import countriesAtlas from "world-atlas/countries-110m.json";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { FilteredProductGrid } from "@/components/filtered-product-grid";
 import { InnerPageHero } from "@/components/inner-page-hero";
@@ -75,6 +79,13 @@ type ProductRangeGroup = {
   offerings: ProductRangeOffering[];
 };
 
+type ProductDecisionSummary = {
+  lead?: string;
+  facts?: ProductDetailItem[];
+  points?: string[];
+  supply?: string;
+};
+
 type ProductPortfolioItem = {
   id: string;
   title: string;
@@ -82,17 +93,18 @@ type ProductPortfolioItem = {
   description: string;
   image: string;
   imageAlt: string;
-  source: string;
-  fit: string;
-  overview: string;
+  source?: string;
+  fit?: string;
+  overview?: string;
   bestFit?: string;
   profile?: ProductDetailItem[];
   supplyFormats?: string[];
   documentPackage?: string;
+  decisionSummary?: ProductDecisionSummary;
   technicalHighlights?: ProductDetailItem[];
   specSections?: Array<{ title: string; items: ProductSpecRow[] }>;
   keyDetails?: ProductDetailItem[];
-  applications: string[];
+  applications?: string[];
   specs?: ProductSpecRow[];
   packing?: ProductDetailItem[];
   origin?: ProductDetailItem[];
@@ -192,9 +204,7 @@ type ProductEditorialFacts = {
   sources?: ProductDetailLink[];
   catalogue?: ProductDetailLink;
   items: Array<ProductDetailItem & {
-    value?: string;
-    slot?: "primary" | "secondary-top" | "secondary-bottom";
-    tone?: "dark" | "sage" | "warm";
+    metric: string;
   }>;
 };
 
@@ -209,7 +219,12 @@ type ProductFlowchart = {
 type ProductOrigins = {
   title: string;
   text: string;
-  note?: string;
+  mapVariant?: "brazil-pins" | "africa-pins";
+  mapAriaLabel?: string;
+  selectionAriaLabel?: string;
+  focusLabel?: string;
+  contextLabel?: string;
+  regionsLabel?: string;
   items: Array<ProductDetailItem & {
     id: string;
     species: string;
@@ -217,7 +232,8 @@ type ProductOrigins = {
     regions: string[];
     image: string;
     imageAlt: string;
-    point: {
+    countryId?: string;
+    point?: {
       x: number;
       y: number;
       labelX: number;
@@ -225,6 +241,119 @@ type ProductOrigins = {
       labelAnchor?: "start" | "middle" | "end";
     };
   }>;
+};
+
+const METRIC_NUMBER_PATTERN = /\d+(?:\.\d+)?/g;
+
+function formatAnimatedMetric(metric: string, progress: number) {
+  return metric.replace(METRIC_NUMBER_PATTERN, (numberText) => {
+    const decimalPlaces = numberText.includes(".") ? numberText.split(".")[1].length : 0;
+    const target = Number(numberText);
+    const current = target * progress;
+    return decimalPlaces > 0 ? current.toFixed(decimalPlaces) : String(Math.round(current));
+  });
+}
+
+function AnimatedMetric({ value }: { value: string }) {
+  const elementRef = useRef<HTMLSpanElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const hasAnimatedRef = useRef(false);
+  const [displayValue, setDisplayValue] = useState(() => formatAnimatedMetric(value, 0));
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element || hasAnimatedRef.current) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) {
+      hasAnimatedRef.current = true;
+      setDisplayValue(value);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || hasAnimatedRef.current) return;
+
+      hasAnimatedRef.current = true;
+      observer.disconnect();
+      const startedAt = performance.now();
+      const duration = 1200;
+
+      const animate = (timestamp: number) => {
+        const linearProgress = Math.min((timestamp - startedAt) / duration, 1);
+        const easedProgress = 1 - Math.pow(1 - linearProgress, 3);
+        setDisplayValue(formatAnimatedMetric(value, easedProgress));
+
+        if (linearProgress < 1) {
+          animationFrameRef.current = window.requestAnimationFrame(animate);
+        } else {
+          setDisplayValue(value);
+          animationFrameRef.current = null;
+        }
+      };
+
+      animationFrameRef.current = window.requestAnimationFrame(animate);
+    }, { threshold: 0.35 });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [value]);
+
+  return (
+    <p aria-label={value} className="product-editorial-facts__metric type-metric" data-final-metric={value}>
+      <span aria-hidden="true" ref={elementRef}>{displayValue}</span>
+    </p>
+  );
+}
+
+const AFRICA_COUNTRY_IDS = new Set([
+  "012", "024", "072", "108", "120", "132", "140", "148", "174", "178", "180", "204", "226", "231",
+  "232", "262", "266", "270", "288", "324", "384", "404", "426", "430", "434", "450", "454", "466",
+  "478", "480", "504", "508", "516", "562", "566", "624", "638", "646", "654", "678", "686", "690",
+  "694", "706", "710", "716", "728", "729", "732", "748", "768", "788", "800", "818", "834", "854",
+  "894",
+]);
+const ORIGIN_COUNTRY_TOPOLOGY = countriesAtlas as unknown as Topology;
+const ORIGIN_COUNTRY_FEATURES = feature(
+  ORIGIN_COUNTRY_TOPOLOGY,
+  ORIGIN_COUNTRY_TOPOLOGY.objects.countries as GeometryObject,
+) as {
+  type: "FeatureCollection";
+  features: Array<GeoPermissibleObjects & { id?: number | string }>;
+};
+const AFRICA_FEATURES = ORIGIN_COUNTRY_FEATURES.features.filter((country) =>
+  AFRICA_COUNTRY_IDS.has(String(country.id).padStart(3, "0")),
+);
+const AFRICA_FEATURE_COLLECTION = {
+  type: "FeatureCollection",
+  features: AFRICA_FEATURES,
+} as GeoPermissibleObjects;
+const AFRICA_PROJECTION = geoNaturalEarth1().fitExtent(
+  [[34, 24], [486, 496]],
+  AFRICA_FEATURE_COLLECTION,
+);
+const AFRICA_PATH = geoPath(AFRICA_PROJECTION);
+const AFRICA_LAND_PATH = AFRICA_PATH(AFRICA_FEATURE_COLLECTION) ?? "";
+const AFRICA_LABEL_OFFSETS: Record<string, { x: number; y: number; anchor: "start" | "end" }> = {
+  "120": { x: 42, y: 24, anchor: "start" },
+  "288": { x: 34, y: -20, anchor: "start" },
+  "384": { x: -36, y: 22, anchor: "end" },
+  "430": { x: -42, y: 30, anchor: "end" },
+  "566": { x: 42, y: -14, anchor: "start" },
+  "694": { x: -42, y: -22, anchor: "end" },
+  "768": { x: 38, y: 28, anchor: "start" },
+};
+const AFRICA_POINT_OFFSETS: Record<string, { x: number; y: number }> = {
+  "288": { x: 0, y: -5 },
+  "430": { x: 2, y: 5 },
+  "694": { x: -2, y: -5 },
+  "768": { x: 5, y: 6 },
 };
 
 type ProductServices = {
@@ -408,17 +537,17 @@ function ProductEditorialFactsSection({ facts }: { facts: ProductEditorialFacts 
         </div>
         <div className="product-editorial-facts__bento">
           {facts.items.map((item) => (
-            <article className={`product-editorial-facts__card product-editorial-facts__card--${item.slot ?? "primary"}`} data-tone={item.tone ?? "warm"} key={item.title}>
+            <article className="product-editorial-facts__card surface-panel" key={item.title}>
               <div className="product-editorial-facts__content">
-                {item.value ? <strong>{item.value}</strong> : null}
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
+                <AnimatedMetric value={item.metric} />
+                <h3 className="type-panel-title">{item.title}</h3>
+                <p className="type-body">{item.description}</p>
               </div>
             </article>
           ))}
         </div>
         {facts.sources?.length || facts.catalogue ? (
-          <div className="product-editorial-facts__sources" aria-label="Coffee market context sources">
+          <div className="product-editorial-facts__sources" aria-label={`${facts.title} sources`}>
             <div className="product-editorial-facts__source-list">
               {facts.sources?.length ? <span>Sources:</span> : null}
               {facts.sources?.map((source) => (
@@ -452,11 +581,68 @@ function ProductFlowchartSection({ flowchart }: { flowchart: ProductFlowchart })
             </LinkButton>
           ) : null}
         </div>
-        <figure className="product-flowchart__media">
+        <figure className="product-flowchart__media media-edge">
           <Image alt={flowchart.imageAlt} fill sizes="(min-width: 1024px) 62vw, 100vw" src={flowchart.image} />
         </figure>
       </Container>
     </section>
+  );
+}
+
+function ProductAfricaOriginsMap({
+  activeOriginId,
+  mapAriaLabel,
+  origins,
+  onSelect,
+}: {
+  activeOriginId: string;
+  mapAriaLabel: string;
+  origins: ProductOrigins;
+  onSelect: (originId: string) => void;
+}) {
+  function handleCountryKeyDown(event: ReactKeyboardEvent<SVGGElement>, originId: string) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onSelect(originId);
+  }
+
+  return (
+    <svg aria-label={mapAriaLabel} className="product-origins__map" role="group" viewBox="0 0 520 520">
+      <path className="product-origins__land" d={AFRICA_LAND_PATH} />
+      {origins.items.map((item) => {
+        if (!item.countryId) return null;
+        const country = AFRICA_FEATURES.find(
+          (featureItem) => String(featureItem.id).padStart(3, "0") === item.countryId,
+        );
+        if (!country) return null;
+        const projectedPoint = AFRICA_PROJECTION(geoCentroid(country));
+        if (!projectedPoint) return null;
+        // Stable SVG attributes prevent tiny server/client floating-point differences during hydration.
+        const pointOffset = AFRICA_POINT_OFFSETS[item.countryId] ?? { x: 0, y: 0 };
+        const point = projectedPoint.map((coordinate, index) => Number(
+          (coordinate + (index === 0 ? pointOffset.x : pointOffset.y)).toFixed(3),
+        )) as [number, number];
+        const offset = AFRICA_LABEL_OFFSETS[item.countryId] ?? { x: 30, y: -16, anchor: "start" as const };
+        const selected = item.id === activeOriginId;
+        return (
+          <g
+            aria-label={`Show ${item.title} cocoa origin information`}
+            aria-pressed={selected}
+            className={`product-origins__pin${selected ? " is-selected" : ""}`}
+            key={item.id}
+            onClick={() => onSelect(item.id)}
+            onKeyDown={(event) => handleCountryKeyDown(event, item.id)}
+            role="button"
+            tabIndex={0}
+          >
+            <line x1={point[0]} x2={point[0] + offset.x} y1={point[1]} y2={point[1] + offset.y - 5} />
+            <circle className="product-origins__pin-halo" cx={point[0]} cy={point[1]} r="11.5" />
+            <circle className="product-origins__pin-dot" cx={point[0]} cy={point[1]} r="6.2" />
+            <text textAnchor={offset.anchor} x={point[0] + offset.x} y={point[1] + offset.y}>{item.title}</text>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
@@ -473,7 +659,11 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
   }
 
   return (
-    <section className="product-detail-section product-origins" id="origins">
+    <section
+      className="product-detail-section product-origins"
+      data-map-variant={origins.mapVariant ?? "brazil-pins"}
+      id="origins"
+    >
       <Container className="a3-container product-origins__inner">
         <div className="product-section-heading">
           <h2 className="type-section">{origins.title}</h2>
@@ -481,8 +671,16 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
         </div>
         <div className="product-origins__showcase">
           <div className="product-origins__map-panel">
-            <svg
-              aria-label="Brazil map with selected coffee sourcing states"
+            {origins.mapVariant === "africa-pins" ? (
+              <ProductAfricaOriginsMap
+                activeOriginId={activeOrigin.id}
+                mapAriaLabel={origins.mapAriaLabel ?? "Africa map with selected sourcing countries"}
+                onSelect={setActiveOriginId}
+                origins={origins}
+              />
+            ) : (
+              <svg
+              aria-label={origins.mapAriaLabel ?? "Brazil map with selected coffee sourcing states"}
               className="product-origins__map"
               role="img"
               viewBox="0 0 520 520"
@@ -492,10 +690,11 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
                 d="M270.784,485L267.753,477.59L272.555,471.415L266.258,462.606L257.678,455.489L246.422,447.293L242.368,447.681L231.388,437.867L224.304,439.215L238.866,422.073L251.224,410.024L258.544,404.988L267.753,398.206L267.989,388.445L262.519,381.435L257.088,383.775L259.213,376.787L260.708,369.649L260.708,363.051L256.773,360.885L252.68,362.828L248.626,362.302L247.327,357.692L246.304,346.808L244.258,343.263L236.898,340.065L232.411,342.383L220.88,340.125L221.588,324.184L218.361,317.687L221.785,315.284L220.723,308.661L223.753,303.587L225.681,294.51L223.084,287.376L217.141,284.157L215.96,279.646L217.574,273.044L196.597,272.581L192.386,259.359L195.574,259.167L195.456,254.285L193.291,250.998L192.819,244.474L186.483,241.142L179.595,241.257L175.069,237.986L167.67,235.763L163.381,231.588L151.141,229.731L139.255,219.723L140.16,212.253L138.822,207.978L139.964,199.651L125.677,201.529L119.892,205.702L110.328,210.199L107.888,213.572L102.26,213.817L94.153,212.874L87.974,214.797L83.015,213.515L83.724,196.629L74.75,203.164L65.108,202.882L60.976,196.967L53.734,196.329L56.056,191.567L49.956,184.847L45.43,174.907L48.303,172.892L48.303,168.23L54.915,165.043L53.813,159.104L56.607,155.272L57.394,150.16L69.91,142.694L78.843,140.578L80.3,138.927L90.178,139.446L95.098,109.429L95.334,104.691L93.641,98.417L88.801,94.439L88.84,86.482L94.98,84.687L97.183,85.816L97.538,81.634L91.162,80.505L91.005,73.657L112.296,73.898L115.917,70.139L118.947,73.601L121.112,80.061L123.159,78.71L129.18,84.484L137.681,83.781L139.806,80.431L147.914,77.877L152.44,76.082L153.699,71.454L161.491,68.343L160.901,66.047L151.652,65.102L150.118,58.211L150.59,50.87L145.67,48.032L147.717,47.012L155.824,48.422L164.522,51.167L167.67,48.57L175.542,46.864L187.742,42.763L191.756,38.585L190.3,35.483L196.007,35L198.526,37.527L197.109,42.336L200.887,44.006L203.366,49.09L200.336,52.965L198.604,62.268L201.399,67.806L202.186,72.879L208.916,78.007L214.307,78.543L215.488,76.396L218.951,75.934L223.91,74.009L227.452,71.102L233.513,72.028L236.15,71.639L242.093,72.528L243.077,70.306L241.266,68.121L242.368,64.954L246.776,65.936L251.932,64.806L258.19,67.121L262.952,69.38L266.336,66.417L268.776,66.88L270.272,69.954L275.506,69.177L279.717,65.028L283.063,56.951L289.517,46.938L293.256,46.418L295.972,52.483L302.072,71.62L307.936,73.416L308.211,80.968L300.025,89.98L303.41,93.273L322.734,94.975L323.127,105.949L331.431,98.769L345.167,102.692L363.349,109.373L368.662,115.779L366.891,121.835L379.603,118.464L400.856,124.261L417.189,123.835L433.364,132.898L447.335,145.182L455.758,148.339L465.085,148.785L469.06,152.242L472.76,166.236L474.57,172.91L470.241,191.174L464.652,198.393L449.264,213.855L442.298,226.473L434.19,236.2L431.475,236.409L428.405,244.684L429.192,265.864L426.162,283.42L424.981,290.988L421.518,295.523L419.589,310.977L408.491,326.184L406.641,338.308L397.786,343.423L395.228,350.542L383.342,350.501L366.144,355.07L358.469,360.379L346.229,363.882L333.36,373.438L324.111,385.44L322.498,394.538L324.308,401.302L322.301,413.776L319.821,419.857L312.147,426.73L300.025,448.975L290.422,459.118L282.984,465.163L277.986,477.524Z"
               />
               {origins.items.map((item) => {
+                if (!item.point) return null;
                 const selected = item.id === activeOrigin.id;
                 return (
                   <g
-                    aria-label={`Show ${item.title} coffee origin information`}
+                    aria-label={`Show ${item.title} origin information`}
                     aria-pressed={selected}
                     className={`product-origins__pin${selected ? " is-selected" : ""}`}
                     key={item.id}
@@ -511,12 +710,12 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
                   </g>
                 );
               })}
-            </svg>
-            {origins.note ? <p className="product-origins__note">{origins.note}</p> : null}
+              </svg>
+            )}
           </div>
 
-          <article aria-live="polite" className="product-origins__detail" key={activeOrigin.id}>
-            <figure className="product-origins__detail-media">
+          <article aria-live="polite" className="product-origins__detail">
+            <figure className="product-origins__detail-media media-edge">
               <Image
                 alt={activeOrigin.imageAlt}
                 fill
@@ -524,25 +723,36 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
                 src={activeOrigin.image}
               />
             </figure>
-            <div className="product-origins__detail-content">
-              <h3>{activeOrigin.title}</h3>
-              <p>{activeOrigin.description}</p>
-              <dl className="product-origins__facts">
-                <div>
-                  <dt>Coffee focus</dt>
-                  <dd>{activeOrigin.species}</dd>
-                </div>
-                <div>
-                  <dt>Trade context</dt>
-                  <dd>{activeOrigin.tradeContext}</dd>
-                </div>
-              </dl>
-              <div className="product-origins__selected-label">Selected origins</div>
-              <ul>{activeOrigin.regions.map((region) => <li key={region}>{region}</li>)}</ul>
+            <div className="product-origins__detail-copy-stack">
+              {origins.items.map((item) => {
+                const selected = item.id === activeOrigin.id;
+                return (
+                  <div
+                    aria-hidden={!selected}
+                    className={clsx("product-origins__detail-content", selected && "is-active")}
+                    key={item.id}
+                  >
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <dl className="product-origins__facts">
+                      <div>
+                        <dt>{origins.focusLabel ?? "Coffee focus"}</dt>
+                        <dd>{item.species}</dd>
+                      </div>
+                      <div>
+                        <dt>{origins.contextLabel ?? "Trade context"}</dt>
+                        <dd>{item.tradeContext}</dd>
+                      </div>
+                    </dl>
+                    <div className="product-origins__selected-label">{origins.regionsLabel ?? "Selected origins"}</div>
+                    <ul>{item.regions.map((region) => <li key={region}>{region}</li>)}</ul>
+                  </div>
+                );
+              })}
             </div>
           </article>
         </div>
-        <div aria-label="Select a Brazilian coffee origin" className="product-origins__tabs">
+        <div aria-label={origins.selectionAriaLabel ?? "Select a Brazilian coffee origin"} className="product-origins__tabs">
           {origins.items.map((item) => (
             <button
               aria-pressed={item.id === activeOrigin.id}
@@ -647,7 +857,7 @@ function ProductStory({
   priority?: boolean;
 }) {
   const media = (
-    <figure className="product-detail-story__media">
+    <figure className="product-detail-story__media media-edge">
       <Image
         src={section.image}
         alt={section.imageAlt}
@@ -952,6 +1162,9 @@ function ProductPortfolioModal({
   const titleId = `product-portfolio-modal-${product.id}`;
   const descriptionId = `${titleId}-description`;
   const details = getPortfolioModalDetails(product);
+  const modalDescription = treatment === "decision-summary"
+    ? product.decisionSummary?.lead
+    : product.overview || product.fit;
 
   useEffect(() => {
     closeButtonRef.current?.focus();
@@ -996,7 +1209,7 @@ function ProductPortfolioModal({
       role="presentation"
     >
       <section
-        aria-describedby={descriptionId}
+        aria-describedby={modalDescription ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
         className="product-info-modal__panel product-info-modal__panel--technical"
@@ -1015,14 +1228,14 @@ function ProductPortfolioModal({
         <div className="product-info-modal__technical">
           <header className="product-info-modal__technical-header">
             <h2 id={titleId}>{product.title}</h2>
-            <p id={descriptionId}>{product.overview || product.fit}</p>
+            {modalDescription ? <p id={descriptionId}>{modalDescription}</p> : null}
           </header>
 
           {treatment === "decision-summary" ? (
             <>
-              {product.profile?.length ? (
+              {product.decisionSummary?.facts?.length ? (
                 <dl className="product-info-modal__decision-attributes">
-                  {product.profile.map((detail) => (
+                  {product.decisionSummary.facts.map((detail) => (
                     <div key={detail.title}>
                       <dt>{detail.title}</dt>
                       <dd>{detail.description}</dd>
@@ -1031,23 +1244,19 @@ function ProductPortfolioModal({
                 </dl>
               ) : null}
 
-              {product.bestFit ? <p className="product-info-modal__decision-fit">{product.bestFit}</p> : null}
+              {product.decisionSummary?.points?.length ? (
+                <section className="product-info-modal__decision-points">
+                  <h3>Key selection points</h3>
+                  <ul>{product.decisionSummary.points.map((point) => <li key={point}>{point}</li>)}</ul>
+                </section>
+              ) : null}
 
-              <div className="product-info-modal__decision-columns">
-                {product.applications.length ? (
-                  <section>
-                    <h3>Applications</h3>
-                    <ul>{product.applications.map((application) => <li key={application}>{application}</li>)}</ul>
-                  </section>
-                ) : null}
-                {product.supplyFormats?.length || product.documentPackage ? (
-                  <section>
-                    <h3>Supply &amp; confirmation</h3>
-                    {product.supplyFormats?.length ? <ul>{product.supplyFormats.map((format) => <li key={format}>{format}</li>)}</ul> : null}
-                    {product.documentPackage ? <p>{product.documentPackage}</p> : null}
-                  </section>
-                ) : null}
-              </div>
+              {product.decisionSummary?.supply ? (
+                <p className="product-info-modal__decision-supply">
+                  <strong>Supply</strong>
+                  <span>{product.decisionSummary.supply}</span>
+                </p>
+              ) : null}
             </>
           ) : (
             <>
@@ -1081,10 +1290,10 @@ function ProductPortfolioModal({
             </section>
           ) : null}
 
-          {product.applications.length ? (
+          {product.applications?.length ? (
             <section className="product-info-modal__technical-section product-info-modal__list-section">
               <h3>Typical applications</h3>
-              <ul>{product.applications.map((application) => <li key={application}>{application}</li>)}</ul>
+              <ul>{product.applications?.map((application) => <li key={application}>{application}</li>)}</ul>
             </section>
           ) : null}
 
@@ -1137,8 +1346,8 @@ function getPortfolioModalDetails(product: ProductPortfolioItem) {
   return product.keyDetails?.length
     ? product.keyDetails
     : [
-        { title: "Source", description: product.source },
-        { title: "Typical uses", description: product.fit },
+        ...(product.source ? [{ title: "Source", description: product.source }] : []),
+        ...(product.fit ? [{ title: "Typical uses", description: product.fit }] : []),
         ...(product.packing?.slice(0, 1) ?? []),
       ];
 }

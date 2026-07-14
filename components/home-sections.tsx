@@ -167,7 +167,7 @@ function HomeHero() {
   const { hero } = homeLanding;
 
   return (
-    <section className="home-hero relative isolate min-h-[100svh] overflow-hidden bg-deep-dark text-surface">
+    <section className="home-hero relative isolate min-h-[100svh] overflow-hidden bg-ink text-surface">
       <Image
         className="home-hero-fallback absolute inset-0 z-0 h-full w-full object-cover"
         src={homeAssets.media.companyTradeEditorial}
@@ -285,7 +285,7 @@ function MarketsPreview() {
   }
 
   return (
-    <section className="home-section home-section--markets markets-layer-section bg-deep-dark text-surface">
+    <section className="home-section home-section--markets markets-layer-section bg-ink text-surface">
       <HomeShell className="markets-layer-stage grid items-center gap-5 lg:grid-cols-2">
         <div className="markets-copy">
           <h2 className="reveal reveal--up type-section text-surface">
@@ -479,7 +479,7 @@ function BeforeYouEnquire() {
               rel="noopener noreferrer"
               aria-label={resource.ariaLabel}
             >
-              <span className="before-enquire-card__media" aria-hidden="true">
+              <span className="before-enquire-card__media media-edge" aria-hidden="true">
                 <Image src={resource.image} alt="" fill sizes="160px" />
               </span>
               <span className="before-enquire-card__copy">
@@ -513,7 +513,7 @@ function FinalCta() {
             </LinkButton>
           </div>
         </div>
-        <div className="final-cta-media reveal reveal--fade reveal-delay-1">
+        <div className="final-cta-media media-edge media-edge--dark reveal reveal--fade reveal-delay-1">
           <Image
             className="object-cover"
             src={homeLanding.cta.image}

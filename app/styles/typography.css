@@ -1,0 +1,132 @@
+.type-h1 {
+  font-size: clamp(2.5rem, 5.2vw, 4rem);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-h3 {
+  font-size: 1.5rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-p1 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-p2 {
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-p3 {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-hero-body {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-section-lead {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-panel-title {
+  font-size: 1.5rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-subtitle {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-body {
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-small {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.type-micro {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  font-weight: 400;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.card-copy {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.type-nav,
+.type-button {
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.type-hero {
+  font-size: clamp(2.65rem, 5.2vw, 4rem);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-section {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.type-kicker {
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.type-metric {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0;
+}

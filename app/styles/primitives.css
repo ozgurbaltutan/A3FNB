@@ -1,0 +1,56 @@
+.surface-card,
+.surface-panel,
+.surface-editorial,
+.surface-elevated {
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.surface-card {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.surface-panel {
+  border-radius: var(--a3-media-radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.surface-inset {
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  box-shadow: none;
+}
+
+.surface-editorial {
+  border-radius: var(--a3-media-radius);
+  box-shadow: var(--shadow-editorial);
+}
+
+.surface-elevated {
+  border-radius: var(--a3-media-radius);
+  box-shadow: var(--shadow-elevated);
+}
+
+.media-edge {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.media-edge::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--media-edge-light);
+  content: "";
+  pointer-events: none;
+}
+
+.surface-ink .media-edge::after,
+.media-edge--dark::after {
+  box-shadow: var(--media-edge-dark);
+}

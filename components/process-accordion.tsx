@@ -178,7 +178,7 @@ export function ProcessAccordion({
         role="group"
       >
         {renderAccordionItems("process-showcase-list")}
-        <div aria-live="polite" className="process-showcase-media">
+        <div aria-live="polite" className="process-showcase-media media-edge">
           {items.map((item) => item.media ? (
             <div
               aria-hidden={visibleMediaId !== item.id}

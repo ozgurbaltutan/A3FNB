@@ -7,6 +7,7 @@
     "build": "node ./node_modules/next/dist/bin/next build",
     "start": "node ./node_modules/next/dist/bin/next start",
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
+    "design:audit": "node scripts/design-system-audit.mjs",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
     "test:e2e": "node ./node_modules/@playwright/test/cli.js test"
   },
