@@ -9,13 +9,14 @@ import { geoCentroid, geoNaturalEarth1, geoPath, type GeoPermissibleObjects } fr
 import { feature } from "topojson-client";
 import type { GeometryObject, Topology } from "topojson-specification";
 import countriesAtlas from "world-atlas/countries-110m.json";
-import { Breadcrumb } from "@/components/breadcrumb";
 import { FilteredProductGrid } from "@/components/filtered-product-grid";
-import { InnerPageHero } from "@/components/inner-page-hero";
+import { FinalCta } from "@/components/final-cta";
+import { InnerPageHero, PageHero } from "@/components/inner-page-hero";
 import { MetricBand } from "@/components/metric-band";
 import { ProcessAccordion } from "@/components/process-accordion";
+import { ProductCollection } from "@/components/product-collection";
 import { TradeProcessShowcase } from "@/components/trade-process-showcase";
-import { Container, LinkButton } from "@/components/ui";
+import { Container, LinkButton, SectionHeader } from "@/components/ui";
 import { homeAssets } from "@/content/site";
 import type { NavigationItem } from "@/lib/types";
 
@@ -533,10 +534,7 @@ function ProductEditorialFactsSection({ facts }: { facts: ProductEditorialFacts 
   return (
     <section className="product-detail-section product-editorial-facts" id="key-facts">
       <Container className="a3-container product-editorial-facts__inner">
-        <div className="product-section-heading">
-          <h2 className="type-section">{facts.title}</h2>
-          {facts.text ? <p className="type-section-lead">{facts.text}</p> : null}
-        </div>
+        <SectionHeader className="product-section-heading" text={facts.text} title={facts.title} />
         <div className="product-editorial-facts__bento">
           {facts.items.map((item) => (
             <article className="product-editorial-facts__card surface-panel" key={item.title}>
@@ -916,40 +914,22 @@ function ProductDetailHero({
   }
 
   return (
-    <section
-      className={clsx(
-        "product-detail-hero",
-        hero.variant === "masthead" && "product-detail-hero--masthead",
-        hero.variant === "split" && "product-detail-hero--split",
-      )}
+    <PageHero
+      breadcrumb={hero.hideBreadcrumb ? undefined : breadcrumb}
+      image={hero.image}
+      imageAlt={hero.imageAlt}
+      productLayout={hero.variant === "masthead" || hero.variant === "split" ? hero.variant : "default"}
+      text={paragraphs}
+      title={hero.title}
+      variant="product"
     >
-      <Container className="a3-container product-detail-hero__inner">
-        {!hero.hideBreadcrumb ? (
-          <div className="product-detail-hero__breadcrumb">
-            <Breadcrumb items={breadcrumb} />
-          </div>
-        ) : null}
-        {hero.image ? (
-          <figure className="product-detail-hero__media">
-            <Image src={hero.image} alt={hero.imageAlt} fill priority sizes="(min-width: 1024px) 1180px, 100vw" className="object-cover" />
-          </figure>
-        ) : null}
-        <div className="product-detail-hero__copy">
-          <h1 className="type-hero product-detail-hero__title">{hero.title}</h1>
-          <div className="type-hero-body product-detail-hero__text">
-            {paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-          {hero.note ? <p className="product-detail-note">{hero.note}</p> : null}
-          {hero.cta ? (
-            <LinkButton href={hero.cta.href} variant="primary" className="product-detail-hero__cta">
-              {hero.cta.label}
-            </LinkButton>
-          ) : null}
-        </div>
-      </Container>
-    </section>
+      {hero.note ? <p className="product-detail-note">{hero.note}</p> : null}
+      {hero.cta ? (
+        <LinkButton href={hero.cta.href} variant="primary" className="product-detail-hero__cta">
+          {hero.cta.label}
+        </LinkButton>
+      ) : null}
+    </PageHero>
   );
 }
 
@@ -1122,24 +1102,26 @@ function ProductPortfolioSection({
       id={portfolio.id ?? "range"}
     >
       <Container className="a3-container product-portfolio-section__inner">
-        <div className="product-portfolio-section__header">
-          <h2 className="type-section">{portfolio.title}</h2>
-          <p className="type-section-lead">{portfolio.text}</p>
-        </div>
-        <FilteredProductGrid
-          appearance={appearance}
-          ariaLabel={`${portfolio.title} products`}
-          getItemLabel={(item) => `View commercial details for ${item.title}`}
-          groups={filterGroups}
-          includeAllFilter={portfolio.showAllFilter ?? true}
-          items={portfolio.items}
-          mode="button"
-          treatment={portfolio.cardTreatment ?? "default"}
-          onItemActivate={(item) => openPortfolioModal(item.id)}
-          setItemRef={(id, node) => {
-            modalTriggerRefs.current[id] = node;
-          }}
-        />
+        <ProductCollection
+          headerClassName="product-portfolio-section__header"
+          title={portfolio.title}
+          text={portfolio.text}
+        >
+          <FilteredProductGrid
+            appearance={appearance}
+            ariaLabel={`${portfolio.title} products`}
+            getItemLabel={(item) => `View commercial details for ${item.title}`}
+            groups={filterGroups}
+            includeAllFilter={portfolio.showAllFilter ?? true}
+            items={portfolio.items}
+            mode="button"
+            treatment={portfolio.cardTreatment ?? "default"}
+            onItemActivate={(item) => openPortfolioModal(item.id)}
+            setItemRef={(id, node) => {
+              modalTriggerRefs.current[id] = node;
+            }}
+          />
+        </ProductCollection>
         {activePortfolioItem ? (
           <ProductPortfolioModal
             product={activePortfolioItem}
@@ -1383,10 +1365,7 @@ function ProductTechnicalSpecs({ specs }: { specs: NonNullable<ProductDetailProp
   return (
     <section className="product-detail-section product-technical-specs" id="technical-specifications">
       <Container className="a3-container product-technical-specs__inner">
-        <div className="product-detail-section__header">
-          <h2 className="type-section">{specs.title}</h2>
-          {specs.text ? <p className="type-section-lead">{specs.text}</p> : null}
-        </div>
+        <SectionHeader className="product-detail-section__header" text={specs.text} title={specs.title} />
         {groups.length > 1 ? (
           <div aria-label="Specification groups" className="product-filter-tabs product-technical-specs__tabs" role="tablist">
             {groups.map((group) => (
@@ -1735,10 +1714,11 @@ function RelatedProducts({
   return (
     <section className="product-detail-related">
       <Container className="a3-container product-detail-related__inner">
-        <div className="product-section-heading">
-          <h2 className="type-section">Related categories</h2>
-          <p className="type-section-lead">Continue exploring product families that may fit the same sourcing programme.</p>
-        </div>
+        <SectionHeader
+          className="product-section-heading"
+          title="Related categories"
+          text="Continue exploring product families that may fit the same sourcing programme."
+        />
         <div className="product-detail-related__compact-grid">
           {links.map((link) => (
             <Link className="product-detail-related__compact-card premium-focus" href={link.href} key={link.href}>
@@ -1764,44 +1744,17 @@ function RelatedProducts({
 }
 
 function ProductFinalCta({ cta }: { cta: ProductDetailProps["finalCta"] }) {
-  if (cta.variant === "compact-reminder") {
-    return (
-      <section className="product-detail-final-cta product-detail-final-cta--compact" id="contact">
-        <Container className="a3-container product-detail-final-cta__compact-inner">
-          <div>
-            <h2>{cta.title}</h2>
-            <p>{cta.text}</p>
-          </div>
-          <LinkButton href={cta.primary.href} variant="light">{cta.primary.label}</LinkButton>
-        </Container>
-      </section>
-    );
-  }
-
-  const image = cta.image ?? homeAssets.media.finalCta;
-  const imageAlt = cta.imageAlt ?? "Commercial food market and buyer activity";
-
   return (
-    <section className={clsx("final-cta-section product-detail-final-cta text-surface", cta.tone === "ink" ? "bg-ink" : "bg-teal")} id="contact">
-      <Container className="a3-container final-cta-shell grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.62fr)]">
-        <div className="final-cta-copy">
-          <h2 className="type-section max-w-[620px] text-surface">{cta.title}</h2>
-          <p className="type-section-lead mt-5 max-w-[760px] text-surface">{cta.text}</p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <LinkButton href={cta.primary.href} variant="light">
-              {cta.primary.label}
-            </LinkButton>
-            {cta.secondary ? (
-              <LinkButton href={cta.secondary.href} variant="darkOutline">
-                {cta.secondary.label}
-              </LinkButton>
-            ) : null}
-          </div>
-        </div>
-        <div className="final-cta-media">
-          <Image className="object-cover" src={image} alt={imageAlt} fill sizes="(min-width: 1024px) 520px, 100vw" />
-        </div>
-      </Container>
-    </section>
+    <FinalCta
+      id="contact"
+      image={cta.image ?? homeAssets.media.finalCta}
+      imageAlt={cta.imageAlt ?? "Commercial food market and buyer activity"}
+      primary={cta.primary}
+      secondary={cta.secondary}
+      text={cta.text}
+      title={cta.title}
+      tone={cta.tone === "ink" ? "ink" : "teal"}
+      variant={cta.variant === "compact-reminder" ? "compact" : "feature"}
+    />
   );
 }

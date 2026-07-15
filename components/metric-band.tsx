@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CountUpMetric } from "@/components/count-up-metric";
-import { Container } from "@/components/ui";
+import { Container, SectionHeader } from "@/components/ui";
 
 export type MetricBandItem = {
   value: string;
@@ -29,10 +29,7 @@ export function MetricBand({
   return (
     <section className="metric-band" id={id}>
       <Container className="a3-container metric-band__inner">
-        <header className="metric-band__header">
-          <h2 className="type-section text-surface">{title}</h2>
-          {edition ? <p>{edition}</p> : null}
-        </header>
+        <SectionHeader className="metric-band__header" text={edition} title={title} tone="dark" />
         <div className="metric-band__grid">
           {items.map((item) => (
             <article className="metric-band__item" key={`${item.value}-${item.description}`}>

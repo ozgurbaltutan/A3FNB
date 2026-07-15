@@ -13,7 +13,7 @@
   --color-media-glass: rgb(var(--surface-rgb) / 8%);
   --font-sans: var(--font-gilroy), Arial, Helvetica, sans-serif;
   --spacing-gutter: clamp(1.25rem, 4vw, 4rem);
-  --spacing-section: clamp(4.5rem, 8vw, 7rem);
+  --spacing-section: var(--space-section-block);
   --radius-small: 0.5rem;
   --radius-control: 0.75rem;
   --radius-card: 0.875rem;
@@ -70,20 +70,50 @@
   --page-max: 1440px;
   --content-max: 820px;
   --header-height: 76px;
-  --section-pad: clamp(4.5rem, 8vw, 7rem);
+  --section-pad: var(--space-section-block);
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --radius-small: 0.5rem;
   --radius-control: 0.75rem;
   --radius-card: 0.875rem;
   --radius-media: 1rem;
   --a3-media-radius: clamp(1rem, 1.4vw, 1.25rem);
-  --space-1: 0.5rem;
-  --space-2: 0.75rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
-  --space-5: 2rem;
-  --space-6: 3rem;
-  --a3-section-pad: clamp(5.5rem, 8vw, 7.5rem);
+  /*
+   * Primitive spacing scale: 4px base grid.
+   * Numeric names intentionally match their pixel multiple at a 16px root.
+   */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-18: 4.5rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+
+  /* Semantic spacing contracts: fixed relationships + fluid composition. */
+  --space-section-block: clamp(4.5rem, 7vw, 7rem);
+  --space-section-compact: clamp(2.5rem, 4vw, 3.5rem);
+  --space-hero-block: clamp(3.5rem, 6vw, 5rem);
+  --space-section-content: clamp(2.5rem, 4vw, 3.5rem);
+  --space-heading-copy: clamp(1rem, 1.4vw, 1.25rem);
+  --space-copy-stack: var(--space-3);
+  --space-copy-action: var(--space-6);
+  --space-control-content: clamp(1.5rem, 2.5vw, 2rem);
+  --space-grid: clamp(1rem, 1.5vw, 1.5rem);
+  --space-panel-gap: clamp(1.5rem, 3vw, 2.5rem);
+  --space-card-padding: clamp(1.25rem, 2vw, 2rem);
+  --space-panel-padding: clamp(1.5rem, 3vw, 2.5rem);
+
+  /* Compatibility aliases; no independent spacing values may live here. */
+  --a3-section-pad: var(--space-section-block);
 
   --motion-fast: 170ms;
   --motion-base: 220ms;

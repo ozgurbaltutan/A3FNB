@@ -11,8 +11,9 @@ import { homeAssets, homeLanding, marketLocations, productCategories, type Marke
 import { categoryCardItem } from "@/content/product-card-items";
 import { EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
 import { ProductImageCarousel } from "@/components/product-image-carousel";
-import { LinkButton } from "@/components/ui";
+import { LinkButton, SectionHeader } from "@/components/ui";
 import { CountUpMetric } from "@/components/count-up-metric";
+import { FinalCta as SharedFinalCta } from "@/components/final-cta";
 import { TradeProcessShowcase } from "@/components/trade-process-showcase";
 
 type FeaturedProduct = {
@@ -137,14 +138,12 @@ function SectionIntro({
   className?: string;
 }) {
   return (
-    <div className={`reveal reveal--up max-w-[871px] ${className}`}>
-      <h2 className={`type-section ${light ? "text-surface" : "text-ink"}`}>
-        {title}
-      </h2>
-      <p className={`type-section-lead mt-6 max-w-[871px] ${light ? "text-surface" : "text-ink/80"}`}>
-        {text}
-      </p>
-    </div>
+    <SectionHeader
+      className={`reveal reveal--up ${className}`}
+      text={text}
+      title={title}
+      tone={light ? "dark" : "light"}
+    />
   );
 }
 
@@ -190,8 +189,8 @@ function HomeHero() {
         <source src={homeAssets.media.heroVideo} type="video/webm" />
       </video>
       <div className="home-hero-overlay absolute inset-0 z-10" aria-hidden="true" />
-      <HomeShell className="relative z-20 flex min-h-[100svh] items-center pb-16 pt-32 lg:pb-20 lg:pt-40">
-        <div className="max-w-[1020px]">
+      <HomeShell className="home-hero__inner relative z-20 flex min-h-[100svh] items-center">
+        <div className="home-hero__copy max-w-[1020px]">
           <h1 className="home-hero-title type-hero max-w-[1020px] text-surface">
             {hero.title.split("\n").map((line, index, lines) => (
               <span className="home-hero-title__line" key={line}>
@@ -200,10 +199,10 @@ function HomeHero() {
               </span>
             ))}
           </h1>
-          <p className="type-hero-body mt-6 max-w-[867px] text-surface">
+          <p className="home-hero__lead type-hero-body max-w-[867px] text-surface">
             {hero.text}
           </p>
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:gap-6">
+          <div className="home-hero__actions flex flex-col sm:flex-row">
             <LinkButton href={hero.primary.href} variant="mediaPrimary">
               {hero.primary.label}
             </LinkButton>
@@ -256,12 +255,11 @@ function FeaturedSourcingCategories() {
           getHref={(product) => product.href}
           getItemLabel={(product) => `View ${product.title} category`}
           header={(
-            <div className="home-products-carousel__intro">
-              <h2 className="type-section text-ink">Explore product categories.</h2>
-              <p className="type-section-lead text-ink/80">
-                A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements.
-              </p>
-            </div>
+            <SectionHeader
+              className="home-products-carousel__intro"
+              title="Explore product categories."
+              text="A3 helps buyers access selected food commodities, ingredients and packaged products, with options shaped around origin, specification, packing, volume and shipping requirements."
+            />
           )}
           items={products}
           mode="link"
@@ -286,17 +284,14 @@ function MarketsPreview() {
 
   return (
     <section className="home-section home-section--markets markets-layer-section bg-ink text-surface">
-      <HomeShell className="markets-layer-stage grid items-center gap-5 lg:grid-cols-2">
+      <HomeShell className="markets-layer-stage grid items-center lg:grid-cols-2">
         <div className="markets-copy">
-          <h2 className="reveal reveal--up type-section text-surface">
-            Markets we connect.
-          </h2>
-          <p className="markets-copy__body reveal reveal--up reveal-delay-1 mt-6 text-surface">
-            {homeLanding.markets.text}
-          </p>
-          <p className="markets-copy__body reveal reveal--up reveal-delay-2 mt-5 text-surface">
-            {homeLanding.markets.note}
-          </p>
+          <SectionHeader
+            className="markets-copy__header reveal reveal--up"
+            text={[homeLanding.markets.text, homeLanding.markets.note]}
+            title="Markets we connect."
+            tone="dark"
+          />
           <div className="markets-metrics reveal reveal--up reveal-delay-3">
             {homeLanding.markets.metrics.map((metric) => (
               <div className="markets-metric" key={metric.label}>
@@ -460,15 +455,12 @@ function BuyerPaths() {
 function BeforeYouEnquire() {
   return (
     <section className="home-section home-section--catalogues before-enquire-band">
-      <HomeShell className="grid gap-6 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center lg:gap-14">
-        <div className="reveal reveal--up max-w-[520px]">
-          <h2 className="type-section text-ink">
-            Product catalogues
-          </h2>
-          <p className="type-section-lead mt-4 text-ink/76">
-            Explore available coffee and sugar catalogues before starting a product or sourcing discussion with A3.
-          </p>
-        </div>
+      <HomeShell className="before-enquire-layout grid lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)] lg:items-center">
+        <SectionHeader
+          className="reveal reveal--up max-w-[520px]"
+          title="Product catalogues"
+          text="Explore available coffee and sugar catalogues before starting a product or sourcing discussion with A3."
+        />
         <div className="before-enquire-grid">
           {homeLanding.resources.map((resource, index) => (
             <Link
@@ -500,29 +492,13 @@ function BeforeYouEnquire() {
 
 function FinalCta() {
   return (
-    <section className="home-section--final-cta final-cta-section bg-teal text-surface">
-      <HomeShell className="final-cta-shell grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.62fr)]">
-        <div className="final-cta-copy reveal reveal--up">
-          <h2 className="type-section max-w-[520px] text-surface">
-            {homeLanding.cta.title}
-          </h2>
-          <p className="type-section-lead mt-5 max-w-[760px] text-surface">{homeLanding.cta.text}</p>
-          <div className="mt-6">
-            <LinkButton href={homeLanding.cta.primary.href} variant="light">
-              {homeLanding.cta.primary.label}
-            </LinkButton>
-          </div>
-        </div>
-        <div className="final-cta-media media-edge media-edge--dark reveal reveal--fade reveal-delay-1">
-          <Image
-            className="object-cover"
-            src={homeLanding.cta.image}
-            alt={homeLanding.cta.imageAlt}
-            fill
-            sizes="(min-width: 1024px) 520px, 100vw"
-          />
-        </div>
-      </HomeShell>
-    </section>
+    <SharedFinalCta
+      className="home-section--final-cta"
+      image={homeLanding.cta.image}
+      imageAlt={homeLanding.cta.imageAlt}
+      primary={homeLanding.cta.primary}
+      text={homeLanding.cta.text}
+      title={homeLanding.cta.title}
+    />
   );
 }

@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { EditorialCopy, EditorialLayout, EditorialMedia, EditorialSection } from "@/components/editorial-section";
+import { FinalCta } from "@/components/final-cta";
 import { FilteredProductGrid, type ProductGridGroup } from "@/components/filtered-product-grid";
 import { InnerPageHero } from "@/components/inner-page-hero";
 import { ProcessAccordion } from "@/components/process-accordion";
-import { Container, LinkButton } from "@/components/ui";
+import { ProductCollection } from "@/components/product-collection";
+import { Container, LinkButton, SectionHeader } from "@/components/ui";
 import { homeLanding } from "@/content/site";
 
 type ProductLineupGroup = "commodities" | "ingredients" | "retail-foodservice";
@@ -74,22 +76,22 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
 
       <section className="products-lineup-page">
         <Container className="a3-container products-lineup-page__inner">
-          <div className="products-lineup-heading product-section-heading">
-            <h2 className="type-section">Explore the product lineup</h2>
-            <p className="type-section-lead">
-              Browse A3 product categories by commercial role, then open the category that best matches the sourcing requirement.
-            </p>
-          </div>
-          <FilteredProductGrid
-            ariaLabel="Product categories"
-            getHref={(product) => product.href}
-            getItemLabel={(product) => `Open ${product.title} category`}
-            groups={groups}
-            items={products}
-            mode="link"
-            showFilters
-            treatment="category-overlay"
-          />
+          <ProductCollection
+            headerClassName="products-lineup-heading product-section-heading"
+            title="Explore the product lineup"
+            text="Browse A3 product categories by commercial role, then open the category that best matches the sourcing requirement."
+          >
+            <FilteredProductGrid
+              ariaLabel="Product categories"
+              getHref={(product) => product.href}
+              getItemLabel={(product) => `Open ${product.title} category`}
+              groups={groups}
+              items={products}
+              mode="link"
+              showFilters
+              treatment="category-overlay"
+            />
+          </ProductCollection>
         </Container>
       </section>
 
@@ -116,12 +118,11 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
 
       <section className="products-support-band">
         <Container className="a3-container products-support-band__inner">
-          <div className="products-support-band__heading product-section-heading">
-            <h2 className="type-section">How A3 supports product sourcing</h2>
-            <p className="type-section-lead">
-              Product availability is only useful when specification, supplier fit, documentation and shipment route can work together.
-            </p>
-          </div>
+          <SectionHeader
+            className="products-support-band__heading product-section-heading"
+            title="How A3 supports product sourcing"
+            text="Product availability is only useful when specification, supplier fit, documentation and shipment route can work together."
+          />
           <ProcessAccordion
             ariaLabel="How A3 supports product sourcing"
             className="products-support-showcase"
@@ -145,28 +146,14 @@ export function ProductsLineupPage({ products }: { products: ProductLineupItem[]
         </Container>
       </section>
 
-      <section className="final-cta-section products-final-cta bg-teal text-surface">
-        <Container className="a3-container final-cta-shell grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(420px,0.62fr)]">
-          <div className="final-cta-copy">
-            <h2 className="type-section max-w-[620px] text-surface">Looking for a specific food product?</h2>
-            <p className="type-section-lead mt-5 max-w-[760px] text-surface">
-              Share the product category, destination market and commercial requirement. A3 will review whether a suitable supply route can be built around your need.
-            </p>
-            <div className="mt-6">
-              <LinkButton href="/en/request-a-quote" variant="light">Share Your Requirement</LinkButton>
-            </div>
-          </div>
-          <div className="final-cta-media">
-            <Image
-              alt="Commercial food market and buyer activity"
-              className="object-cover"
-              fill
-              sizes="(min-width: 1024px) 520px, 100vw"
-              src="/media/home/final-cta.webp"
-            />
-          </div>
-        </Container>
-      </section>
+      <FinalCta
+        className="products-final-cta"
+        image="/media/home/final-cta.webp"
+        imageAlt="Commercial food market and buyer activity"
+        primary={{ href: "/en/request-a-quote", label: "Share Your Requirement" }}
+        text="Share the product category, destination market and commercial requirement. A3 will review whether a suitable supply route can be built around your need."
+        title="Looking for a specific food product?"
+      />
     </>
   );
 }

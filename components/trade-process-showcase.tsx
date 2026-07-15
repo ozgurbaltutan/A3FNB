@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ProcessAccordion } from "@/components/process-accordion";
-import { Container } from "@/components/ui";
+import { Container, SectionHeader } from "@/components/ui";
 
 export type TradeProcessShowcaseItem = {
   id?: string;
@@ -25,10 +25,11 @@ export function TradeProcessShowcase({ id, title, text, items, className = "" }:
   return (
     <section className={`home-section home-section--process trade-process-showcase ${className}`.trim()} id={id}>
       <Container className="a3-container">
-        <div className="reveal reveal--up max-w-[871px] trade-process-showcase__intro">
-          <h2 className="type-section text-ink">{title}</h2>
-          <p className="type-section-lead mt-6 max-w-[871px] text-ink/80">{text}</p>
-        </div>
+        <SectionHeader
+          className="reveal reveal--up trade-process-showcase__intro"
+          text={text}
+          title={title}
+        />
         <ProcessAccordion
           ariaLabel={`${title} steps`}
           className="reveal reveal--up reveal-delay-2"

@@ -108,11 +108,13 @@ export function Section({
   children,
   className,
   tone = "paper",
+  spacing = "default",
   muted = false,
 }: {
   children: ReactNode;
   className?: string;
   tone?: "paper" | "surface" | "ink" | "teal";
+  spacing?: "default" | "compact";
   /** @deprecated Prefer the explicit tone prop. */
   muted?: boolean;
 }) {
@@ -121,7 +123,8 @@ export function Section({
   return (
     <section
       className={clsx(
-        "py-[var(--section-pad)]",
+        "design-section",
+        spacing === "compact" ? "design-section--compact" : "design-section--default",
         resolvedTone === "paper" && "bg-paper text-ink",
         resolvedTone === "surface" && "bg-surface text-ink",
         resolvedTone === "ink" && "surface-ink bg-ink text-surface",
@@ -131,6 +134,31 @@ export function Section({
     >
       {children}
     </section>
+  );
+}
+
+export function SectionHeader({
+  title,
+  text,
+  tone = "light",
+  className,
+}: {
+  title: ReactNode;
+  text?: ReactNode | readonly ReactNode[];
+  tone?: "light" | "dark";
+  className?: string;
+}) {
+  const paragraphs = Array.isArray(text) ? text : text === undefined ? [] : [text];
+
+  return (
+    <div className={clsx("section-header", tone === "dark" && "section-header--dark", className)}>
+      <h2 className="type-section">{title}</h2>
+      {paragraphs.length ? (
+        <div className="section-header__copy">
+          {paragraphs.map((paragraph, index) => <p className="type-section-lead" key={index}>{paragraph}</p>)}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
