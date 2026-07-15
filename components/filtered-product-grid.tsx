@@ -19,6 +19,7 @@ type FilteredProductGridBaseProps<TItem extends ProductImageCarouselItem> = {
   contentMode?: "default" | "title-only";
   filterThreshold?: number;
   groups?: ProductGridGroup[];
+  includeAllFilter?: boolean;
   items: TItem[];
   showFilters?: boolean;
   getItemLabel?: (item: TItem) => string;
@@ -57,8 +58,9 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
     filterThreshold = 8,
     getItemLabel,
     groups = [],
+    includeAllFilter = true,
     items,
-    showFilters = items.length > filterThreshold,
+    showFilters = items.length > filterThreshold || groups.length > 1,
     treatment = "default",
   } = props;
   const availableGroups = useMemo(
@@ -71,9 +73,11 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
     [groups, items],
   );
   const filters = showFilters && availableGroups.length > 1
-    ? [{ id: "all", label: "All", itemIds: items.map((item) => item.id) }, ...availableGroups]
+    ? includeAllFilter
+      ? [{ id: "all", label: "All", itemIds: items.map((item) => item.id) }, ...availableGroups]
+      : availableGroups
     : [];
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState(filters[0]?.id ?? "all");
   const resolvedFilter = filters.find((filter) => filter.id === activeFilter) ?? filters[0];
   const visibleItems = resolvedFilter
     ? items.filter((item) => resolvedFilter.itemIds.includes(item.id))

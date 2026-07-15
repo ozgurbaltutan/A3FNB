@@ -125,47 +125,6 @@ const productCategoryDetailSources: Record<string, ProductCategoryDetailSource> 
     ] },
   },
 
-  "grains-seeds": {
-    slug: "grains-seeds",
-    heroText: [
-      "Wheat, maize and sunflower seed requirements organised by crop, grade, intended processing use, origin and shipment model.",
-      "A3 aligns physical quality, food or feed-use requirements, crop availability, documents and logistics before quotation.",
-    ],
-    image: "/media/home/featured-grains-card.png",
-    imageAlt: "Commercial grains and seeds",
-    portfolioTitle: "Grains and seeds portfolio",
-    portfolioText: "Separate milling, pasta, maize and sunflower routes make the intended processing use clear from the start.",
-    groups: [
-      { id: "wheat", title: "Wheat", description: "Wheat routes separated by milling performance and pasta application." },
-      { id: "grains-seeds", title: "Other Grains & Seeds", description: "Maize and sunflower seed reviewed by grade, use and crop availability." },
-    ],
-    products: [
-      product("wheat", "milling-wheat", "Milling Wheat", "Wheat selected for flour milling according to class, protein performance and mill requirements.", "Origin and crop by requirement", "Bread, bakery and general flour milling", "Wheat class, protein, test weight, moisture, falling number and impurities", "Bulk grain", "Bulk vessel, container or bagged route by volume"),
-      product("wheat", "durum-wheat-pasta", "Durum Wheat for Pasta", "Durum wheat selected for semolina yield, colour and pasta processing performance.", "Origin and crop by requirement", "Semolina and pasta production", "Vitreous kernels, protein, test weight, moisture, colour and defects", "Bulk durum grain", "Bulk vessel, container or bags by programme"),
-      product("grains-seeds", "corn-maize", "Corn / Maize", "Maize reviewed by grade, crop, intended use and destination requirements.", "Origin and crop by requirement", "Food processing, milling and approved commercial uses", "Grade, moisture, test weight, broken kernels, foreign material and GMO status where relevant", "Whole maize grain", "Bulk or bagged shipment by route"),
-      product("grains-seeds", "sunflower-seed", "Sunflower Seed", "Sunflower seed reviewed by oilseed or confectionery use, variety and physical quality.", "Origin and crop by requirement", "Oil crushing, food processing or confectionery use", "Type, oil content where relevant, moisture, admixture, kernel condition and size", "In-shell seed", "Bulk, big bags or bags by application"),
-    ],
-    context: {
-      title: "Grain selection context",
-      edition: "USDA FAS and Codex commodity context · reviewed July 2026",
-      items: [
-        { value: "68", label: "kg/hl minimum", description: "Codex minimum test weight for wheat." },
-        { value: "70", label: "kg/hl minimum", description: "Codex minimum test weight for durum wheat." },
-        { value: "5%", label: "maximum", description: "Codex limit for shrunken and broken kernels in wheat; durum wheat is 6%." },
-      ],
-      sources: [
-        { label: "USDA FAS Grain: World Markets and Trade", href: "https://apps.fas.usda.gov/psdonline/circulars/grain.pdf" },
-        { label: "Codex commodity standards", href: codexStandards },
-      ],
-    },
-    shipment: { title: "From crop brief to loading", text: "Crop, grade, volume, loading model and destination controls are reviewed together for grain and seed programmes.", items: [
-      { title: "Crop and end use", description: "Define milling, pasta, food, crushing or confectionery use together with crop and origin preferences." },
-      { title: "Grade and safety tests", description: "Test weight, moisture, protein or oil content, defects, mycotoxins and GMO status are reviewed as relevant." },
-      { title: "Survey and loading model", description: "Bulk vessel, container or bag route, inspection, fumigation and port capability are aligned." },
-      { title: "Shipment release", description: "Final quality certificate, weight, origin, phytosanitary and destination documents are confirmed." },
-    ] },
-  },
-
   "dairy-milk-powders": {
     slug: "dairy-milk-powders",
     heroText: [

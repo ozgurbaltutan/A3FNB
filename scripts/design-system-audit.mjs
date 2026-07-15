@@ -18,6 +18,11 @@ const forbiddenTokens = [
 ];
 const forbiddenComments = ["authoritative override", "audit fixes", "pilot overrides"];
 const palette = new Set(["#03100e", "#f7f2ea", "#fffdf8", "#0f7569", "#0a5f55", "#6fa59b"]);
+const requiredShadowTokens = new Map([
+  ["--shadow-base", "2px 4px 12px 0 rgba(0, 0, 0, 0.08)"],
+  ["--shadow-raised", "2px 4px 16px 0 rgba(0, 0, 0, 0.16)"],
+  ["--shadow-overlay", "2px 6px 20px 0 rgba(0, 0, 0, 0.20)"],
+]);
 const errors = [];
 let rootCount = 0;
 
@@ -79,9 +84,27 @@ for (const file of files) {
       );
     }
   }
+
+  for (const declaration of source.matchAll(/filter\s*:\s*drop-shadow\(([^;]+)\)\s*;/gms)) {
+    if (!declaration[1].includes("var(--shadow-filter-")) {
+      errors.push(`${path.relative(process.cwd(), file)} contains a hardcoded drop shadow: ${declaration[1].trim()}`);
+    }
+  }
+
+  for (const declaration of source.matchAll(/text-shadow\s*:\s*([^;]+);/gms)) {
+    const value = declaration[1].trim();
+    if (value !== "none" && !value.includes("var(--shadow-text-")) {
+      errors.push(`${path.relative(process.cwd(), file)} contains a hardcoded text shadow: ${value}`);
+    }
+  }
 }
 
 const tokenSource = fs.readFileSync(tokenFile, "utf8");
+for (const [token, value] of requiredShadowTokens) {
+  if (!tokenSource.includes(`${token}: ${value};`)) {
+    errors.push(`tokens.css must define ${token} as ${value}`);
+  }
+}
 const tokenHexes = [...tokenSource.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((match) => match[0].toLowerCase());
 const unknownPaletteValues = [...new Set(tokenHexes.filter((color) => !palette.has(color)))];
 if (unknownPaletteValues.length) {

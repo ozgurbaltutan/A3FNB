@@ -1,0 +1,28 @@
+# Dairy & Milk Powders content verification
+
+Reviewed 14 July 2026. This note records the product-identity and market claims used on `/en/products/dairy-milk-powders`. Codex figures are identity references, not supplier-specific guarantees. Every commercial offer still requires the producer specification and lot COA.
+
+## Product identity and decision content
+
+| Page claim | Source used | Editorial boundary |
+| --- | --- | --- |
+| Whole milk powder: 26–<42% milk fat, ≤5% water and ≥34% protein in milk solids-not-fat | [Codex CXS 207-1999: Milk Powders and Cream Powder](https://www.fao.org/input/download/standards/333/CXS_207e.pdf) | Shown as Codex identity criteria; regular/instant format and analytical limits remain offer-specific. |
+| Skimmed milk powder: ≤1.5% milk fat, ≤5% water and ≥34% protein in milk solids-not-fat | [Codex CXS 207-1999](https://www.fao.org/input/download/standards/333/CXS_207e.pdf) | Heat class, WPNI, solubility and scorched-particle requirements are application decisions, not universal Codex values. |
+| Instant powder: agglomeration, optional lecithination, wettability, dispersibility and solubility | [Tetra Pak Dairy Processing Handbook: Milk and whey powder](https://dairyprocessinghandbook.tetrapak.com/chapter/milk-and-whey-powdered-ingredients) | The page does not imply that every instant powder is lecithinated. |
+| Fat-filled powder uses dairy solids with a declared vegetable-fat system | [Tetra Pak Dairy Processing Handbook: Milk and whey powder](https://dairyprocessinghandbook.tetrapak.com/chapter/milk-and-whey-powdered-ingredients), [Codex CXS 206-1999: Use of Dairy Terms](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/de/?lnk=1&url=https%3A%2F%2Fworkspace.fao.org%2Fsites%2Fcodex%2FStandards%2FCXS+206-1999%2FCXS_206e.pdf) | Explicitly described as formulated and not presented as Codex whole milk powder. Destination naming and label review are required. |
+| Whey powder is separated into sweet or acid whey and selected by lactose, protein, ash, pH, moisture and microbiology | [Codex CXS 289-1995: Whey Powders](https://www.fao.org/input/download/standards/184/CXS_289e.pdf), [USDEC: Sweet Whey Powder](https://www.thinkusadairy.org/products/whey-protein-and-ingredients/whey-categories/sweet-whey-powder) | Composition is kept as a decision checklist; no unsupported universal supplier specification is published. |
+| Lactose: monohydrate, anhydrous or mixture; ≥99% anhydrous lactose on a dry basis | [Codex CXS 212-1999: Sugars](https://www.fao.org/input/download/standards/338/CXS_212e_u.pdf) | Intended-use grade and producer approval are confirmed separately. |
+| Dairy permeate: milk or whey source, ≥76% anhydrous lactose and ≤5% moisture | [Codex CXS 331-2017: Dairy Permeate Powders](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/fr/?lnk=1&url=https%253A%252F%252Fworkspace.fao.org%252Fsites%252Fcodex%252FStandards%252FCXS%2B331-2017%252FCXS_331e.pdf), [USDEC: Permeate](https://www.thinkusadairy.org/products/permeate-%28dairy-product-solids%29) | Nitrogen, ash, minerals and demineralisation remain source- and offer-specific. |
+| Butter: milk-derived fat product with ≥80% milk fat and ≤16% water | [Codex CXS 279-1971: Butter](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/es/?lnk=1&url=https%253A%252F%252Fworkspace.fao.org%252Fsites%252Fcodex%252FStandards%252FCXS%2B279-1971%252FCXS_279e.pdf) | Salt status, cultured/sweet-cream route, format and shelf life are confirmed by offer. |
+| Natural cheese identity is kept separate from formulated cheese analogues | [Codex CXS 283-1978: General Standard for Cheese](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/en/?lnk=1&url=https%3A%2F%2Fworkspace.fao.org%2Fsites%2Fcodex%2FStandards%2FCXS+283-1978%2FCXS_283e.pdf), [Codex CXS 206-1999](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/de/?lnk=1&url=https%3A%2F%2Fworkspace.fao.org%2Fsites%2Fcodex%2FStandards%2FCXS+206-1999%2FCXS_206e.pdf) | Analogue products are never labelled as natural cheese on the page. Destination naming rules remain a pre-offer check. |
+| UHT milk combines continuous high-temperature processing, commercial sterility and aseptic packing | [Codex CXC 57-2004: Code of Hygienic Practice for Milk and Milk Products](https://www.fao.org/fao-who-codexalimentarius/sh-proxy/en/?lnk=1&url=https%253A%252F%252Fworkspace.fao.org%252Fsites%252Fcodex%252FStandards%252FCXC+57-2004%252FCXC_057e.pdf), [Tetra Pak Dairy Processing Handbook: Long-life dairy products](https://dairyprocessinghandbook.tetrapak.com/chapter/long-life-dairy-products) | Shelf life is stated only as manufacturer-validated; no fixed duration is claimed. |
+
+## Market context
+
+| Metric | Source and date | Wording used |
+| --- | --- | --- |
+| 117.4 | [FAO Dairy Price Index](https://www.fao.org/markets-and-trade/commodities-overview/basic-foods/fao-dairy-price-index/en), June 2026 | Down 1.5% from May and 24.5% from June 2025; SMP remained firmer year on year while weak Chinese demand weighed on WMP. |
+| ~50% | [OECD–FAO Agricultural Outlook 2026–2035: Dairy](https://www.oecd.org/en/publications/oecd-fao-agricultural-outlook-2026-2035_47874669-en/full-report/dairy-and-dairy-products_5e1ae8f8.html) | Around half of global WMP and SMP production is traded internationally. |
+| 13.7m | [OECD–FAO Agricultural Outlook 2026–2035: Dairy](https://www.oecd.org/en/publications/oecd-fao-agricultural-outlook-2026-2035_47874669-en/full-report/dairy-and-dairy-products_5e1ae8f8.html) | Global dairy trade projected at 13.7 million tonnes in 2035, 11% above the 2023–25 base. |
+
+The page labels these figures as dated context and explicitly says they are not live quotations.

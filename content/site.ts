@@ -257,9 +257,9 @@ export const productCategories: ProductCategory[] = [
   {
     title: "Starches & Sweeteners",
     slug: "starches-sweeteners",
-    shortDescription: "Starches and sweeteners by application, specification and packing need.",
+    shortDescription: "Starches, plant proteins and sweeteners matched to product performance and market needs.",
     longDescription:
-      "A3 reviews starch and sweetener requirements by application, specification, packing format and commercial use case.",
+      "A3 reviews starch, protein and sweetener requirements by application, technical target, regulatory fit, packing and delivery.",
     iconKey: "starchesIndustrial",
     imageKey: "featuredStarchesIndustrial",
     exampleProducts: ["Corn Starch", "Tapioca Starch", "Wheat Starch", "Potato Starch", "Rice Starch", "Pea Starch", "Modified Starches", "Vital Wheat Gluten", "Pea Protein", "Glucose Syrup", "Fructose Syrup", "Maltodextrin", "Dextrose Monohydrate", "Dextrose Anhydrous", "Sorbitol", "Maltitol", "Xylitol", "Erythritol", "Glycerol", "Allulose", "Stevia"],
@@ -268,9 +268,9 @@ export const productCategories: ProductCategory[] = [
   {
     title: "Dried Fruit & Nuts",
     slug: "dried-fruit-nuts",
-    shortDescription: "Dried fruits and nuts by type, grade, origin and application need.",
+    shortDescription: "Dried fruits and nuts selected by crop, variety, grade, format, application and destination requirements.",
     longDescription:
-      "A3 reviews dried fruit and nut requirements by product type, grade, origin, application, packing and documentation need.",
+      "A3 coordinates dried fruit and nut sourcing by crop, variety, grade, treatment, format, packing, food-safety controls and destination requirements.",
     iconKey: "driedFruitNuts",
     imageKey: "featuredDriedFruitNuts",
     exampleProducts: ["Raisins & Sultanas", "Dried Apricots", "Dates", "Dried Figs", "In-Shell Pistachios", "Pistachio Kernels", "Walnuts"],
@@ -702,6 +702,75 @@ export const pages: Record<string, PageContent> = {
       structuredDataType: "Product",
       targetKeyword: "cocoa products supplier",
       secondaryKeywords: ["cocoa powder supplier", "cocoa butter sourcing", "cocoa mass liquor", "certified cocoa products"],
+    },
+  },
+  grains: {
+    locale: "en",
+    slug: "/en/products/grains-seeds",
+    title: "Grain and seed sourcing matched to crop, use and destination.",
+    description:
+      "A3 coordinates milling wheat, durum wheat, corn or maize and sunflower seed supply by crop, end use, quality, loading model and shipment requirements.",
+    sections: ["overview", "products", "market-context", "services", "cta"],
+    seo: {
+      metaTitle: "Grains & Seeds Sourcing | A3 Food & Beverage",
+      metaDescription:
+        "Source milling wheat, durum wheat, corn or maize and sunflower seed with crop, end-use, quality, packing and shipment requirements coordinated by A3.",
+      canonicalPath: "/en/products/grains-seeds",
+      ogTitle: "Grains & Seeds Sourcing",
+      ogDescription:
+        "Commercial grain and seed sourcing matched to crop, end use, quality, loading model and destination requirements.",
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "Product",
+      targetKeyword: "grains and seeds supplier",
+      secondaryKeywords: ["milling wheat supplier", "durum wheat sourcing", "bulk maize supplier", "sunflower seed supplier"],
+    },
+  },
+  oils: {
+    locale: "en",
+    slug: "/en/products/oils-fats",
+    title: "Edible oils and functional fats matched to process, application and destination.",
+    description:
+      "A3 coordinates sunflower, corn, olive and palm-based oil supply alongside margarines and functional fats by identity, processing route, application, packing and shipment requirements.",
+    sections: ["overview", "products", "market-context", "services", "cta"],
+    seo: {
+      metaTitle: "Edible Oils & Functional Fats Sourcing | A3 Food & Beverage",
+      metaDescription:
+        "Source sunflower, corn, olive and palm-based oils, margarines and functional fats with processing, quality, packing, temperature and shipment requirements coordinated by A3.",
+      canonicalPath: "/en/products/oils-fats",
+      ogTitle: "Fats & Oils Sourcing",
+      ogDescription:
+        "Commercial edible-oil and functional-fat sourcing matched to product identity, processing route, application, packing and destination.",
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "Product",
+      targetKeyword: "edible oils and fats supplier",
+      secondaryKeywords: ["sunflower oil supplier", "olive oil sourcing", "palm olein supplier", "industrial bakery fats"],
+    },
+  },
+  starches: {
+    locale: "en",
+    slug: "/en/products/starches-sweeteners",
+    title: "Starch and sweetener sourcing matched to function, process and destination.",
+    description:
+      "A3 coordinates native and modified starches, plant proteins, glucose ingredients, polyols and specialty sweeteners by application, technical target, regulatory fit, packing and delivery.",
+    sections: ["overview", "products", "market-context", "services", "cta"],
+    seo: {
+      metaTitle: "Starches & Sweeteners Sourcing | A3 Food & Beverage",
+      metaDescription:
+        "Source native and modified starches, glucose syrups, maltodextrin, dextrose, polyols, plant proteins and specialty sweeteners matched to application, regulation and delivery.",
+      canonicalPath: "/en/products/starches-sweeteners",
+      ogTitle: "Starches & Sweeteners Sourcing",
+      ogDescription:
+        "Crop-based ingredients matched to finished-product function, processing conditions, regulatory market, packing and delivery.",
+      robots,
+      locale: "en",
+      sitemapInclude: true,
+      structuredDataType: "Product",
+      targetKeyword: "starches and sweeteners supplier",
+      secondaryKeywords: ["food starch supplier", "glucose syrup sourcing", "polyol supplier", "modified starch supplier"],
     },
   },
   elleMina: {

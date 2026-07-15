@@ -116,7 +116,9 @@ type ProductPortfolio = {
   title: string;
   text: string;
   cardTreatment?: "default" | "category-overlay";
+  compactCardCopy?: boolean;
   modalTreatment?: "legacy" | "decision-summary";
+  showAllFilter?: boolean;
   groups?: {
     id: string;
     title: string;
@@ -363,7 +365,7 @@ type ProductServices = {
 };
 
 type ProductDetailProps = {
-  pageTreatment?: "polished";
+  pageTreatment?: "polished" | "surface-flow";
   cardAppearance?: "light" | "legacy-dark";
   breadcrumb: NavigationItem[];
   hero?: ProductDetailHero;
@@ -518,8 +520,8 @@ export function ProductDetailLayout({
     </>
   );
 
-  return pageTreatment === "polished"
-    ? <div className="product-detail-layout product-detail-layout--polished">{content}</div>
+  return pageTreatment
+    ? <div className={clsx("product-detail-layout", `product-detail-layout--${pageTreatment}`)}>{content}</div>
     : content;
 }
 
@@ -1115,6 +1117,7 @@ function ProductPortfolioSection({
       className={clsx(
         "product-detail-section product-portfolio-section",
         portfolio.cardTreatment === "category-overlay" && "product-portfolio-section--category-overlay",
+        portfolio.compactCardCopy && "product-portfolio-section--compact-card-copy",
       )}
       id={portfolio.id ?? "range"}
     >
@@ -1128,6 +1131,7 @@ function ProductPortfolioSection({
           ariaLabel={`${portfolio.title} products`}
           getItemLabel={(item) => `View commercial details for ${item.title}`}
           groups={filterGroups}
+          includeAllFilter={portfolio.showAllFilter ?? true}
           items={portfolio.items}
           mode="button"
           treatment={portfolio.cardTreatment ?? "default"}

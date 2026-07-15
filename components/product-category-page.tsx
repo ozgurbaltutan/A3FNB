@@ -122,6 +122,7 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
         })}
       />
       <ProductDetailLayout
+        pageTreatment="surface-flow"
         breadcrumb={breadcrumb}
         hero={{
           title: category.title,
