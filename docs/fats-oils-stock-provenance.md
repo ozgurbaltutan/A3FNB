@@ -10,4 +10,4 @@ Images were downloaded from the selected Pexels photo pages on 15 July 2026 and 
 | Packing/tank/temperature route | Daniel Dan | [Stainless Steel Tank in an Industrial Plant](https://www.pexels.com/photo/stainless-steel-tank-in-an-industrial-plant-7598915/) | `/public/media/products/oils-fats/oils-service-route-stock-v1.webp` |
 | Documentation and shipment | J | [Cargo Containers in Waterfront City Port](https://www.pexels.com/photo/cargo-containers-in-waterfront-city-port-6392038/) | `/public/media/products/oils-fats/oils-service-shipment-stock-v1.webp` |
 
-Original downloaded files are retained in `/tmp/oils-fats-stock/` for internal crop verification; the application uses only the optimised WebP files listed above.
+Original downloaded files are not committed; the application uses only the optimised WebP files listed above.

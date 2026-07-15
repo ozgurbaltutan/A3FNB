@@ -197,34 +197,66 @@ export default function GrainsSeedsPage() {
             },
           ],
         }}
-        shipmentOptions={{
-          id: "integrated-value-chain",
-          title: "Structured Grain & Seed Sourcing",
-          text: "Product definition, technical controls and shipment execution are reviewed as one connected commercial route.",
-          image: "/media/products/grains-seeds/grain-service-crop-matching-stock-v1.webp",
-          imageAlt: "Combine harvesters working across a wheat field",
+        services={{
+          title: "Our Global Origination Network",
+          text: "We identify and capture business opportunities across main global markets, ensuring supply security through trusted relationships in key producing territories.",
+          variant: "media-grid",
           items: [
             {
-              title: "Crop, Grade & End-use Matching",
-              description: "We clarify the product, crop, milling, pasta, food, feed or crushing use, volume and destination brief before approaching supply.",
+              title: "The Black Sea & Europe",
+              description: "Accessing high-quality supply from leading exporters like France, Poland, and Ukraine to serve international milling and industrial demands.",
+              imageSrc: "/media/products/grains-seeds/origination-europe-harvest-user-v1.webp",
+              imageAlt: "Combine harvester cutting a broad golden grain field",
+            },
+            {
+              title: "The Americas",
+              description: "Sourcing dominant origins for corn and oilseeds to meet diverse global requirements for food and animal nutrition.",
+              imageSrc: "/media/products/grains-seeds/origination-americas-farm-user-v1.webp",
+              imageAlt: "Farmer tending rows of young corn plants in the field",
+            },
+            {
+              title: "Strategic Export Hubs",
+              description: "Coordinating flows through major international ports to ensure efficient maritime and inland waterway logistics.",
+              imageSrc: "/media/products/grains-seeds/origination-export-hubs-user-v1.webp",
+              imageAlt: "Bulk grain beside cargo ships at an export port",
+            },
+          ],
+        }}
+        servicesPosition="before-shipment"
+        shipmentOptions={{
+          id: "integrated-value-chain",
+          title: "High-Volume Execution Excellence",
+          text: "A3 utilizes years of experience in risk mitigation and maritime logistics to ensure maximum returns without complication.",
+          image: "/media/products/grains-seeds/grains-seeds-hero-stock-v1.webp",
+          imageAlt: "Vibrant green wheat field stretching toward a mountain horizon",
+          items: [
+            {
+              title: "Requirement",
+              description: "We establish technical baselines by identifying specific moisture levels, protein content, and bulk volume needs for your facility.",
+              image: "/media/products/grains-seeds/grains-seeds-hero-stock-v1.webp",
+              imageAlt: "Vibrant green wheat field stretching toward a mountain horizon",
+            },
+            {
+              title: "Matching",
+              description: "We leverage our global network to identify the right producer or supplier that matches your origin and timing requirements.",
               image: "/media/products/grains-seeds/grain-service-crop-matching-stock-v1.webp",
               imageAlt: "Combine harvesters working across a wheat field",
             },
             {
-              title: "Quality, Safety & Inspection",
-              description: "Protein, vitreousness, falling number, test weight, moisture, defects, admixture, mycotoxin, GMO and inspection requirements are aligned as relevant to the product and destination.",
+              title: "Vetting",
+              description: "We conduct a rigorous assessment of documentation and certifications to ensure every supply option is secure and market-compliant.",
               image: "/media/products/grains-seeds/grain-service-quality-stock-v1.webp",
               imageAlt: "Hands conducting a physical review of grain kernels",
             },
             {
-              title: "Commercial & Shipment Structuring",
-              description: "Price basis, Incoterm, shipment window, bulk vessel, container or bag model, inspection and payment conditions are evaluated as one commercial route.",
+              title: "Commercials",
+              description: "We structure trades using optimized Incoterms and price management strategies to safeguard your prosperity against market volatility.",
               image: "/media/products/grains-seeds/grain-service-structuring-stock-v1.webp",
               imageAlt: "Metal grain storage silos in an open agricultural landscape",
             },
             {
-              title: "Documentation & Load Coordination",
-              description: "Specification or COA, weight and quality certificates, origin, phytosanitary, fumigation where required and destination documents are coordinated with booking and loading milestones.",
+              title: "Execution",
+              description: "We coordinate end-to-end logistics, from inland warehouse management to international shipping and freight forwarding.",
               image: "/media/products/grains-seeds/grain-service-shipment-stock-v1.webp",
               imageAlt: "Cargo ship alongside a container terminal during shipment coordination",
             },

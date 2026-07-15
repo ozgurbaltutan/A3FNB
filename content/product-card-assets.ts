@@ -7,7 +7,7 @@ export const CATEGORY_CARD_IMAGES: Record<string, string> = {
   "oils-fats": "/media/home/products/oils-fats-light-v4.webp",
   "starches-sweeteners": "/media/home/products/starches-sweeteners-light-v4.webp",
   "dried-fruit-nuts": "/media/home/products/dried-fruit-nuts-light-v4.webp",
-  "frozen-foods": "/media/home/products/frozen-foods-light-v4.webp",
+  "frozen-foods": "/media/home/products/frozen-foods-light-v5.webp",
   "consumer-foods": "/media/home/products/consumer-foods-light-v4.webp",
 };
 

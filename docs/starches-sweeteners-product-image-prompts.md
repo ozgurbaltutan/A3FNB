@@ -32,4 +32,4 @@ Portrait 2:3 commercial ingredient sample; warm pale ivory/stone seamless backgr
 | Allulose | `allulose-light-v2.webp` | White crystals and clear syrup as neutral technical samples; no marketing claims. |
 | Stevia | `stevia-light-v2.webp` | One micro-scoop with a measured pinch and two leaves, communicating high intensity without a sugar-like heap. |
 
-The accepted 21-image contact sheet is stored locally at `tmp/starches-sweeteners-stock/products-contact-sheet.jpg` for visual QA. The first stevia generation was rejected because the powder quantity appeared too large for a high-intensity sweetener; the accepted version uses a single micro-scoop.
+An accepted 21-image contact sheet was used for visual QA and is not committed. The first stevia generation was rejected because the powder quantity appeared too large for a high-intensity sweetener; the accepted version uses a single micro-scoop.

@@ -347,7 +347,13 @@ const AFRICA_POINT_OFFSETS: Record<string, { x: number; y: number }> = {
 type ProductServices = {
   title: string;
   text: string;
-  items: ProductDetailItem[];
+  items: Array<
+    ProductDetailItem & {
+      imageSrc?: string;
+      imageAlt?: string;
+    }
+  >;
+  variant?: "cards" | "media-grid";
 };
 
 type ProductDetailProps = {
@@ -757,22 +763,47 @@ function ProductOriginsSection({ origins }: { origins: ProductOrigins }) {
 }
 
 function ProductServicesSection({ services }: { services: ProductServices }) {
+  const useMediaGrid = services.variant === "media-grid";
+
   return (
-    <section className="product-detail-section product-services" id="services">
+    <section className={clsx("product-detail-section product-services", useMediaGrid && "product-services--media")} id="services">
       <Container className="a3-container product-services__inner">
         <div className="product-section-heading">
           <h2 className="type-section">{services.title}</h2>
           <p className="type-section-lead">{services.text}</p>
         </div>
-        <div className="product-services__grid">
-          {services.items.map((item, index) => (
-            <article key={item.title}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </article>
-          ))}
-        </div>
+        {useMediaGrid ? (
+          <div className="product-services__media-grid">
+            {services.items.map((item) => (
+              <article key={item.title}>
+                {item.imageSrc ? (
+                  <figure className="product-services__media-visual">
+                    <Image
+                      alt={item.imageAlt ?? ""}
+                      fill
+                      sizes="(min-width: 1024px) 30vw, (min-width: 768px) 42vw, 100vw"
+                      src={item.imageSrc}
+                    />
+                  </figure>
+                ) : null}
+                <div className="product-services__media-copy">
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="product-services__grid" data-count={services.items.length}>
+            {services.items.map((item, index) => (
+              <article key={item.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        )}
       </Container>
     </section>
   );

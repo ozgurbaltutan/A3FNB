@@ -279,9 +279,9 @@ export const productCategories: ProductCategory[] = [
   {
     title: "Frozen Foods",
     slug: "frozen-foods",
-    shortDescription: "Frozen food products by category, packing and temperature-control need.",
+    shortDescription: "Frozen food lines matched by format, end use, approval, packing and cold-chain requirements.",
     longDescription:
-      "A3 reviews frozen food product requirements by category, packing format, producer availability and temperature-control needs.",
+      "A3 coordinates frozen potato products, fruit and vegetables, poultry, seafood and bakery lines with producer approval, remaining shelf life, documents and temperature-controlled delivery aligned before quotation.",
     iconKey: "frozenFoods",
     imageKey: "featuredFrozenFoods",
     exampleProducts: ["French Fries / Frozen Potato Products", "Frozen Poultry", "Frozen Seafood", "Frozen Fruit & Vegetables", "Frozen Pastry & Bakery Products"],

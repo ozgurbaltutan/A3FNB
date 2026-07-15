@@ -134,6 +134,38 @@ test("home, products and product-detail accordions share panel rhythm", async ({
   }
 });
 
+test("product section navigation stays static and exposes every link", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/en/products/starches-sweeteners");
+
+  const nav = page.locator(".product-section-nav");
+  await expect(nav).toHaveCSS("position", "relative");
+  await expect(nav).toHaveCSS("box-shadow", "none");
+  await expect(nav.locator("[aria-current], .is-active")).toHaveCount(0);
+
+  await nav.getByRole("link", { name: "Products" }).click();
+  await expect(page).toHaveURL(/#range$/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/en/products/starches-sweeteners");
+  const mobileLinks = nav.locator(".product-section-nav__links");
+  const visibility = await mobileLinks.evaluate((strip) => {
+    const bounds = strip.getBoundingClientRect();
+    const links = [...strip.querySelectorAll("a")];
+    return {
+      allVisible: links.every((link) => {
+        const linkBounds = link.getBoundingClientRect();
+        return linkBounds.left >= bounds.left && linkBounds.right <= bounds.right && linkBounds.bottom <= bounds.bottom;
+      }),
+      clientWidth: strip.clientWidth,
+      scrollWidth: strip.scrollWidth,
+    };
+  });
+
+  expect(visibility.allVisible).toBe(true);
+  expect(visibility.scrollWidth).toBe(visibility.clientWidth);
+});
+
 test("homepage primary sections use one symmetric block rhythm", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/en");

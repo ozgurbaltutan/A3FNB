@@ -397,7 +397,26 @@ test("Grains & Seeds has the intended structure, product CTA routing and keyboar
   await expect(page.getByRole("heading", { name: "Connecting global harvests to the industries that depend on them." })).toBeVisible();
   await expect(page.locator("#range .product-image-card")).toHaveCount(4);
   await expect(page.locator("#key-facts .product-editorial-facts__card")).toHaveCount(3);
-  await expect(page.locator("#integrated-value-chain .process-accordion-trigger")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "Our Global Origination Network" })).toBeVisible();
+  const originationGrid = page.locator("#services .product-services__media-grid");
+  await expect(originationGrid.locator("article")).toHaveCount(3);
+  await expect(originationGrid).not.toContainText(/01|02|03/);
+  await expect(page.locator("#services .product-services__network-panel")).toHaveCount(0);
+  await expect(page.locator("#services .product-services__network-visual")).toHaveCount(0);
+  const originationImages = originationGrid.locator(".product-services__media-visual img");
+  await expect(originationImages).toHaveCount(3);
+  await expect(originationImages.nth(0)).toHaveAttribute("src", /origination-europe-harvest-user-v1\.webp/);
+  await expect(originationImages.nth(0)).toHaveAttribute("alt", "Combine harvester cutting a broad golden grain field");
+  await expect(originationImages.nth(1)).toHaveAttribute("src", /origination-americas-farm-user-v1\.webp/);
+  await expect(originationImages.nth(1)).toHaveAttribute("alt", "Farmer tending rows of young corn plants in the field");
+  await expect(originationImages.nth(2)).toHaveAttribute("src", /origination-export-hubs-user-v1\.webp/);
+  await expect(originationImages.nth(2)).toHaveAttribute("alt", "Bulk grain beside cargo ships at an export port");
+  await expect(page.getByRole("heading", { name: "The Black Sea & Europe" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The Americas" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Strategic Export Hubs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "High-Volume Execution Excellence" })).toBeVisible();
+  await expect(page.locator("#integrated-value-chain .process-accordion-trigger")).toHaveCount(5);
+  await expect(page.locator("#services + #integrated-value-chain")).toHaveCount(1);
   await expect(page.locator("#origins")).toHaveCount(0);
   await expect(page.locator("#technical-specifications")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "USDA Grain: World Markets and Trade" })).toHaveAttribute(
@@ -417,28 +436,63 @@ test("Grains & Seeds has the intended structure, product CTA routing and keyboar
   );
   await page.keyboard.press("Escape");
 
-  const quality = page.getByRole("button", { name: /Quality, Safety & Inspection/ });
-  await quality.focus();
-  await quality.press("Enter");
-  await expect(quality).toHaveAttribute("aria-expanded", "true");
+  const vetting = page.getByRole("button", { name: /Vetting/ });
+  await vetting.focus();
+  await vetting.press("Enter");
+  await expect(vetting).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
+    "alt",
+    "Hands conducting a physical review of grain kernels",
+  );
 
-  await quality.press("ArrowDown");
-  const structuring = page.getByRole("button", { name: /Commercial & Shipment Structuring/ });
-  await expect(structuring).toBeFocused();
-  await structuring.press("Space");
-  await expect(structuring).toHaveAttribute("aria-expanded", "true");
+  await vetting.press("ArrowDown");
+  const commercials = page.getByRole("button", { name: /Commercials/ });
+  await expect(commercials).toBeFocused();
+  await commercials.press("Space");
+  await expect(commercials).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
     "alt",
     "Metal grain storage silos in an open agricultural landscape",
   );
 
-  const documentation = page.getByRole("button", { name: /Documentation & Load Coordination/ });
-  await documentation.click();
-  await expect(documentation).toHaveAttribute("aria-expanded", "true");
+  const execution = page.getByRole("button", { name: /Execution/ });
+  await execution.click();
+  await expect(execution).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
     "alt",
     "Cargo ship alongside a container terminal during shipment coordination",
   );
+
+  for (const layout of [
+    { columns: 3, height: 1000, width: 1440 },
+    { columns: 1, height: 900, width: 900 },
+    { columns: 1, height: 844, width: 390 },
+  ]) {
+    await page.setViewportSize({ width: layout.width, height: layout.height });
+    await expect.poll(() => originationGrid.evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length)).toBe(layout.columns);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+
+    if (layout.width === 1440) {
+      const desktopGeometry = await originationGrid.evaluate((grid) => {
+        const visuals = Array.from(grid.querySelectorAll<HTMLElement>(".product-services__media-visual"));
+        const headings = Array.from(grid.querySelectorAll<HTMLElement>("h3"));
+        return {
+          heights: visuals.map((visual) => visual.getBoundingClientRect().height),
+          headingTops: headings.map((heading) => heading.getBoundingClientRect().top),
+          widths: visuals.map((visual) => visual.getBoundingClientRect().width),
+        };
+      });
+      expect(Math.max(...desktopGeometry.widths) - Math.min(...desktopGeometry.widths)).toBeLessThanOrEqual(1);
+      expect(Math.max(...desktopGeometry.heights) - Math.min(...desktopGeometry.heights)).toBeLessThanOrEqual(1);
+      expect(Math.max(...desktopGeometry.headingTops) - Math.min(...desktopGeometry.headingTops)).toBeLessThanOrEqual(1);
+    }
+  }
+
+  for (let imageIndex = 0; imageIndex < 3; imageIndex += 1) {
+    const originationImage = originationImages.nth(imageIndex);
+    await originationImage.scrollIntoViewIfNeeded();
+    await expect.poll(() => originationImage.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  }
 });
 
 test("Dried Fruit & Nuts exposes seven sourced products, three market facts and no specification matrix", async ({ page }) => {
@@ -510,6 +564,87 @@ test("Dried Fruit & Nuts exposes seven sourced products, three market facts and 
   await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
     "alt",
     "Dried apricots arranged on outdoor drying trays",
+  );
+});
+
+test("Frozen Foods exposes five cold-chain routes, market context and accessible product details", async ({ page }) => {
+  await page.goto("/en/products/frozen-foods");
+
+  await expect(
+    page.getByRole("heading", {
+      name: "Frozen food sourcing built around a reliable cold chain.",
+    }),
+  ).toBeVisible();
+
+  await expect(page.locator("#range").getByRole("tab")).toHaveCount(0);
+  await expect(page.locator("#range .product-image-card")).toHaveCount(5);
+  await expect(page.locator("#key-facts .product-editorial-facts__card")).toHaveCount(3);
+  await expect(page.locator("#integrated-value-chain .process-accordion-trigger")).toHaveCount(4);
+  await expect(page.locator("#technical-specifications")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Selection criteria/i })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Fortune Business Insights — Frozen Food Market" })).toHaveAttribute(
+    "href",
+    "https://www.fortunebusinessinsights.com/frozen-food-market-104138",
+  );
+
+  const productIds = [
+    "french-fries",
+    "frozen-fruit-vegetables",
+    "frozen-poultry",
+    "frozen-seafood",
+    "frozen-pastry-bakery",
+  ];
+  const cards = page.locator("#range .product-image-card");
+
+  for (let productIndex = 0; productIndex < productIds.length; productIndex += 1) {
+    const card = cards.nth(productIndex);
+    await card.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "At a glance" })).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "Key considerations" })).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "Supply" })).toBeVisible();
+    await expect(dialog.getByRole("link", { name: /Request/ })).toHaveAttribute(
+      "href",
+      `/en/request-a-quote?category=frozen-foods&product=${productIds[productIndex]}`,
+    );
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+
+    if (productIndex === 0) {
+      await dialog.getByRole("button", { name: "Close product details" }).click();
+    } else if (productIndex === 1) {
+      await page.locator(".product-info-modal--portfolio").click({ position: { x: 4, y: 4 } });
+    } else {
+      await page.keyboard.press("Escape");
+    }
+
+    await expect(dialog).toBeHidden();
+    await expect(card).toBeFocused();
+    await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe("");
+  }
+
+  await expect(page.getByRole("link", { name: "Discuss a frozen food requirement" })).toHaveAttribute(
+    "href",
+    "/en/request-a-quote?category=frozen-foods",
+  );
+
+  const quality = page.getByRole("button", { name: /Producer, Quality & Market Approval/ });
+  await quality.focus();
+  await quality.press("Enter");
+  await expect(quality).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
+    "alt",
+    "Laboratory worker reviewing frozen-food quality samples",
+  );
+
+  await quality.press("ArrowDown");
+  const coldChain = page.getByRole("button", { name: /Packing, Shelf Life & Cold Chain/ });
+  await expect(coldChain).toBeFocused();
+  await coldChain.press("Space");
+  await expect(coldChain).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#integrated-value-chain .process-showcase-media__item.is-active img")).toHaveAttribute(
+    "alt",
+    "Warehouse worker moving palletised goods in temperature-controlled storage",
   );
 });
 

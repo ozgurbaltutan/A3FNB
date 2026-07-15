@@ -12,4 +12,4 @@ Prepared for the A3 Food & Beverage Starches & Sweeteners page on 15 July 2026. 
 
 The initially planned [Cargo Ship in Busy Port](https://www.pexels.com/photo/cargo-ship-in-busy-port-with-shipping-containers-36652838/) by Rafael Rodrigues was downloaded for review and rejected because visible carrier and container branding conflicted with the page’s neutral commercial presentation. The accepted Vancouver image was already cleared for the Grains & Seeds page; a separate category derivative is stored here so the route has no cross-category asset dependency.
 
-Source downloads and QA contact sheets remain in the local `tmp/starches-sweeteners-stock` work area and are not page-delivery assets.
+Source downloads and QA contact sheets are not committed and are not page-delivery assets.

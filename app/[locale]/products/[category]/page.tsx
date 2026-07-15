@@ -4,7 +4,7 @@ import { productCategories } from "@/content/site";
 
 export function generateStaticParams() {
   return productCategories
-    .filter((category) => !["coffee", "sugar", "cocoa-products", "grains-seeds", "dairy-milk-powders", "oils-fats", "starches-sweeteners", "dried-fruit-nuts"].includes(category.slug))
+    .filter((category) => !["coffee", "sugar", "cocoa-products", "grains-seeds", "dairy-milk-powders", "oils-fats", "starches-sweeteners", "dried-fruit-nuts", "frozen-foods"].includes(category.slug))
     .map((category) => ({ locale: "en", category: category.slug }));
 }
 
