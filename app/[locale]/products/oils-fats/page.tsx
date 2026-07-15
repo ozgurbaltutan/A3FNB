@@ -70,7 +70,6 @@ export default function OilsFatsPage() {
           title: "Fats & Oils Portfolio",
           text: "Eight commercial routes separated by oil identity, refining or fractionation status, functional performance, delivery form and end use.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           items: [
             {
               id: "sunflower-oil",

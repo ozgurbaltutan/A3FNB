@@ -221,6 +221,7 @@ test("Coffee origins and product service accordions respond", async ({ page }) =
 
 test("product cards and decision-summary modals stay compact across breakpoints", async ({ page }) => {
   test.setTimeout(240_000);
+  await page.emulateMedia({ reducedMotion: "reduce" });
 
   const productPages: Array<{ count: number; route: string; tabCounts?: number[] }> = [
     { count: 4, route: "/en/products/sugar" },
@@ -289,29 +290,67 @@ test("product cards and decision-summary modals stay compact across breakpoints"
 
         for (let index = 0; index < tabCounts[tabIndex]; index += 1) {
           const card = cards.nth(index);
+          await expect(card).toHaveAttribute("aria-haspopup", "dialog");
+          await expect(card).toHaveAttribute("aria-expanded", "false");
+          const controlledDialogId = await card.getAttribute("aria-controls");
+          expect(controlledDialogId).toBeTruthy();
+
           await card.click();
           const dialog = page.getByRole("dialog");
           await expect(dialog).toBeVisible();
-          const cta = dialog.getByRole("link", { name: /Request/ });
+          await expect(card).toHaveAttribute("aria-expanded", "true");
+          await expect(dialog).toHaveAttribute("id", controlledDialogId ?? "");
+
+          const productTitle = (await dialog.getByRole("heading", { level: 2 }).textContent())?.trim() ?? "";
+          const cta = dialog.getByRole("link", { name: `Request a quote for ${productTitle}`, exact: true });
           await expect(cta).toBeVisible();
 
           const modalGeometry = await dialog.evaluate((panel) => {
-            const scroller = panel.querySelector<HTMLElement>(".product-info-modal__technical");
-            const action = panel.querySelector<HTMLElement>(".product-info-modal__technical-actions");
+            const header = panel.querySelector<HTMLElement>(".product-info-modal__decision-header");
+            const scroller = panel.querySelector<HTMLElement>(".product-info-modal__decision-body");
+            const action = panel.querySelector<HTMLElement>(".product-info-modal__decision-actions");
+            const facts = panel.querySelector<HTMLElement>(".product-info-modal__decision-attributes");
+            const points = panel.querySelector<HTMLElement>(".product-info-modal__decision-points ul");
+            const headerRect = header?.getBoundingClientRect();
             const actionRect = action?.getBoundingClientRect();
             const panelRect = panel.getBoundingClientRect();
             return {
               actionBottom: actionRect?.bottom ?? Number.POSITIVE_INFINITY,
+              actionTop: actionRect?.top ?? Number.NEGATIVE_INFINITY,
               clientHeight: scroller?.clientHeight ?? 0,
+              factsColumns: facts ? getComputedStyle(facts).gridTemplateColumns.split(" ").length : 0,
+              headerBottom: headerRect?.bottom ?? Number.POSITIVE_INFINITY,
+              headerTop: headerRect?.top ?? Number.NEGATIVE_INFINITY,
               panelBottom: panelRect.bottom,
+              panelCenter: panelRect.left + panelRect.width / 2,
+              panelLeft: panelRect.left,
+              panelRight: panelRect.right,
+              panelTop: panelRect.top,
+              pointsColumns: points ? getComputedStyle(points).gridTemplateColumns.split(" ").length : 0,
+              scrollWidth: scroller?.scrollWidth ?? Number.POSITIVE_INFINITY,
               scrollHeight: scroller?.scrollHeight ?? Number.POSITIVE_INFINITY,
               scrollTop: scroller?.scrollTop ?? -1,
+              width: panelRect.width,
             };
           });
 
           expect(modalGeometry.scrollTop).toBe(0);
-          expect(modalGeometry.scrollHeight).toBeLessThanOrEqual(modalGeometry.clientHeight + 1);
-          expect(modalGeometry.actionBottom).toBeLessThanOrEqual(Math.min(modalGeometry.panelBottom, viewport.height) + 1);
+          expect(modalGeometry.scrollHeight).toBeGreaterThanOrEqual(modalGeometry.clientHeight);
+          expect(modalGeometry.scrollWidth).toBeLessThanOrEqual(modalGeometry.width + 1);
+          expect(modalGeometry.headerTop).toBeGreaterThanOrEqual(modalGeometry.panelTop - 1);
+          expect(modalGeometry.headerBottom).toBeLessThanOrEqual(modalGeometry.actionTop + 1);
+          expect(modalGeometry.actionBottom).toBeLessThanOrEqual(modalGeometry.panelBottom + 1);
+          expect(modalGeometry.pointsColumns).toBe(1);
+
+          if (viewport.width <= 767) {
+            expect(modalGeometry.panelLeft).toBeCloseTo(0, 0);
+            expect(modalGeometry.panelRight).toBeCloseTo(viewport.width, 0);
+            expect(modalGeometry.panelBottom).toBeCloseTo(viewport.height, 0);
+            expect(modalGeometry.factsColumns).toBe(1);
+          } else {
+            expect(modalGeometry.panelCenter).toBeCloseTo(viewport.width / 2, 0);
+            expect(modalGeometry.factsColumns).toBe(2);
+          }
 
           if (productPage.route === "/en/products/sugar") {
             await expect(dialog).not.toContainText(/Moisture|Ash content|Polarisation|Solubility/);
@@ -320,9 +359,35 @@ test("product cards and decision-summary modals stay compact across breakpoints"
           await page.keyboard.press("Escape");
           await expect(dialog).toBeHidden();
           await expect(card).toBeFocused();
+          await expect(card).toHaveAttribute("aria-expanded", "false");
         }
       }
     }
+  }
+});
+
+test("Elle Mina uses the unified decision-summary modal", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/en/products/elle-mina");
+
+  const cards = page.locator("#range .product-image-card");
+  await expect(cards).toHaveCount(3);
+
+  for (let index = 0; index < 3; index += 1) {
+    const card = cards.nth(index);
+    await card.click();
+
+    const dialog = page.getByRole("dialog");
+    const productTitle = (await dialog.getByRole("heading", { level: 2 }).textContent())?.trim() ?? "";
+    await expect(dialog.getByRole("heading", { name: "At a glance" })).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "Key considerations" })).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: "Supply" })).toBeVisible();
+    await expect(dialog.getByRole("link", { name: `Request a quote for ${productTitle}`, exact: true })).toBeVisible();
+    await expect(dialog.locator(".product-info-modal__technical")).toHaveCount(0);
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(card).toBeFocused();
   }
 });
 
@@ -346,7 +411,7 @@ test("Grains & Seeds has the intended structure, product CTA routing and keyboar
 
   const millingCard = page.locator("#range .product-image-card").first();
   await millingCard.click();
-  await expect(page.getByRole("dialog").getByRole("link", { name: "Request a milling wheat offer" })).toHaveAttribute(
+  await expect(page.getByRole("dialog").getByRole("link", { name: "Request a quote for Milling Wheat" })).toHaveAttribute(
     "href",
     "/en/request-a-quote?category=grains-seeds&product=milling-wheat",
   );
@@ -514,13 +579,16 @@ test("Starches & Sweeteners exposes 21 product routes, five families and a keybo
   const firstCard = page.locator("#range .product-image-card").first();
   await firstCard.click();
   const dialog = page.getByRole("dialog");
+  const title = dialog.getByRole("heading", { name: "Corn Starch" });
   const close = dialog.getByRole("button", { name: "Close product details" });
   const cta = dialog.getByRole("link", { name: /Request/ });
-  await expect(close).toBeFocused();
+  await expect(title).toBeFocused();
   await page.keyboard.press("Shift+Tab");
   await expect(cta).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(close).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(cta).toBeFocused();
   await page.locator(".product-info-modal--portfolio").click({ position: { x: 4, y: 4 } });
   await expect(dialog).toBeHidden();
   await expect(firstCard).toBeFocused();
@@ -650,18 +718,22 @@ test("Fats & Oils has eight product routes, three metrics and a keyboard accordi
 test("Conilon modal exposes catalogue grades and modal focus remains trapped", async ({ page }) => {
   await page.goto("/en/products/coffee");
   const conilonCard = page.locator("#range .product-image-card").last();
-  await conilonCard.click();
+  await conilonCard.focus();
+  await conilonCard.press("Enter");
 
   const dialog = page.getByRole("dialog");
+  const title = dialog.getByRole("heading", { name: "Robusta Conilon" });
   const close = dialog.getByRole("button", { name: "Close product details" });
-  const cta = dialog.getByRole("link", { name: "Request availability for this profile" });
+  const cta = dialog.getByRole("link", { name: "Request a quote for Robusta Conilon" });
   await expect(dialog).toContainText("7, 7/8 and 8");
-  await expect(close).toBeFocused();
+  await expect(title).toBeFocused();
 
   await page.keyboard.press("Shift+Tab");
   await expect(cta).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(close).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(cta).toBeFocused();
 
   await page.keyboard.press("Escape");
   await expect(conilonCard).toBeFocused();
@@ -670,6 +742,42 @@ test("Conilon modal exposes catalogue grades and modal focus remains trapped", a
   await page.locator(".product-info-modal--portfolio").click({ position: { x: 4, y: 4 } });
   await expect(dialog).toBeHidden();
   await expect(conilonCard).toBeFocused();
+});
+
+test("decision-summary mobile sheet keeps its header and action fixed while the body scrolls", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 360, height: 640 });
+  await page.goto("/en/products/dairy-milk-powders");
+
+  const card = page.getByRole("button", { name: "View commercial details for Fat-Filled Milk Powder" });
+  await card.press("Space");
+
+  const dialog = page.getByRole("dialog");
+  const body = dialog.locator(".product-info-modal__decision-body");
+  const header = dialog.locator(".product-info-modal__decision-header");
+  const action = dialog.locator(".product-info-modal__decision-actions");
+  const cta = dialog.getByRole("link", { name: "Request a quote for Fat-Filled Milk Powder" });
+  await expect(cta).toBeVisible();
+
+  const before = await dialog.evaluate((panel) => {
+    const headerRect = panel.querySelector<HTMLElement>(".product-info-modal__decision-header")?.getBoundingClientRect();
+    const actionRect = panel.querySelector<HTMLElement>(".product-info-modal__decision-actions")?.getBoundingClientRect();
+    return { actionTop: actionRect?.top ?? 0, headerTop: headerRect?.top ?? 0 };
+  });
+
+  await body.evaluate((node) => { node.scrollTop = node.scrollHeight; });
+  await expect.poll(() => body.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+
+  const after = await dialog.evaluate((panel) => {
+    const headerRect = panel.querySelector<HTMLElement>(".product-info-modal__decision-header")?.getBoundingClientRect();
+    const actionRect = panel.querySelector<HTMLElement>(".product-info-modal__decision-actions")?.getBoundingClientRect();
+    return { actionTop: actionRect?.top ?? 0, headerTop: headerRect?.top ?? 0 };
+  });
+
+  expect(after.headerTop).toBeCloseTo(before.headerTop, 0);
+  expect(after.actionTop).toBeCloseTo(before.actionTop, 0);
+  await expect(header).toBeVisible();
+  await expect(action).toBeVisible();
 });
 
 test("Cocoa origin pins support pointer, Enter and Space selection", async ({ page }) => {

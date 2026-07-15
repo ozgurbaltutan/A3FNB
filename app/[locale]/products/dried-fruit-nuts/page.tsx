@@ -71,7 +71,6 @@ export default function DriedFruitNutsPage() {
           text: "Seven sourcing routes defined by product form, crop and variety, size, treatment, application, packing and destination requirements.",
           cardTreatment: "category-overlay",
           compactCardCopy: true,
-          modalTreatment: "decision-summary",
           showAllFilter: false,
           groups: [
             {

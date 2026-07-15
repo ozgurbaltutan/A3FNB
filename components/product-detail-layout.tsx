@@ -94,22 +94,8 @@ type ProductPortfolioItem = {
   description: string;
   image: string;
   imageAlt: string;
-  source?: string;
-  fit?: string;
-  overview?: string;
-  bestFit?: string;
-  profile?: ProductDetailItem[];
-  supplyFormats?: string[];
-  documentPackage?: string;
-  decisionSummary?: ProductDecisionSummary;
-  technicalHighlights?: ProductDetailItem[];
-  specSections?: Array<{ title: string; items: ProductSpecRow[] }>;
-  keyDetails?: ProductDetailItem[];
-  applications?: string[];
-  specs?: ProductSpecRow[];
-  packing?: ProductDetailItem[];
-  origin?: ProductDetailItem[];
-  cta?: ProductDetailLink;
+  decisionSummary: ProductDecisionSummary;
+  cta: ProductDetailLink;
 };
 
 type ProductPortfolio = {
@@ -118,7 +104,6 @@ type ProductPortfolio = {
   text: string;
   cardTreatment?: "default" | "category-overlay";
   compactCardCopy?: boolean;
-  modalTreatment?: "legacy" | "decision-summary";
   showAllFilter?: boolean;
   groups?: {
     id: string;
@@ -367,7 +352,7 @@ type ProductServices = {
 
 type ProductDetailProps = {
   pageTreatment?: "polished" | "surface-flow";
-  cardAppearance?: "light" | "legacy-dark";
+  cardAppearance?: "light" | "dark";
   breadcrumb: NavigationItem[];
   hero?: ProductDetailHero;
   intro?: {
@@ -794,51 +779,15 @@ function ProductServicesSection({ services }: { services: ProductServices }) {
 }
 
 function ProductSectionNavigation({ items }: { items: ProductSectionNavigationItem[] }) {
-  const [activeHref, setActiveHref] = useState(items[0]?.href ?? "");
-
-  useEffect(() => {
-    const sections = items
-      .map((item) => document.getElementById(item.href.replace(/^#/, "")))
-      .filter((section): section is HTMLElement => Boolean(section));
-
-    if (!sections.length) return;
-
-    let frame = 0;
-    const updateActiveSection = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        const activationLine = window.innerHeight * 0.35;
-        const activeSection = sections.find((section) => {
-          const bounds = section.getBoundingClientRect();
-          return bounds.top <= activationLine && bounds.bottom > activationLine;
-        });
-
-        if (activeSection) setActiveHref(`#${activeSection.id}`);
-      });
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    window.addEventListener("resize", updateActiveSection);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", updateActiveSection);
-      window.removeEventListener("resize", updateActiveSection);
-    };
-  }, [items]);
-
   return (
     <nav aria-label="On this product page" className="product-section-nav">
       <Container className="a3-container product-section-nav__inner">
         <div className="product-section-nav__links">
           {items.map((item) => (
             <a
-              aria-current={activeHref === item.href ? "location" : undefined}
-              className={clsx("premium-focus type-nav", activeHref === item.href && "is-active")}
+              className="premium-focus type-nav"
               href={item.href}
               key={item.href}
-              onClick={() => setActiveHref(item.href)}
             >
               {item.label}
             </a>
@@ -1049,11 +998,15 @@ function ProductRangeSimple({ profiles }: { profiles: NonNullable<ProductDetailP
   );
 }
 
+function getProductPortfolioModalId(itemId: string) {
+  return `product-portfolio-modal-${itemId}`;
+}
+
 function ProductPortfolioSection({
   appearance,
   portfolio,
 }: {
-  appearance: "light" | "legacy-dark";
+  appearance: "light" | "dark";
   portfolio: ProductPortfolio;
 }) {
   const [activePortfolioItemId, setActivePortfolioItemId] = useState<string | null>(null);
@@ -1108,8 +1061,10 @@ function ProductPortfolioSection({
           text={portfolio.text}
         >
           <FilteredProductGrid
+            activeItemId={activePortfolioItemId}
             appearance={appearance}
             ariaLabel={`${portfolio.title} products`}
+            getDialogId={(item) => getProductPortfolioModalId(item.id)}
             getItemLabel={(item) => `View commercial details for ${item.title}`}
             groups={filterGroups}
             includeAllFilter={portfolio.showAllFilter ?? true}
@@ -1126,7 +1081,6 @@ function ProductPortfolioSection({
           <ProductPortfolioModal
             product={activePortfolioItem}
             onClose={closePortfolioModal}
-            treatment={portfolio.modalTreatment ?? "legacy"}
           />
         ) : null}
       </Container>
@@ -1137,29 +1091,44 @@ function ProductPortfolioSection({
 function ProductPortfolioModal({
   product,
   onClose,
-  treatment,
 }: {
   product: ProductPortfolioItem;
   onClose: () => void;
-  treatment: "legacy" | "decision-summary";
 }) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const panelRef = useRef<HTMLElement | null>(null);
-  const titleId = `product-portfolio-modal-${product.id}`;
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const modalId = getProductPortfolioModalId(product.id);
+  const titleId = `${modalId}-title`;
   const descriptionId = `${titleId}-description`;
-  const details = getPortfolioModalDetails(product);
-  const modalDescription = treatment === "decision-summary"
-    ? product.decisionSummary?.lead
-    : product.overview || product.fit;
+  const modalDescription = product.decisionSummary.lead || product.description;
 
   useEffect(() => {
-    closeButtonRef.current?.focus();
+    titleRef.current?.focus();
   }, [product.id]);
+
+  useEffect(() => () => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+  }, []);
+
+  function requestClose() {
+    if (isClosing) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onClose();
+      return;
+    }
+
+    setIsClosing(true);
+    closeTimerRef.current = window.setTimeout(onClose, 180);
+  }
 
   function handleDialogKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
-      onClose();
+      requestClose();
       return;
     }
 
@@ -1179,7 +1148,7 @@ function ProductPortfolioModal({
     const firstFocusable = focusable[0];
     const lastFocusable = focusable[focusable.length - 1];
 
-    if (event.shiftKey && document.activeElement === firstFocusable) {
+    if (event.shiftKey && (document.activeElement === firstFocusable || document.activeElement === titleRef.current)) {
       event.preventDefault();
       lastFocusable.focus();
     } else if (!event.shiftKey && document.activeElement === lastFocusable) {
@@ -1190,83 +1159,41 @@ function ProductPortfolioModal({
 
   return (
     <div
-      className="product-info-modal product-info-modal--portfolio"
-      onClick={onClose}
+      className={clsx("product-info-modal product-info-modal--portfolio", isClosing && "is-closing")}
+      onClick={requestClose}
       role="presentation"
     >
       <section
         aria-describedby={modalDescription ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
-        className="product-info-modal__panel product-info-modal__panel--technical"
+        className="product-info-modal__panel product-info-modal__panel--decision"
+        id={modalId}
         onClick={(event) => event.stopPropagation()}
         onKeyDown={handleDialogKeyDown}
         ref={panelRef}
         role="dialog"
       >
-        <button
-          aria-label="Close product details"
-          className="product-info-modal__close premium-focus"
-          onClick={onClose}
-          ref={closeButtonRef}
-          type="button"
-        />
-        <div className="product-info-modal__technical">
-          <header className="product-info-modal__technical-header">
-            <h2 id={titleId}>{product.title}</h2>
+        <header className="product-info-modal__decision-header">
+          <div className="product-info-modal__decision-heading">
+            <h2 id={titleId} ref={titleRef} tabIndex={-1}>{product.title}</h2>
             {modalDescription ? <p id={descriptionId}>{modalDescription}</p> : null}
-          </header>
+          </div>
+          <button
+            aria-label="Close product details"
+            className="product-info-modal__close premium-focus"
+            onClick={requestClose}
+            ref={closeButtonRef}
+            type="button"
+          />
+        </header>
 
-          {treatment === "decision-summary" ? (
-            <>
-              {product.decisionSummary?.facts?.length ? (
-                <dl className="product-info-modal__decision-attributes">
-                  {product.decisionSummary.facts.map((detail) => (
-                    <div key={detail.title}>
-                      <dt>{detail.title}</dt>
-                      <dd>{detail.description}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : null}
-
-              {product.decisionSummary?.points?.length ? (
-                <section className="product-info-modal__decision-points">
-                  <h3>Key selection points</h3>
-                  <ul>{product.decisionSummary.points.map((point) => <li key={point}>{point}</li>)}</ul>
-                </section>
-              ) : null}
-
-              {product.decisionSummary?.supply ? (
-                <p className="product-info-modal__decision-supply">
-                  <strong>Supply</strong>
-                  <span>{product.decisionSummary.supply}</span>
-                </p>
-              ) : null}
-            </>
-          ) : (
-            <>
-          {product.bestFit ? (
-            <section className="product-info-modal__best-fit">
-              <h3>Best fit / when to choose</h3>
-              <p>{product.bestFit}</p>
-            </section>
-          ) : null}
-
-          {product.profile?.length ? (
-            <section className="product-info-modal__technical-section">
-              <h3>Product profile</h3>
-              <dl className="product-info-modal__facts product-info-modal__facts--technical">
-                {product.profile.map((detail) => <div key={detail.title}><dt>{detail.title}</dt><dd>{detail.description}</dd></div>)}
-              </dl>
-            </section>
-          ) : null}
-
-          {details.length ? (
-            <section className="product-info-modal__technical-section">
-              <h3>Commercial details</h3>
-              <dl className="product-info-modal__facts product-info-modal__facts--technical">
-                {details.map((detail) => (
+        <div className="product-info-modal__decision-body">
+          {product.decisionSummary.facts?.length ? (
+            <section className="product-info-modal__decision-section product-info-modal__decision-glance">
+              <h3>At a glance</h3>
+              <dl className="product-info-modal__decision-attributes">
+                {product.decisionSummary.facts.map((detail) => (
                   <div key={detail.title}>
                     <dt>{detail.title}</dt>
                     <dd>{detail.description}</dd>
@@ -1276,66 +1203,30 @@ function ProductPortfolioModal({
             </section>
           ) : null}
 
-          {product.applications?.length ? (
-            <section className="product-info-modal__technical-section product-info-modal__list-section">
-              <h3>Typical applications</h3>
-              <ul>{product.applications?.map((application) => <li key={application}>{application}</li>)}</ul>
+          {product.decisionSummary.points?.length ? (
+            <section className="product-info-modal__decision-section product-info-modal__decision-points">
+              <h3>Key considerations</h3>
+              <ul>{product.decisionSummary.points.map((point) => <li key={point}>{point}</li>)}</ul>
             </section>
           ) : null}
 
-          {product.supplyFormats?.length ? (
-            <section className="product-info-modal__technical-section product-info-modal__list-section">
-              <h3>Packing &amp; supply formats</h3>
-              <ul>{product.supplyFormats.map((format) => <li key={format}>{format}</li>)}</ul>
+          {product.decisionSummary.supply ? (
+            <section className="product-info-modal__decision-section product-info-modal__decision-supply">
+              <h3>Supply</h3>
+              <p>{product.decisionSummary.supply}</p>
             </section>
-          ) : null}
-
-          {product.documentPackage ? (
-            <section className="product-info-modal__technical-section">
-              <h3>Documents &amp; confirmation</h3>
-              <p>{product.documentPackage}</p>
-            </section>
-          ) : null}
-
-          {product.technicalHighlights?.length ? (
-            <section className="product-info-modal__technical-section">
-              <h3>Technical selection notes</h3>
-              <dl className="product-info-modal__facts product-info-modal__facts--technical">
-                {product.technicalHighlights.map((detail) => <div key={detail.title}><dt>{detail.title}</dt><dd>{detail.description}</dd></div>)}
-              </dl>
-            </section>
-          ) : null}
-
-          {product.specSections?.map((section) => (
-            <section className="product-info-modal__technical-section" key={section.title}>
-              <h3>{section.title}</h3>
-              <ProductSpecTable rows={section.items} />
-            </section>
-          ))}
-            </>
-          )}
-
-          {product.cta ? (
-            <footer className="product-info-modal__technical-actions">
-              <LinkButton href={product.cta.href} variant="primary">
-                {product.cta.label}
-              </LinkButton>
-            </footer>
           ) : null}
         </div>
+
+        <footer className="product-info-modal__decision-actions">
+          <LinkButton href={product.cta.href} variant="primary">
+            Request a quote
+            <span className="product-info-modal__visually-hidden"> for {product.title}</span>
+          </LinkButton>
+        </footer>
       </section>
     </div>
   );
-}
-
-function getPortfolioModalDetails(product: ProductPortfolioItem) {
-  return product.keyDetails?.length
-    ? product.keyDetails
-    : [
-        ...(product.source ? [{ title: "Source", description: product.source }] : []),
-        ...(product.fit ? [{ title: "Typical uses", description: product.fit }] : []),
-        ...(product.packing?.slice(0, 1) ?? []),
-      ];
 }
 
 function findSpecValue(rows: ProductSpecRow[] | undefined, parameter: string) {
@@ -1708,7 +1599,7 @@ function ProductSupport({ support }: { support: ProductSupportSection }) {
 function RelatedProducts({
   links,
 }: {
-  appearance: "light" | "legacy-dark";
+  appearance: "light" | "dark";
   links: ProductDetailLink[];
 }) {
   return (

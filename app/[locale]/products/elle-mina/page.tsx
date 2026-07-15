@@ -34,7 +34,7 @@ export default function ElleMinaPage() {
         )}
       />
       <ProductDetailLayout
-        cardAppearance="legacy-dark"
+        cardAppearance="dark"
         breadcrumb={breadcrumb}
         hero={{
           title: "Elle Mina",
@@ -53,31 +53,21 @@ export default function ElleMinaPage() {
           text:
             "Explore consumer and professional margarine and butter formats for retail, foodservice, bakery and distribution buyers.",
           items: elleMinaProducts.map((product) => {
-            const fit = product.applications.join(", ");
-
             return {
               id: product.id,
               title: product.title,
               description: product.cardSummary,
               image: product.image,
               imageAlt: product.imageAlt,
-              source: "Elle Mina range",
-              fit,
-              overview: product.description,
-              keyDetails: [
+              decisionSummary: {
+                lead: product.description,
+                facts: [
                 { title: "Source", description: "Elle Mina range" },
-                { title: "Typical uses", description: fit },
                 { title: "Packing", description: product.packing },
-              ],
-              applications: [...product.applications],
-              packing: [
-                { title: "Packing", description: product.packing },
-                { title: "Channel fit", description: fit },
-              ],
-              origin: [
-                { title: "Brand", description: "Elle Mina product range reviewed by inquiry." },
-                { title: "Market fit", description: "Destination market, label needs and commercial route are checked before quotation." },
-              ],
+                ],
+                points: product.applications.slice(0, 4),
+                supply: `${product.packing}. Destination market, label needs and commercial route are confirmed before quotation.`,
+              },
               cta: { label: "Request quote for this product", href: elleMinaQuoteHref(product.id) },
             };
           }),

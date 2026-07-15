@@ -15,7 +15,7 @@ export type ProductImageCarouselItem = {
 };
 
 type ProductImageCarouselBaseProps<TItem extends ProductImageCarouselItem> = {
-  appearance?: "light" | "legacy-dark";
+  appearance?: "light" | "dark";
   ariaLabel: string;
   className?: string;
   contentMode?: "default" | "title-only";
@@ -35,7 +35,9 @@ type ProductImageCarouselLinkProps<TItem extends ProductImageCarouselItem> =
 
 type ProductImageCarouselButtonProps<TItem extends ProductImageCarouselItem> =
   ProductImageCarouselBaseProps<TItem> & {
+    activeItemId?: string | null;
     getHref?: never;
+    getDialogId?: (item: TItem) => string;
     mode: "button";
     onItemActivate: (item: TItem) => void;
     setItemRef?: (id: string, node: HTMLElement | null) => void;
@@ -46,13 +48,15 @@ export type ProductImageCarouselProps<TItem extends ProductImageCarouselItem> =
   | ProductImageCarouselButtonProps<TItem>;
 
 type ProductImageCardProps<TItem extends ProductImageCarouselItem> = {
-  appearance?: "light" | "legacy-dark";
+  appearance?: "light" | "dark";
   getItemLabel?: (item: TItem) => string;
   href?: string;
   imageSizes?: string;
   item: TItem;
   mode: "link" | "button";
   contentMode?: "default" | "title-only";
+  dialogId?: string;
+  isDialogOpen?: boolean;
   onActivate?: (item: TItem) => void;
   priority?: boolean;
   setItemRef?: (id: string, node: HTMLElement | null) => void;
@@ -66,6 +70,8 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
   item,
   mode,
   contentMode = "default",
+  dialogId,
+  isDialogOpen = false,
   appearance = "light",
   onActivate,
   priority = false,
@@ -111,6 +117,9 @@ function ProductImageCard<TItem extends ProductImageCarouselItem>({
 
   return (
     <button
+      aria-controls={dialogId}
+      aria-expanded={dialogId ? isDialogOpen : undefined}
+      aria-haspopup={dialogId ? "dialog" : undefined}
       aria-label={label}
       className={cardClassName}
       data-appearance={appearance}
@@ -201,9 +210,11 @@ export function ProductImageCarousel<TItem extends ProductImageCarouselItem>(pro
           />
         ) : (
           <ProductImageCard
+            dialogId={props.getDialogId?.(item)}
             contentMode={contentMode}
             appearance={appearance}
             getItemLabel={getItemLabel}
+            isDialogOpen={props.activeItemId === item.id}
             item={item}
             key={item.id}
             mode="button"
@@ -241,9 +252,11 @@ export function ProductImageGrid<TItem extends ProductImageCarouselItem>(props: 
             />
           ) : (
             <ProductImageCard
+              dialogId={props.getDialogId?.(item)}
               contentMode={contentMode}
               appearance={appearance}
               getItemLabel={getItemLabel}
+              isDialogOpen={props.activeItemId === item.id}
               imageSizes="(min-width: 1181px) 25vw, (min-width: 768px) 50vw, 100vw"
               item={item}
               mode="button"

@@ -71,7 +71,6 @@ export default function StarchesSweetenersPage() {
           text: "Twenty-one ingredient routes, grouped by the job they perform. Choose by finished-product need rather than name alone; A3 confirms final grade, supplier specification and destination approval with the offer.",
           cardTreatment: "category-overlay",
           compactCardCopy: true,
-          modalTreatment: "decision-summary",
           showAllFilter: false,
           filters: [
             { id: "starches", label: "Native & Modified Starches", itemIds: ["corn-starch", "tapioca-starch", "wheat-starch", "potato-starch", "rice-starch", "pea-starch", "modified-starches"] },

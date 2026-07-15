@@ -77,7 +77,6 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
   ];
 
   const portfolioItems = detail.products.map((item) => {
-    const criteria = productCriteria(item);
     return {
       id: item.id,
       title: item.title,
@@ -85,27 +84,20 @@ export function ProductCategoryDetailPage({ slug }: { slug: string }) {
       description: item.description,
       image: item.image,
       imageAlt: item.imageAlt,
-      source: item.source,
-      fit: item.fit,
-      overview: item.description,
-      keyDetails: [
-        { title: "Source", description: item.source },
-        { title: "Product form", description: item.format },
-        { title: "Typical uses", description: item.fit },
-        { title: "Selection criteria", description: item.selection },
-        { title: "Packing", description: item.packing },
-        { title: "Documents", description: item.documents ?? "Final documents confirmed with the commercial offer." },
-      ],
-      applications: [item.fit],
-      specs: criteria,
-      packing: [
-        { title: "Packing review", description: item.packing },
-        { title: "Commercial fit", description: "Volume, destination, timing and route are checked before quotation." },
-      ],
-      origin: [
-        { title: "Source approach", description: item.source },
-        { title: "Route context", description: "Origin, destination, supplier availability and document readiness are reviewed together." },
-      ],
+      decisionSummary: {
+        lead: item.description,
+        facts: [
+          { title: "Source", description: item.source },
+          { title: "Product form", description: item.format },
+          { title: "Packing", description: item.packing },
+        ],
+        points: [
+          item.fit,
+          item.selection,
+          item.documents ?? "Final documents are confirmed with the commercial offer.",
+        ],
+        supply: `${item.packing} Volume, destination, timing and route are checked before quotation.`,
+      },
       cta: { label: "Request quote for this product", href: quoteHref(category, item.id) },
     };
   });

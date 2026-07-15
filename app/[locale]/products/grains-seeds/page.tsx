@@ -70,7 +70,6 @@ export default function GrainsSeedsPage() {
           title: "Grains & Seeds Portfolio",
           text: "Four sourcing routes defined by crop, end use, functional quality, safety requirements and the intended loading model.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           items: [
             {
               id: "milling-wheat",

@@ -143,7 +143,6 @@ export default function CoffeePage() {
           title: "Brazilian Green Coffee Portfolio",
           text: "Selected Brazilian green coffee routes ranging from differentiated Arabica lots to established commercial Arabica and Conilon profiles.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           items: [
             {
               id: "selected-specialty-lots",

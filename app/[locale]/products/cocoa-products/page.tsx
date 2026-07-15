@@ -71,7 +71,6 @@ export default function CocoaProductsPage() {
           title: "Cocoa Products Portfolio",
           text: "Four commercial routes matched to the buyer's processing capability, formulation, technical specification and finished-product objective.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           items: [
             {
               id: "cocoa-beans",

@@ -89,7 +89,6 @@ export default function DairyMilkPowdersPage() {
           title: "Dairy & Milk Powder Portfolio",
           text: "Eleven product routes separated by dairy identity, composition, functional performance, packing and temperature requirements.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           filters: [
             {
               id: "milk-powders",

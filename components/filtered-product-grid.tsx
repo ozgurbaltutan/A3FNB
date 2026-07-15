@@ -13,7 +13,7 @@ export type ProductGridGroup = {
 };
 
 type FilteredProductGridBaseProps<TItem extends ProductImageCarouselItem> = {
-  appearance?: "light" | "legacy-dark";
+  appearance?: "light" | "dark";
   ariaLabel: string;
   className?: string;
   contentMode?: "default" | "title-only";
@@ -36,7 +36,9 @@ type FilteredProductGridLinkProps<TItem extends ProductImageCarouselItem> =
 
 type FilteredProductGridButtonProps<TItem extends ProductImageCarouselItem> =
   FilteredProductGridBaseProps<TItem> & {
+    activeItemId?: string | null;
     getHref?: never;
+    getDialogId?: (item: TItem) => string;
     mode: "button";
     onItemActivate: (item: TItem) => void;
     setItemRef?: (id: string, node: HTMLElement | null) => void;
@@ -118,9 +120,11 @@ export function FilteredProductGrid<TItem extends ProductImageCarouselItem>(
           />
         ) : (
           <ProductImageGrid
+            activeItemId={props.activeItemId}
             appearance={appearance}
             ariaLabel={ariaLabel}
             contentMode={contentMode}
+            getDialogId={props.getDialogId}
             getItemLabel={getItemLabel}
             items={visibleItems}
             mode="button"

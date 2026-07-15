@@ -116,7 +116,6 @@ export default function SugarPage() {
           text:
             "We source high-quality Brazilian cane sugar and European beet sugar by origin and specific ICUMSA grade. Each supply option is rigorously assessed against the technical requirements of food manufacturers, primary processors and industrial consumers worldwide.",
           cardTreatment: "category-overlay",
-          modalTreatment: "decision-summary",
           items: [
             {
               id: "icumsa-45",
