@@ -20,8 +20,8 @@ const dairySeo = {
   ogDescription:
     "Dairy ingredients and products matched by composition, application, packing, origin and commercial requirements.",
   ogImage: {
-    src: "/media/products/dairy-milk-powders/dairy-hero-pasture-stock-v1.webp",
-    alt: "Holstein dairy cows grazing in a green pasture",
+    src: "/media/products/dairy-milk-powders/dairy-hero-cattle-pasture-user-v1.webp",
+    alt: "Mixed dairy cattle grazing across a broad green pasture",
   },
   robots: { index: true, follow: true },
   locale: "en",
@@ -289,7 +289,7 @@ export default function DairyMilkPowdersPage() {
           summary:
             "Milk powders, whey and speciality dairy ingredients, butter, cheese products and UHT milk connected to industrial demand through a global supply network.",
           href: "/en/products/dairy-milk-powders",
-          image: "/media/products/dairy-milk-powders/dairy-hero-pasture-stock-v1.webp",
+          image: "/media/products/dairy-milk-powders/dairy-hero-cattle-pasture-user-v1.webp",
         })}
       />
       <ProductDetailLayout
@@ -301,8 +301,8 @@ export default function DairyMilkPowdersPage() {
             "Synchronizing world-class production with industrial demand.",
             "A3 acts as a pivotal force in the international dairy value chain, continuously creating innovative supply solutions that bridge the distance between global dairy suppliers and professional customers. By integrating over six decades of collective industry heritage with real-time market intelligence, we add distinctive value to your procurement through high-quality derivatives and tailor-made risk management.",
           ],
-          image: "/media/products/dairy-milk-powders/dairy-hero-pasture-stock-v1.webp",
-          imageAlt: "Holstein dairy cows grazing together in a green pasture",
+          image: "/media/products/dairy-milk-powders/dairy-hero-cattle-pasture-user-v1.webp",
+          imageAlt: "Mixed dairy cattle grazing across a broad green pasture",
           hideBreadcrumb: true,
           variant: "compact",
         }}

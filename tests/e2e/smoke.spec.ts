@@ -752,6 +752,9 @@ test("Dairy & Milk Powders exposes 13 decision modals, correct CTA routing and n
   await page.goto("/en/products/dairy-milk-powders");
 
   await expect(page.getByRole("heading", { name: "Dairy & Milk Powders: The Essential Link in Global Nutrition" })).toBeVisible();
+  const heroImage = page.locator("#overview .inner-page-hero__image");
+  await expect(heroImage).toHaveAttribute("src", /dairy-hero-cattle-pasture-user-v1\.webp/);
+  await expect(heroImage).toHaveAttribute("alt", "Mixed dairy cattle grazing across a broad green pasture");
   await expect(page.locator("#range .product-image-card")).toHaveCount(13);
   await expect(page.locator("#range").getByRole("tab")).toHaveCount(4);
   const origination = page.locator("#services");
