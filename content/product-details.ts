@@ -128,13 +128,13 @@ const productCategoryDetailSources: Record<string, ProductCategoryDetailSource> 
   "dairy-milk-powders": {
     slug: "dairy-milk-powders",
     heroText: [
-      "Milk powders, whey ingredients, dairy fats, cheese products and UHT milk organised by composition, functionality, packing and market requirements.",
-      "A3 distinguishes Codex-recognised dairy products from formulated or analogue products and confirms final specifications with each offer.",
+      "Essential milk powders, dairy ingredients and liquid dairy connected to industrial demand through a global supply network.",
+      "Protein, fat, application, packing, origin and commercial requirements are calibrated before each offer.",
     ],
     image: "/media/home/featured-dairy-ingredients.webp",
     imageAlt: "Dairy ingredients and milk powders",
-    portfolioTitle: "Dairy and milk powder portfolio",
-    portfolioText: "Browse milk powders, whey and permeate ingredients, dairy fats, cheese routes and shelf-stable milk as separate product families.",
+    portfolioTitle: "A Portfolio of Technical Precision",
+    portfolioText: "Browse milk powders, whey and speciality ingredients, dairy products and shelf-stable milk as distinct commercial routes.",
     groups: [
       { id: "milk-powders", title: "Milk Powders", description: "Dried milk products selected by composition, instant properties and application." },
       { id: "whey", title: "Whey, Lactose & Permeate", description: "Dairy ingredients with distinct protein, mineral and lactose profiles." },
@@ -143,11 +143,13 @@ const productCategoryDetailSources: Record<string, ProductCategoryDetailSource> 
     products: [
       product("milk-powders", "whole-milk-powder", "Whole Milk Powder", "Milk powder retaining milk fat for dairy, beverage and food applications.", "Approved dairy origins by requirement", "Dairy, bakery, beverages and confectionery", "Milk fat, protein, moisture, heat class, solubility and microbiology", "Regular whole milk powder", "Multiwall bags with food-grade liner or big bags"),
       product("milk-powders", "skimmed-milk-powder", "Skimmed Milk Powder", "Low-fat milk powder selected by protein, heat treatment and functional use.", "Approved dairy origins by requirement", "Bakery, beverages, dairy and prepared foods", "Protein, moisture, heat class, scorched particles, solubility and microbiology", "Low-fat milk powder", "Multiwall bags with food-grade liner or big bags"),
+      product("milk-powders", "buttermilk-powder", "Buttermilk Powder", "Spray-dried liquid buttermilk used to improve dairy flavour, texture, colour and moisture retention.", "Approved dairy origins by requirement", "Bakery, confectionery, dairy, ice cream, prepared foods and dry mixes", "Protein, fat and application performance confirmed with the offer", "Spray-dried buttermilk powder", "Multiwall bags with food-grade liner or other formats by offer"),
       product("milk-powders", "instant-milk-powder", "Instant Milk Powder", "Agglomerated milk powder designed for improved wetting and dispersibility during reconstitution.", "Approved dairy origins by requirement", "Consumer reconstitution and beverage mixes", "Whole or skim base, instantisation, wettability, dispersibility and lecithination", "Agglomerated instant powder", "Retail packs or lined industrial bags"),
       product("milk-powders", "fat-filled-milk-powder", "Fat-Filled Milk Powder", "A formulated powder combining dairy solids with specified vegetable fat for targeted cost and functionality.", "Approved ingredient processors", "Beverages, bakery and formulated foods", "Protein source, vegetable fat type and level, solubility, flavour and application", "Formulated dairy/vegetable-fat powder", "Lined bags or big bags"),
       product("whey", "whey-powder", "Whey Powder", "Powder produced by drying sweet whey or acid whey, selected according to composition and use.", "Approved dairy origins by requirement", "Bakery, confectionery, seasoning and food manufacture", "Sweet or acid whey, lactose, protein, ash, moisture and microbiology", "Sweet whey or acid whey powder", "Lined multiwall bags or big bags"),
       product("whey", "lactose", "Lactose", "Crystalline milk sugar selected by mesh, purity and application.", "Approved dairy ingredient producers", "Food, infant nutrition subject to approval, confectionery and pharmaceutical-adjacent uses", "Monohydrate or anhydrous form, purity, mesh and microbiology", "Crystalline powder", "Lined bags or drums by grade"),
       product("whey", "dairy-whey-permeate", "Dairy / Whey Permeate Powder", "High-lactose dairy solids remaining after membrane removal of protein and fat to defined levels.", "Approved dairy ingredient producers", "Bakery, confectionery, seasoning and dairy formulations", "Dairy or whey source, lactose, ash, protein, moisture and mineral profile", "Spray-dried permeate powder", "Lined bags or big bags"),
+      product("whey", "infant-grade-ingredients", "Infant Grade Ingredients", "Controlled dairy derivatives suitable for wet- and dry-blend infant formula production.", "Approved infant-grade dairy ingredient producers", "Infant nutrition manufacturing subject to producer and destination approval", "Ingredient identity, wet- or dry-blend fit, infant-grade controls and compliance documentation", "Dairy ingredient format confirmed by programme", "Sealed food-grade industrial or consumer-ready formats by offer"),
       product("dairy-products", "butter", "Butter", "Milk-fat product reviewed by salted status, fat level, format and cold-chain route.", "Approved dairy origins by requirement", "Bakery, foodservice, retail and manufacturing", "Salted or unsalted, milk fat, moisture, format and microbiology", "Blocks, sheets or retail portions", "Cartons under controlled temperature"),
       product("dairy-products", "cheese", "Cheese", "Natural cheese selected by variety, maturity, fat and moisture profile, format and application.", "Approved dairy origins by requirement", "Retail, foodservice, bakery and prepared foods", "Variety, maturity, composition, melt or slice performance and format", "Blocks, loaves, slices, shreds or portions", "Vacuum packs, bags or cartons under cold chain"),
       product("dairy-products", "cheese-analogues", "Cheese Analogues", "Formulated cheese-like products using dairy and/or vegetable-fat systems for defined functional performance.", "Approved specialist producers", "Pizza, bakery, foodservice and prepared foods", "Dairy content, fat system, melt, stretch, browning, shred and flavour", "Blocks, loaves, slices or shreds", "Bags or cartons under controlled temperature"),
@@ -479,6 +481,10 @@ const criteriaByProduct: Record<string, ProductSelectionCriterion[]> = {
     { parameter: "Milk fat", specification: "≤1.5% (Codex)" }, { parameter: "Water", specification: "≤5% (Codex)" },
     { parameter: "Milk protein in MSNF", specification: "≥34% (Codex)" }, { parameter: "Functional grade", specification: "Heat class and solubility by application" },
   ],
+  "buttermilk-powder": [
+    { parameter: "Protein", specification: "Confirmed with each offer" }, { parameter: "Fat", specification: "Confirmed with each offer" },
+    { parameter: "Function", specification: "Flavour, texture, colour and moisture retention" }, { parameter: "Offer confirmation", specification: "Full specification and COA available on request" },
+  ],
   "instant-milk-powder": [
     { parameter: "Base", specification: "Whole or skim milk powder" }, { parameter: "Instant properties", specification: "Wettability and dispersibility by offer" },
     { parameter: "Treatment", specification: "Agglomerated; lecithinated where specified" }, { parameter: "Composition", specification: "Fat, protein and water by base powder" },
@@ -498,6 +504,10 @@ const criteriaByProduct: Record<string, ProductSelectionCriterion[]> = {
   "dairy-whey-permeate": [
     { parameter: "Source", specification: "Milk permeate or whey permeate" }, { parameter: "Composition", specification: "Lactose, protein, ash and minerals" },
     { parameter: "Water", specification: "Supplier specification confirmed" }, { parameter: "Function", specification: "Browning, flavour and solids contribution" },
+  ],
+  "infant-grade-ingredients": [
+    { parameter: "Production fit", specification: "Wet blend or dry blend" }, { parameter: "Approval", specification: "Infant-grade producer and destination requirements" },
+    { parameter: "Quality", specification: "Ingredient-specific quality and safety controls" }, { parameter: "Documentation", specification: "Specification and compliance package confirmed with each offer" },
   ],
   "butter": [
     { parameter: "Milk fat", specification: "≥80% (Codex butter basis)" }, { parameter: "Water", specification: "≤16% (Codex butter basis)" },

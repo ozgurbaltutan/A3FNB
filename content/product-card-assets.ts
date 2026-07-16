@@ -12,7 +12,19 @@ export const CATEGORY_CARD_IMAGES: Record<string, string> = {
 };
 
 export const PRODUCT_CARD_IMAGE_OVERRIDES: Record<string, string> = {
-  "dairy-milk-powders/whole-milk-powder": "/media/products/dairy-milk-powders/whole-milk-powder-light-v2.webp",
+  "dairy-milk-powders/whole-milk-powder": "/media/products/dairy-milk-powders/whole-milk-powder-light-v4.webp",
+  "dairy-milk-powders/skimmed-milk-powder": "/media/products/dairy-milk-powders/skimmed-milk-powder-light-v4.webp",
+  "dairy-milk-powders/buttermilk-powder": "/media/products/dairy-milk-powders/buttermilk-powder-light-v4.webp",
+  "dairy-milk-powders/instant-milk-powder": "/media/products/dairy-milk-powders/instant-milk-powder-light-v4.webp",
+  "dairy-milk-powders/fat-filled-milk-powder": "/media/products/dairy-milk-powders/fat-filled-milk-powder-light-v4.webp",
+  "dairy-milk-powders/whey-powder": "/media/products/dairy-milk-powders/whey-powder-light-v4.webp",
+  "dairy-milk-powders/lactose": "/media/products/dairy-milk-powders/lactose-light-v4.webp",
+  "dairy-milk-powders/dairy-whey-permeate": "/media/products/dairy-milk-powders/dairy-whey-permeate-light-v4.webp",
+  "dairy-milk-powders/infant-grade-ingredients": "/media/products/dairy-milk-powders/infant-grade-ingredients-light-v4.webp",
+  "dairy-milk-powders/butter": "/media/products/dairy-milk-powders/butter-light-v4.webp",
+  "dairy-milk-powders/cheese": "/media/products/dairy-milk-powders/cheese-light-v4.webp",
+  "dairy-milk-powders/cheese-analogues": "/media/products/dairy-milk-powders/cheese-analogues-light-v4.webp",
+  "dairy-milk-powders/uht-milk": "/media/products/dairy-milk-powders/uht-milk-light-v4.webp",
   "oils-fats/sunflower-oil": "/media/products/oils-fats/sunflower-oil-light-v2.webp",
   "consumer-foods/ketchup": "/media/products/consumer-foods/ketchup-light-v2.webp",
 };

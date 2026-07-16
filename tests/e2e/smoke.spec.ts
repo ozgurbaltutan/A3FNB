@@ -214,7 +214,7 @@ test("Coffee origins and product service accordions respond", async ({ page }) =
   await expect(logistics).toHaveAttribute("aria-expanded", "true");
 
   await page.goto("/en/products/grains-seeds");
-  const loadCoordination = page.getByRole("button", { name: /Documentation & Load Coordination/ });
+  const loadCoordination = page.getByRole("button", { name: /Execution$/ });
   await loadCoordination.click();
   await expect(loadCoordination).toHaveAttribute("aria-expanded", "true");
 });
@@ -228,7 +228,7 @@ test("product cards and decision-summary modals stay compact across breakpoints"
     { count: 5, route: "/en/products/coffee" },
     { count: 4, route: "/en/products/cocoa-products" },
     { count: 4, route: "/en/products/grains-seeds" },
-    { count: 11, route: "/en/products/dairy-milk-powders" },
+    { count: 13, route: "/en/products/dairy-milk-powders" },
     { count: 8, route: "/en/products/oils-fats" },
     { count: 21, route: "/en/products/starches-sweeteners", tabCounts: [7, 2, 5, 5, 2] },
     { count: 7, route: "/en/products/dried-fruit-nuts", tabCounts: [4, 3] },
@@ -340,7 +340,7 @@ test("product cards and decision-summary modals stay compact across breakpoints"
           expect(modalGeometry.headerTop).toBeGreaterThanOrEqual(modalGeometry.panelTop - 1);
           expect(modalGeometry.headerBottom).toBeLessThanOrEqual(modalGeometry.actionTop + 1);
           expect(modalGeometry.actionBottom).toBeLessThanOrEqual(modalGeometry.panelBottom + 1);
-          expect(modalGeometry.pointsColumns).toBe(1);
+          expect(modalGeometry.pointsColumns).toBe(productPage.route === "/en/products/dairy-milk-powders" ? 0 : 1);
 
           if (viewport.width <= 767) {
             expect(modalGeometry.panelLeft).toBeCloseTo(0, 0);
@@ -748,14 +748,38 @@ test("Starches & Sweeteners exposes 21 product routes, five families and a keybo
   );
 });
 
-test("Dairy & Milk Powders exposes 11 decision modals, correct CTA routing and no map", async ({ page }) => {
+test("Dairy & Milk Powders exposes 13 decision modals, correct CTA routing and no map", async ({ page }) => {
   await page.goto("/en/products/dairy-milk-powders");
 
-  await expect(page.getByRole("heading", { name: "Connecting dairy ingredients to the products and markets that depend on them." })).toBeVisible();
-  await expect(page.locator("#range .product-image-card")).toHaveCount(11);
+  await expect(page.getByRole("heading", { name: "Dairy & Milk Powders: The Essential Link in Global Nutrition" })).toBeVisible();
+  await expect(page.locator("#range .product-image-card")).toHaveCount(13);
   await expect(page.locator("#range").getByRole("tab")).toHaveCount(4);
-  await expect(page.locator("#key-facts .product-editorial-facts__card")).toHaveCount(3);
-  await expect(page.locator("#integrated-value-chain .process-accordion-trigger")).toHaveCount(4);
+  const origination = page.locator("#services");
+  const originationGrid = origination.locator(".product-services__media-grid");
+  const originationImages = originationGrid.locator(".product-services__media-visual img");
+  await expect(page.getByRole("link", { name: "Origination" })).toHaveAttribute("href", "#services");
+  await expect(originationGrid.locator("article")).toHaveCount(3);
+  await expect(originationGrid).not.toContainText(/CEE|LATAM|TR \+ CN/);
+  await expect(page.locator("#key-facts")).toHaveCount(0);
+  await expect(originationImages.nth(0)).toHaveAttribute("src", /origination-europe-dairy-user-v1\.webp/);
+  await expect(originationImages.nth(0)).toHaveAttribute(
+    "alt",
+    "Dairy farmer standing among Holstein cows inside a modern barn",
+  );
+  await expect(originationImages.nth(1)).toHaveAttribute("src", /origination-south-america-grass-fed-user-v1\.webp/);
+  await expect(originationImages.nth(1)).toHaveAttribute(
+    "alt",
+    "Grazing horse on an Argentine grassland beneath snow-covered mountains",
+  );
+  await expect(originationImages.nth(2)).toHaveAttribute("src", /origination-manufacturing-hubs-user-v1\.webp/);
+  await expect(originationImages.nth(2)).toHaveAttribute(
+    "alt",
+    "Milk tankers unloading at a dairy processing facility in Türkiye",
+  );
+  await expect(page.getByRole("heading", { name: "The European Heartland" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "South American Grass-Fed Excellence" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Innovative Manufacturing Hubs" })).toBeVisible();
+  await expect(page.locator("#trade-process .process-accordion-trigger")).toHaveCount(5);
   await expect(page.locator("#origins")).toHaveCount(0);
   await expect(page.locator("[class*='map']")).toHaveCount(0);
 
@@ -763,11 +787,13 @@ test("Dairy & Milk Powders exposes 11 decision modals, correct CTA routing and n
   const productIds = [
     "whole-milk-powder",
     "skimmed-milk-powder",
+    "buttermilk-powder",
     "instant-milk-powder",
     "fat-filled-milk-powder",
     "whey-powder",
     "lactose",
     "dairy-whey-permeate",
+    "infant-grade-ingredients",
     "butter",
     "cheese",
     "cheese-analogues",
@@ -786,13 +812,71 @@ test("Dairy & Milk Powders exposes 11 decision modals, correct CTA routing and n
     await expect(cards.nth(index)).toBeFocused();
   }
 
-  const matching = page.getByRole("button", { name: /Product & Application Matching/ });
-  await matching.focus();
-  await matching.press("ArrowDown");
-  const quality = page.getByRole("button", { name: /Quality, Food Safety & Plant Approval/ });
-  await expect(quality).toBeFocused();
-  await quality.press("Space");
-  await expect(quality).toHaveAttribute("aria-expanded", "true");
+  const calibration = page.getByRole("button", { name: /Requirement Calibration/ });
+  await calibration.focus();
+  await calibration.press("ArrowDown");
+  const origin = page.getByRole("button", { name: /Origin Integration/ });
+  await expect(origin).toBeFocused();
+  await origin.press("Space");
+  await expect(origin).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#trade-process .process-showcase-media__item.is-active img")).toHaveAttribute(
+    "alt",
+    "Holstein dairy cows grazing together in a green pasture",
+  );
+
+  for (const viewport of [
+    { width: 360, height: 800 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/en/products/dairy-milk-powders");
+    await expect.poll(() => originationGrid.evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(" ").length))
+      .toBe(viewport.width === 1440 ? 3 : 1);
+    const responsiveAudit = await page.evaluate(() => ({
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+      overflowingCardCopy: [...document.querySelectorAll<HTMLElement>("#range .product-image-card__copy")]
+        .filter((element) => element.scrollWidth > element.clientWidth + 1).length,
+      incompleteImages: [...document.querySelectorAll<HTMLImageElement>("#range img, #services img")]
+        .filter((image) => !image.complete || image.naturalWidth === 0).length,
+    }));
+    expect(responsiveAudit.documentWidth).toBe(responsiveAudit.viewportWidth);
+    expect(responsiveAudit.overflowingCardCopy).toBe(0);
+    expect(responsiveAudit.incompleteImages).toBe(0);
+
+    if (viewport.width === 1440) {
+      const desktopGeometry = await originationGrid.evaluate((grid) => {
+        const visuals = Array.from(grid.querySelectorAll<HTMLElement>(".product-services__media-visual"));
+        const headings = Array.from(grid.querySelectorAll<HTMLElement>("h3"));
+        return {
+          heights: visuals.map((visual) => visual.getBoundingClientRect().height),
+          headingTops: headings.map((heading) => heading.getBoundingClientRect().top),
+          widths: visuals.map((visual) => visual.getBoundingClientRect().width),
+        };
+      });
+      expect(Math.max(...desktopGeometry.widths) - Math.min(...desktopGeometry.widths)).toBeLessThanOrEqual(1);
+      expect(Math.max(...desktopGeometry.heights) - Math.min(...desktopGeometry.heights)).toBeLessThanOrEqual(1);
+      expect(Math.max(...desktopGeometry.headingTops) - Math.min(...desktopGeometry.headingTops)).toBeLessThanOrEqual(1);
+    }
+
+    if (viewport.width === 360) {
+      await page.locator("#range .product-image-card").first().click();
+      const modalBounds = await page.getByRole("dialog").evaluate((element) => element.getBoundingClientRect().toJSON());
+      expect(modalBounds.x).toBeGreaterThanOrEqual(0);
+      expect(modalBounds.width).toBeLessThanOrEqual(viewport.width);
+      await page.keyboard.press("Escape");
+    }
+  }
+
+  for (const selection of [
+    ["buttermilk-powder", "Buttermilk Powder"],
+    ["infant-grade-ingredients", "Infant Grade Ingredients"],
+  ] as const) {
+    await page.goto(`/en/request-a-quote?category=dairy-milk-powders&product=${selection[0]}`);
+    await expect(page.locator(".selected-enquiry-product strong")).toHaveText(selection[1]);
+    await expect(page.locator('.selected-enquiry-product input[name="productId"]')).toHaveValue(selection[0]);
+  }
 });
 
 test("Fats & Oils has eight product routes, three metrics and a keyboard accordion", async ({ page }) => {
@@ -884,14 +968,14 @@ test("decision-summary mobile sheet keeps its header and action fixed while the 
   await page.setViewportSize({ width: 360, height: 640 });
   await page.goto("/en/products/dairy-milk-powders");
 
-  const card = page.getByRole("button", { name: "View commercial details for Fat-Filled Milk Powder" });
+  const card = page.getByRole("button", { name: "View commercial details for Fat Filled Milk Powders" });
   await card.press("Space");
 
   const dialog = page.getByRole("dialog");
   const body = dialog.locator(".product-info-modal__decision-body");
   const header = dialog.locator(".product-info-modal__decision-header");
   const action = dialog.locator(".product-info-modal__decision-actions");
-  const cta = dialog.getByRole("link", { name: "Request a quote for Fat-Filled Milk Powder" });
+  const cta = dialog.getByRole("link", { name: "Request a quote for Fat Filled Milk Powders" });
   await expect(cta).toBeVisible();
 
   const before = await dialog.evaluate((panel) => {
@@ -983,7 +1067,6 @@ test("fact cards use one metric, one title and one paragraph with count-up motio
     { initial: "0m+", route: "/en/products/sugar", values: ["189m+", "59%", "1908"] },
     { initial: "0–0", route: "/en/products/cocoa-products", values: ["30–40", "≈400", "5–7 days"] },
     { initial: "0m", route: "/en/products/grains-seeds", values: ["820m", "1.30bn", "62.7m"] },
-    { initial: "0.0", route: "/en/products/dairy-milk-powders", values: ["117.4", "~50%", "13.7m"] },
     { initial: "0.0m", route: "/en/products/oils-fats", values: ["244.7m", "≈50%", "23.6m"] },
     { initial: "0m", route: "/en/products/starches-sweeteners", values: ["22m", "9.8m", "48%"] },
     { initial: "0.00m", route: "/en/products/dried-fruit-nuts", values: ["6.02m", "3.25m", "78%"] },
@@ -1023,7 +1106,7 @@ test("fact cards use one metric, one title and one paragraph with count-up motio
 
 test("fact card metrics and paragraphs align across product pages", async ({ page }) => {
   test.setTimeout(60_000);
-  const routes = ["/en/products/coffee", "/en/products/sugar", "/en/products/cocoa-products", "/en/products/grains-seeds", "/en/products/dairy-milk-powders", "/en/products/oils-fats", "/en/products/starches-sweeteners", "/en/products/dried-fruit-nuts"];
+  const routes = ["/en/products/coffee", "/en/products/sugar", "/en/products/cocoa-products", "/en/products/grains-seeds", "/en/products/oils-fats", "/en/products/starches-sweeteners", "/en/products/dried-fruit-nuts"];
 
   for (const route of routes) {
     await page.setViewportSize({ width: 1440, height: 1000 });
